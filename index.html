@@ -1171,9 +1171,11 @@ function addProp2(b, kind, x, y, z, s, ry) {
   if (kind === 'arch') { P(G.box, '#c8bfa4', -2.5, 2.6, 0, 1.5, 5.2, 2.2); P(G.box, '#c8bfa4', 2.5, 2.6, 0, 1.5, 5.2, 2.2); P(G.box, '#b8af94', -2.5, .3, 0, 2, .6, 2.7); P(G.box, '#b8af94', 2.5, .3, 0, 2, .6, 2.7); P(G.box, '#d8cfb4', 0, 5.7, 0, 6.8, 1.0, 2.4); P(G.box, '#c8bfa4', 0, 6.7, 0, 7.2, .4, 2.7); P(G.box, '#e8dcc0', 0, 7.7, 0, 5.2, 1.6, 2.1); P(G.box, '#6a5a3a', 0, 7.7, 1.08, 3.6, .5, .05); [-2.1, -.7, .7, 2.1].forEach((px, i) => { P(G.box, '#e0b84a', px, 9.0 + (i % 2) * .2, 0, .9, .8, .5); P(G.box, '#e0b84a', px, 9.7 + (i % 2) * .2, 0, .25, .6, .25); }); P(G.box, '#e0b84a', 0, 9.2, 0, 2.2, .35, 1.1); [-2.5, 2.5].forEach(px => { P(G.cyl8, '#e8dfc8', px * 1.08, 2.8, 1.25, .28, 5, .28); P(G.box, '#a89c88', px, 3.2, 1.12, .9, 1.3, .1); }); return true; }
   if (kind === 'amphitheatre') {
     const R = 10, N = 24; for (let i = 0; i < N; i++) { const a = i * 2 * Math.PI / N, sa = Math.sin(a), ca = Math.cos(a), w = 2 * Math.PI * R / N * 1.04; const c = ['#dccaa0', '#d4c298', '#cbb88e'];
-      [[1.6, 3.2], [4.8, 3.0], [7.7, 2.8]].forEach((q, t) => { P(G.box, c[t], sa * R, q[0], ca * R, w, q[1], 1.6, 0, a, 0); P(G.box, '#1e1a16', sa * (R + .82), q[0] - .1, ca * (R + .82), w * .46, q[1] * .62, .12, 0, a, 0); P(G.cyl8, '#e8dcc0', sa * (R + .85) + ca * w * .38, q[0] - .1, ca * (R + .85) - sa * w * .38, .12, q[1] * .62, .12); });
+      const gate = i === 12; /* entrée (côté porte une fois l'édifice tourné) */
+      if (!gate) { P(G.box, '#c8b58a', sa * (R - 1.5), .6, ca * (R - 1.5), w * .9, 1.2, 1.2, 0, a, 0); P(G.box, '#d0bd92', sa * (R - 2.4), .3, ca * (R - 2.4), w * .78, .6, .8, 0, a, 0); }
+      [[1.6, 3.2], [4.8, 3.0], [7.7, 2.8]].forEach((q, t) => { if (gate && t === 0) return; P(G.box, c[t], sa * R, q[0], ca * R, w, q[1], 1.6, 0, a, 0); P(G.box, '#1e1a16', sa * (R + .82), q[0] - .1, ca * (R + .82), w * .46, q[1] * .62, .12, 0, a, 0); P(G.cyl8, '#e8dcc0', sa * (R + .85) + ca * w * .38, q[0] - .1, ca * (R + .85) - sa * w * .38, .12, q[1] * .62, .12); });
       P(G.box, '#b8a880', sa * R, 9.6, ca * R, w, .9, 1.9, 0, a, 0); if (i % 2 === 0) { P(G.box, '#a89870', sa * (R + .6), 10.6, ca * (R + .6), .25, 1.4, .25); P(G.box, '#8a7a5a', sa * R, 10.2, ca * R, .5, .6, .5); } }
-    P(G.cyl8, '#c8b58a', 0, 2.2, 0, R - 1.4, 4.4, R - 1.4); P(G.cyl8, '#d0bd92', 0, 3.6, 0, R - 2.8, 3.0, R - 2.8); P(G.cyl8, '#d8c59a', 0, 4.6, 0, R - 4.2, 2.2, R - 4.2); P(G.cyl8, '#e8d6a8', 0, 1.9, 0, R - 5.6, 3.8, R - 5.6); P(G.cyl8, '#f0e0b8', 0, 3.85, 0, R - 5.9, .1, R - 5.9);
+    /* intérieur ouvert : arène de sable (avant : gradins pleins où le héros se retrouvait enfermé) */
     [0, 1, 2, 3].forEach(k => P(G.box, '#c0392b', Math.sin(k * 1.57) * (R + 1), 11.4, Math.cos(k * 1.57) * (R + 1), .08, 1.8, .6)); return true;
   }
   if (kind === 'aqueduct') { for (let k = 0; k < 4; k++) { const px = -6.3 + k * 4.2; P(G.box, '#cdbf9c', px - 2.1, 3.5, 0, 1.4, 7, 2.0); P(G.box, '#bfb08c', px - 2.1, .3, 0, 1.8, .6, 2.4); P(G.box, '#cdbf9c', px, 6.3, 0, 4.2, 1.5, 2.0); P(G.bow, '#d8cca8', px, 4.35, 0, 2.5, 2.7, 2.2); P(G.box, '#b8a880', px, 7.3, 0, 4.4, .45, 2.3); P(G.box, '#6aa8c8', px, 7.55, 0, 3.8, .25, 1.3); } P(G.box, '#cdbf9c', 6.3, 3.5, 0, 1.4, 7, 2.0); P(G.box, '#bfb08c', 6.3, .3, 0, 1.8, .6, 2.4); return true; }
@@ -1678,6 +1680,11 @@ function nvBuild() {
   for (let j = 0; j < Hd; j++) for (let i = 0; i < Wd; i++) { const x = NV.x0 + (i + .5) * cs, z = NV.z0 + (j + .5) * cs; if (inWater(x, z)) wt[j * Wd + i] = 1; }
   nvBorderCells();
   
+  /* amphithéâtre (Colisée de Rome) : anneau de murs + gradins bloqués, entrée côté porte, arène intérieure libre */
+  PX.forEach(X => (X && X.blds || []).forEach(o => { if (o.t !== 'amph') return; const k = Math.min(o.w, o.d) / 22, R = 10 * k, ga = X.door ? Math.atan2(X.door[1] - o.z, X.door[0] - o.x) : Math.PI / 2;
+    for (let a = 0; a < 6.283; a += .04) { let d = Math.abs(a - ga) % 6.283; if (d > Math.PI) d = 6.283 - d; if (d < .2) continue; for (let r = R - 2.9 * k; r <= R + 1; r += .3) nvMark(o.x + Math.cos(a) * r, o.z + Math.sin(a) * r); }
+    for (let r = 0; r < R - 3.1 * k; r += .3) for (let a = 0; a < 6.283; a += .3 / Math.max(r, .3)) { const i = nvI(o.x + Math.cos(a) * r), j = nvJ(o.z + Math.sin(a) * r); if (i >= 0 && j >= 0 && i < NV.W && j < NV.H) NV.raw[j * NV.W + i] = 0; }
+    for (let r = R - 3.2 * k; r <= R + 2.5; r += .3) { const i = nvI(o.x + Math.cos(ga) * r), j = nvJ(o.z + Math.sin(ga) * r); for (let a = -2; a <= 2; a++) for (let b2 = -2; b2 <= 2; b2++) { const ii = i + a, jj = j + b2; if (ii >= 0 && jj >= 0 && ii < NV.W && jj < NV.H) NV.raw[jj * NV.W + ii] = 0; } } }));
   Zs.forEach(zo => { zo.chests.forEach(c => nvCircle(c.x, c.z, c.big ? 1.7 : .9)); zo.altars.forEach(a => nvCircle(a.x, a.z, 1.6)); zo.sick.forEach(s => { if (s.cage) nvCircle(s.x, s.z, 1.5); }); });
   nvDilate();
 }
@@ -2953,11 +2960,11 @@ function buildBeacons() {
     const z = +k, X = PX[z]; if (!X || !X.mon) continue; const L = X.mon, x = L.x, zz = L.z, y = groundH(x, zz), h = z === 7 ? 60 : 46;
     const col = new THREE.Mesh(new THREE.CylinderGeometry(1.1, 2.2, h, 12, 1, true), new THREE.MeshBasicMaterial({ color: 0xffe27a, transparent: true, opacity: .22, depthWrite: false, side: THREE.DoubleSide, fog: false, blending: THREE.AdditiveBlending }));
     col.position.set(x, y + h / 2, zz); scene.add(col);
-    const sg = mkSign(MONUMENTS[k][0], MONUMENTS[k][1]); sg.scale.set(11, 3.45, 1); sg.position.set(x, y + (z === 7 ? 38 : 16), zz); scene.add(sg);
+    const sg = mkSign(MONUMENTS[k][0], MONUMENTS[k][1]); sg.scale.set(7, 2.2, 1); sg.position.set(x, y + (z === 7 ? 34 : 15), zz); scene.add(sg);
     BEACONS.push({ z, col, sg });
   }
 }
-function beaconTick(zn) { BEACONS.forEach(b => { const near = Math.abs(b.z - zn) <= 1 && !W.arena; b.sg.visible = near; b.col.visible = near && !S.boss[b.z]; if (b.col.visible) b.col.material.opacity = .16 + .08 * Math.sin(T * 2 + b.z); }); }
+function beaconTick(zn) { BEACONS.forEach(b => { const near = Math.abs(b.z - zn) <= 1 && !W.arena, close = Math.hypot(b.col.position.x - W.x, b.col.position.z - W.z) < 30; b.sg.visible = near && !close; b.col.visible = near && !S.boss[b.z]; if (b.col.visible) b.col.material.opacity = .16 + .08 * Math.sin(T * 2 + b.z); }); }
 function mkSign(l1, l2) {
   const c = document.createElement('canvas'); c.width = 512; c.height = 160; const x = c.getContext('2d');
   x.fillStyle = '#2a0a0aee'; x.strokeStyle = '#ffd24a'; x.lineWidth = 8; x.beginPath(); x.roundRect ? x.roundRect(8, 8, 496, 144, 28) : x.rect(8, 8, 496, 144); x.fill(); x.stroke();
@@ -3314,11 +3321,14 @@ function buildEpreuves() {
 }
 function enterEpreuve(z) {
   const E = EPR[z]; if (!E) return; if (!S.boss[z]) { note(E.n, 'Convertis d\'abord ' + ZONES[z].boss + '.'); return; } const l = eprLeft(z); if (l > 0) { note(E.n, 'Reviens dans ' + Math.ceil(l / 60) + ' min.'); return; }
-  flushCoins(); W.epr = { zn: z, wave: 0, cool: 1.5 }; W.arena = { x: EPX.x, z: EPX.z, hx: E.hx, hz: E.hz }; W.by = null; clearEnemies(); clearProj(); W.x = EPX.x; W.z = EPX.z + E.hz - 7; W.hp = HPM(); W.dead = 0;
+  flushCoins(); W.epr = { zn: z, wave: 0, cool: 1.5 }; W.arena = z === 4 ? { x: EPX.x, z: EPX.z, hx: 19.6, hz: 15.2, ov: 1 } : { x: EPX.x, z: EPX.z, hx: E.hx, hz: E.hz }; W.by = null; clearEnemies(); clearProj(); W.x = EPX.x; W.z = EPX.z + E.hz - 7; W.hp = HPM(); W.dead = 0;
   E.g.visible = true; camera.position.set(W.x, CAMH, W.z + CAMZ); note(E.n, 'Tiens bon pendant ' + E.waves.length + ' vagues. Si tu tombes, retour devant l\'entrée.');
 }
 function updEpreuve(dt, alive) {
-  const P = W.epr; if (!P || !alive) return; const E = EPR[P.zn]; P.cool -= dt; if (P.cool > 0) return;
+  const P = W.epr; if (!P || !alive) return; const E = EPR[P.zn];
+  /* garde les ennemis dans l'arène (ovale du Colisée ou salle du Concile) : ceux qui sortent sont replacés à l'intérieur */
+  { const A = W.arena; if (A) enemies.forEach(e => { if (e.done > 0) return; const ux = (e.x - A.x) / (A.hx - 1), uz = (e.z - A.z) / (A.hz - 1), q = A.ov ? Math.hypot(ux, uz) : Math.max(Math.abs(ux), Math.abs(uz)); if (q > 1) { e.x = A.x + (e.x - A.x) / q * .9; e.z = A.z + (e.z - A.z) / q * .9; e.hx = e.x; e.hz = e.z; e.m.position.x = e.x; e.m.position.z = e.z; } e.chase = true; }); }
+  P.cool -= dt; if (P.cool > 0) return;
   if (enemies.some(e => !e.done)) return;
   if (P.wave >= E.waves.length) { if (!P.end) { P.end = 2.4; note(E.end[0], E.end[1]); } P.end -= dt; if (P.end <= 0) leaveArena(true); return; }
   E.waves[P.wave].forEach((k, i) => { const a = i * 2.4 + P.wave, e = spawnFoe(P.zn, false, k, EPX.x + Math.cos(a) * 11, EPX.z - 5 + Math.sin(a) * 5); e.chase = true; });
@@ -3780,7 +3790,7 @@ const FSP = [
 ];
 /* ---------- boucle de jeu ---------- */
 const ctrl = { on: 0, dx: 0, dy: 0, ox: 0, oy: 0 }; let pulse = 0, walked = 0, shakeA = 0, bossEnt = null;
-function step(dx, dz) { if (W.tmp) { const A = W.arena, q = nvSlide(W.x, W.z, dx, dz, .5, false); if (Math.abs(q[0] - A.x) < A.hx - .5) W.x = q[0]; if (Math.abs(q[1] - A.z) < A.hz - .5) W.z = q[1]; return; } if (W.arena) { const A = W.arena, ax = W.x + dx, az = W.z + dz; if (Math.abs(ax - A.x) < A.hx) W.x = ax; if (Math.abs(az - A.z) < A.hz) W.z = az; return; } const q = nvSlide(W.x, W.z, dx, dz, .5, false), nx = q[0], nz = q[1], zi = zoneAt(nx, nz); if (zi >= 0 && zi <= S.lvl) { if (wallBlock(nx, nz, 1.1)) return; if (!has('wk') && inWater(nx, nz) && !inWater(W.x, W.z)) { if (T - W.wMsg > 3) { W.wMsg = T; note('Eau profonde', 'Étudie « Marcher sur les eaux » dans l\'onglet Recherche.'); } return; } W.x = nx; W.z = nz; } else if (zi > S.lvl && T - W.lockMsg > 3) { W.lockMsg = T; note('Zone verrouillée', 'Vaincs ' + ZONES[zi - 1].boss + ' pour ouvrir le passage.'); } }
+function step(dx, dz) { if (W.tmp) { const A = W.arena, q = nvSlide(W.x, W.z, dx, dz, .5, false); if (Math.abs(q[0] - A.x) < A.hx - .5) W.x = q[0]; if (Math.abs(q[1] - A.z) < A.hz - .5) W.z = q[1]; return; } if (W.arena) { const A = W.arena, ax = W.x + dx, az = W.z + dz; if (A.ov) { const ins = (x, z) => ((x - A.x) / A.hx) ** 2 + ((z - A.z) / A.hz) ** 2 < 1; if (ins(ax, az)) { W.x = ax; W.z = az; } else if (ins(ax, W.z)) W.x = ax; else if (ins(W.x, az)) W.z = az; return; } if (Math.abs(ax - A.x) < A.hx) W.x = ax; if (Math.abs(az - A.z) < A.hz) W.z = az; return; } const q = nvSlide(W.x, W.z, dx, dz, .5, false), nx = q[0], nz = q[1], zi = zoneAt(nx, nz); if (zi >= 0 && zi <= S.lvl) { if (wallBlock(nx, nz, 1.1)) return; if (!has('wk') && inWater(nx, nz) && !inWater(W.x, W.z)) { if (T - W.wMsg > 3) { W.wMsg = T; note('Eau profonde', 'Étudie « Marcher sur les eaux » dans l\'onglet Recherche.'); } return; } W.x = nx; W.z = nz; } else if (zi > S.lvl && T - W.lockMsg > 3) { W.lockMsg = T; note('Zone verrouillée', 'Vaincs ' + ZONES[zi - 1].boss + ' pour ouvrir le passage.'); } }
 const dist = (x, z) => Math.hypot(x - W.x, z - W.z);
 const _pv = new THREE.Vector3();
 function onScreen(x, z) { _pv.set(x, 1.5, z).project(camera); return _pv.z < 1 && Math.abs(_pv.x) < 1.04 && Math.abs(_pv.y) < 1.04; }
