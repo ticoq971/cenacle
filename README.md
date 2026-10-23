@@ -18,3 +18,10 @@ Jeu d'action-évolution en 3D (Three.js r128), dans un seul fichier `index.html`
 
 ## Historique
 Voir `git log`.
+
+## Coop en ligne
+Réglages → Coop : crée une salle, partage le code (ou le lien), tes amis rejoignent avec le code (6 joueurs max). Connexion directe entre navigateurs (WebRTC, signalisation via relais publics nostr, bibliothèque Trystero, licence MIT dans vendor/). Sans compte ni serveur ; peut échouer sur certains réseaux 4G / d'entreprise.
+
+## Sauvegarde
+La partie est stockée dans le navigateur. Pour la transférer (PC ↔ iPhone) : Réglages → Partie → Exporter la sauvegarde, puis Importer sur l'autre appareil.
+

@@ -4,6 +4,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Cinzel:wght@600;800&family=Alegreya+Sans:wght@400;500;700&display=swap">
 <!-- three.js r128 : copie locale (vendor/), sinon CDN -->
 <script src="vendor/three.min.js"></script>
+<script src="vendor/trystero-nostr.min.js"></script>
 <script>window.THREE || document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"><\/script>');</script>
 <style>
 /* Jeu d'action-évolution en 3D : monde ouvert découpé en 6 zones (une par époque), interface en surimpression. */
@@ -3450,6 +3451,28 @@ function qUpd(label, text) {
   if (sg !== QS.sig) { QS.sig = sg; QS.until = now + (QS.qt++ ? 5000 : 7500); }
   qApply(QS.pin === 'open' ? false : now > QS.until);
 }
+/* ---------- salon hors de Claude : WebRTC pair à pair (Trystero, signalisation publique nostr), même interface que window.claude room ----------
+   Un salon Trystero par code. La présence et les événements (emo, bless, bossdown) passent directement d'un navigateur à l'autre. */
+function p2pLobby() {
+  if (!window.Trystero) return null; const TR = window.Trystero, me = TR.selfId, H = {}, PH = [], CH = []; let room = null, code = '', myP = {}, others = new Map(), sendP = null, sendE = null;
+  const fire = (n, m) => (H[n] || []).forEach(f => { try { f(m); } catch (e) { } }), peersCh = () => PH.forEach(f => { try { f(); } catch (e) { } });
+  const leave = () => { if (room) { try { room.leave(); } catch (e) { } } room = null; others.clear(); peersCh(); };
+  const join = c => { leave(); code = c; if (!c) return; room = TR.joinRoom({ appId: 'cenacle-ticoq971-v1' }, 'salle-' + c); const aP = room.makeAction('pres'), aE = room.makeAction('ev'); sendP = aP.send; sendE = aE.send;
+    aP.onMessage = (d, x) => { const id = x && x.peerId || x; if (!id) return; others.set(id, d && typeof d === 'object' ? d : {}); peersCh(); };
+    aE.onMessage = (d, x) => { const id = x && x.peerId || x; if (!d || typeof d.n !== 'string') return; fire(d.n, { data: d.d, peer: id, sameTab: false }); };
+    room.onPeerJoin = id => { try { sendP(myP, { target: id }); } catch (e) { } peersCh(); };
+    room.onPeerLeave = id => { others.delete(id); peersCh(); }; };
+  return {
+    p2p: true,
+    connected: () => true,
+    onConnection: (cb) => { CH.push(cb); setTimeout(() => cb(true), 0); return () => { }; },
+    onPeers: (cb) => { PH.push(cb); return () => { }; },
+    on: (n, cb) => { (H[n] = H[n] || []).push(cb); return () => { H[n] = H[n].filter(f => f !== cb); }; },
+    peers: () => { const L = [{ peer: me, isMe: true, sameTab: true, kind: 'viewer', presence: myP }]; others.forEach((p, id) => L.push({ peer: id, isMe: false, sameTab: false, kind: 'viewer', presence: p })); return L; },
+    presence: (o) => { for (const k in o) { if (o[k] === null) delete myP[k]; else myP[k] = o[k]; } const c = mpNorm(myP.code || ''); if (c !== code) join(c); else if (room && sendP) { try { sendP(myP); } catch (e) { } } return Promise.resolve(); },
+    emit: (n, d) => { fire(n, { data: d, peer: me, sameTab: true }); if (room && sendE) { try { sendE({ n, d }); } catch (e) { } } return Promise.resolve(); }
+  };
+}
 function mpInit() {
   if (MP.st === 'ready') return; MP.st = 'init'; MP.err = ''; MP.tries = 0; MP.t0 = Date.now(); mpDraw(true);
   const loop = async () => {
@@ -3459,14 +3482,14 @@ function mpInit() {
         const room = await window.claude.use('room');
         if (room && room.onPeers) { await mpReady(room); return; }
         if (MP.tries > 6) { MP.st = 'none'; MP.err = 'Le salon temps réel n\'est pas fourni par cette vue.'; mpDraw(true); }
-      } else if (MP.tries > 14) { MP.st = 'none'; MP.err = 'Ouvre la page depuis l\'application Claude pour jouer en coop.'; mpDraw(true); }
+      } else if (MP.tries > 2) { const lb = p2pLobby(); if (lb) { await mpReady(lb); return; } if (MP.tries > 14) { MP.st = 'none'; MP.err = 'Module de coop introuvable (vendor/trystero-nostr.min.js).'; mpDraw(true); } }
     } catch (e) { MP.err = String(e && e.message || e).slice(0, 80); }
     if (MP.tries < 60) setTimeout(loop, MP.tries < 12 ? 700 : 4000);
   };
   loop();
 }
 async function mpReady(room) {
-  MP.lobby = room; let usr = null; try { usr = await window.claude.use('user'); } catch (e) {} MP.usr = usr;
+  MP.lobby = room; let usr = null; try { if (!room.p2p) usr = await window.claude.use('user'); } catch (e) {} MP.usr = usr;
   try { if (usr && usr.me) { const me = await usr.me(); MP.me.name = String(me.name || '').slice(0, 20); if (me.color) MP.me.col = me.color; } } catch (e) {}
   MP.st = 'ready'; MP.err = ''; MP.rawConn = room.connected ? !!room.connected() : true; MP.ct = Date.now();
   MP.un = [room.onConnection(c => { MP.rawConn = !!c; MP.ct = Date.now(); if (c) MP.sig = ''; mpDraw(); if (!c) { setTimeout(mpDraw, 2600); setTimeout(mpDraw, 20500); } }, mpPeerErr), room.onPeers(() => mpSync(), mpPeerErr), room.on('emo', mpEmo, () => {}), room.on('bless', mpBless, () => {}), room.on('bossdown', mpBossDown, () => {})];
@@ -3494,7 +3517,7 @@ async function mpLeave(silent) {
   try { if (MP.lobby && had) await MP.lobby.presence({ code: null, x: null, z: null, zn: null, ar: null, mv: null, f: null, hp: null, nm: null, col: null }); } catch (e) {}
   MP.sig = ''; mpDraw(true); if (!silent) note('Coop', 'Tu as quitté la salle.');
 }
-const mpInvite = () => 'Rejoins ma partie coop de Cénacle ! Code : ' + MP.code.toUpperCase() + '\n' + MPURL + '#coop=' + MP.code;
+const mpInvite = () => 'Rejoins ma partie coop de Cénacle ! Code : ' + MP.code.toUpperCase() + '\n' + (MP.lobby && MP.lobby.p2p ? location.origin + location.pathname : MPURL) + '#coop=' + MP.code;
 async function mpCopy() {
   const t = mpInvite(); try { if (navigator.share && /Mobi|Android|iPhone/i.test(navigator.userAgent)) { await navigator.share({ text: t }); return; } await navigator.clipboard.writeText(t); note('Invitation copiée', 'Colle-la dans un message à tes amis.'); }
   catch (e) { const i = $('mpl').querySelector('.mpt'); if (i) { i.style.display = 'block'; i.value = t; i.focus(); i.select(); } note('Copie manuelle', 'Sélectionne le texte et copie-le.'); }
@@ -3573,9 +3596,25 @@ function rstDraw(box, mk) {
   let w = box.querySelector('#rstw'); if (w && !(box.dataset.rst !== String(RST.step) || w.dataset.ready !== String(performance.now() - RST.t0 >= 1500))) return; if (w) w.remove(); box.dataset.rst = String(RST.step);
   w = mk('div', '', 'rstw'); w.id = 'rstw'; w.dataset.ready = String(performance.now() - RST.t0 >= 1500); w.appendChild(mk('h4', 'Partie'));
   const b = (t, a, cls) => { const e = mk('button', t, cls); e.dataset.a = a; return e; };
-  if (RST.step === 0) { const r = mk('div', '', 'mpr'); r.appendChild(b('Réinitialiser la partie', 'rst0', 'rstb')); w.appendChild(r); }
+  if (RST.step === 0) { const r = mk('div', '', 'mpr'); r.appendChild(b('Réinitialiser la partie', 'rst0', 'rstb')); w.appendChild(r); const r2 = mk('div', '', 'mpr'); r2.appendChild(b('Exporter la sauvegarde', 'svx')); r2.appendChild(b('Importer une sauvegarde', 'svi')); w.appendChild(r2); }
   else { w.appendChild(mk('div', 'Tout effacer ? Fidèles, améliorations, reliques, églises, évêques, progression…', 'rstq')); const r = mk('div', '', 'mpr'), y = b('Oui, tout effacer', 'rst1', 'rstb rsty'); y.disabled = performance.now() - RST.t0 < 1500; r.appendChild(y); r.appendChild(b('Annuler', 'rstx')); w.appendChild(r); }
   box.appendChild(w);
+}
+function saveExport() {
+  try { save(); const code = 'CEN1:' + btoa(unescape(encodeURIComponent(JSON.stringify(S))));
+    const done = () => { try { note('Code copié', 'Colle-le sur l’autre appareil (Réglages → Importer)'); } catch (e) { } };
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(code).then(done, () => prompt('Copie ce code de sauvegarde :', code)); else prompt('Copie ce code de sauvegarde :', code);
+  } catch (e) { alert('Export impossible.'); }
+}
+function saveImport() {
+  const c = (prompt('Colle ton code de sauvegarde (il remplacera la partie actuelle) :') || '').trim(); if (!c) return;
+  let s; try { s = JSON.parse(decodeURIComponent(escape(atob(c.replace(/^CEN1:/, '').replace(/\s+/g, ''))))); s = migrateSave(s); } catch (e) { s = null; }
+  if (!s || typeof s !== 'object' || !Array.isArray(s.conv)) { alert('Code invalide.'); return; }
+  if (!confirm('Remplacer la partie actuelle par cette sauvegarde ?')) return;
+  window.RESETTING = true; try { if (MP && MP.code) mpLeave(); } catch (e) { }
+  s.t = Date.now(); const str = JSON.stringify(s); try { localStorage.setItem(KEY, str); localStorage.removeItem('cenacle_newgame'); } catch (e) { }
+  try { CLD.pend = null; if (CLD.ref && CLD.ref.set) CLD.ref.set({ data: str, ver: s.ver || 3, savedAt: Date.now() }).catch(() => { }); } catch (e) { }
+  setTimeout(() => location.reload(), 300);
 }
 function doReset() {
   window.RESETTING = true;
@@ -3619,6 +3658,7 @@ function mpDraw(full) {
 }
 function mpClick(ev) {
   const b = ev.target.closest('button'); if (!b) return; const a = b.dataset.a;
+  if (a === 'svx') { saveExport(); return; } if (a === 'svi') { saveImport(); return; }
   if (a === 'rst0') { RST.step = 1; RST.t0 = performance.now(); mpDraw(true); setTimeout(() => { if (RST.step === 1) mpDraw(true); }, 1600); return; } if (a === 'rstx') { RST.step = 0; mpDraw(true); return; } if (a === 'rst1') { if (performance.now() - RST.t0 < 1500) return; doReset(); return; } if (a === 'create') mpJoin(mpGen(), false, true); else if (a === 'join') mpJoin($('mpl').querySelector('.mpi').value); else if (a === 'copy') mpCopy(); else if (a === 'leave') mpLeave(); else if (a === 'retry') mpInit();
   else if (b.dataset.e && MP.lobby && MP.code) { MP.lobby.emit('emo', { e: b.dataset.e, code: MP.code }).catch(() => {}); } else if (b.dataset.b) mpBlessSend(b.dataset.b);
 }
