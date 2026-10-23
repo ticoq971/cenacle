@@ -340,6 +340,13 @@ button:focus-visible{outline:3px solid #fff;outline-offset:2px}
 .tst b{display:block;font-weight:800;font-size:.8rem}.tst.imp{border-left-color:#ffd24a;background:#2a1d0cdd}.tst.imp b{color:#ffd24a;font-size:.86rem}.tst.low{opacity:.8}.tst.out{opacity:0;transform:translateX(-12px)}
 @keyframes tstin{from{opacity:0;transform:translateX(-12px)}to{opacity:1;transform:none}}
 #chatt{top:calc(env(safe-area-inset-top,0px) + 76px)!important}
+
+.nw{white-space:nowrap}.upg{color:#1b7a3a;font-weight:700}
+.mbdg{display:inline-block;white-space:nowrap;background:linear-gradient(#ffe27a,#e0a021);color:#3a2400;border:1px solid #8a5a00;border-radius:999px;padding:1px 8px;font-size:.78rem;font-weight:800;margin-top:3px}
+.ups2{opacity:.75;font-size:.76rem}.upd{font-size:.76rem;opacity:.85;margin-top:2px}.upd summary{cursor:pointer;opacity:.75}
+#sp{--gold:#8a5a00}#sp [style*="color:#ffd24a"],#sp [style*="color:#ffe27a"],#sp [style*="color: #ffd24a"]{color:#8a5a00!important}
+#sp .line b,#sp .buy b,#sp .buy small,#sp .cur b{white-space:nowrap}
+#sp .rp{background:#fff9!important;color:#3a2410!important}#sp .rp b{color:#3a2410!important}
 </style>
 <div id="game">
   <canvas id="gl" aria-label="Scène 3D : glissez pour déplacer Jésus, il prêche automatiquement à portée des gens"></canvas>
@@ -370,7 +377,7 @@ button:focus-visible{outline:3px solid #fff;outline-offset:2px}
   <div id="sheet"><div id="sp"><div id="sh"><div id="stabs"><button data-s="hg">Héros</button><button data-s="ug">Améliorer</button><button data-s="rsg">Recherche</button><button data-s="cg">Églises</button><button data-s="rg">Sac</button></div><button id="sx" aria-label="Fermer">✕</button></div>
     <div id="sbody">
       <div class="pn" id="hg"></div>
-      <div class="pn" id="ug" hidden><h3>Améliorations du héros</h3><p class="mut">Dépense tes fidèles pour renforcer Jésus (le héros) ; les apôtres ont leurs propres achats plus bas. Les bonus des convertis, des églises et des reliques s'ajoutent par-dessus.</p><div class="pn" id="ups"></div><h3>Apôtres</h3><div class="pn" id="apl"></div></div>
+      <div class="pn" id="ug" hidden><h3>Améliorations du héros</h3><div class="pn" id="ups"></div><h3>Apôtres</h3><div class="pn" id="apl"></div></div>
       <div class="pn" id="cg" hidden><h3>Églises et évêques</h3><div class="card fold" data-fk="cg"><button class="fh" aria-expanded="true">Comment ça marche ?<i>▸</i></button><div class="fb"><div class="bst"><i>1</i><div>Bâtis une église, puis <b>nomme un évêque</b> (en fidèles F). Chaque achat porte son bénéficiaire : <b>👤 Toi</b> (héros), <b>✝ Évêque</b>, <b>⛪ Église</b>.</div></div><div class="bst"><i>2</i><div><b>✝ L'évêque</b> <b>marche dans la ville et convertit les habitants</b>. Chaque converti te rapporte des <b>fidèles (F)</b> et des <b>Points d'Église (PE)</b>. Plus il convertit, plus il gagne en <b>Puissance</b> (vitesse de conversion) et en <b>Vie</b> (résistance). Si sa vie tombe à 0, il se repose à l'église puis repart.</div></div><div class="bst"><i>3</i><div><b>👤 Pour toi :</b> tant que tu es dans la ville, tu profites d'un <b>Bonus de ville</b> : un peu plus de Puissance, de Vie et de régénération, d'autant plus grand que l'évêque est fort. Les PE servent à améliorer l'église et à former l'évêque. Tu en gagnes aussi à chaque personne que tu convertis (1 par ennemi normal, 3 par garde d'élite, 10 par boss, 2 à 3 par malade guéri ou captif libéré, un peu plus dans les zones avancées), même sans église.</div></div><div class="bst"><i>4</i><div><b>La messe</b> (bouton « Célébrer la messe », dans l’église ou dans sa fiche) coûte des PE et dure <b>2 min 30</b> : l’évêque de cette église convertit <b>2 fois plus vite</b> (donc environ 2 fois plus de fidèles par minute) et chaque conversion rapporte <b>1,5 fois plus de PE</b>. Pendant la messe, tu te soignes aussi près de l’église. Un compte à rebours s’affiche, et l’église brille d’une lueur dorée.</div></div></div></div><div class="line"><span>Points d'Église</span><b id="cgt"></b></div><div class="line"><span>Revenu des évêques</span><span id="cgr" style="text-align:right"></span></div><div class="pn" id="cgl"></div></div>
       <div class="pn" id="rsg" hidden></div>
       <div class="pn" id="rg" hidden><div class="card" id="wpl"></div><h3>Reliques</h3><div id="relhelp"></div><div id="relgrid"></div><div class="card" id="relsum"></div><div id="relbars"></div><div id="relorg"></div><button class="buy" id="seekb" style="width:100%"></button><div id="relhow" style="margin-top:8px"></div></div>
@@ -380,6 +387,8 @@ button:focus-visible{outline:3px solid #fff;outline-offset:2px}
   <div id="nogl"><div><h2 style="font:400 1.6rem var(--display)">3D indisponible</h2><p>Votre navigateur ne peut pas afficher la scène en 3D.</p></div></div>
 </div>
 <script>
+/* lien de don : laisser vide tant qu'il n'y en a pas (le bouton « Faire un don » reste caché) */
+const DONATE_URL = '';
 const KEY = 'cenacle_v2'; const _hw = new THREE.Vector3(); const CS = .8, CAMH = 24, CAMZ = 22, CAML = 26;
 const $ = id => document.getElementById(id);
 const rnd = (a, b) => a + Math.random() * (b - a);
@@ -754,7 +763,7 @@ $('relgrid').addEventListener('click', ev => {
 $('relsum').addEventListener('click', ev => { if (ev.target.id === 'fusb' && sel >= 0) { const j = relFusePair(sel); if (j >= 0) relFuse(sel, j); const g = $('relgrid'); g.classList.remove('flash'); void g.offsetWidth; g.classList.add('flash'); drawRel(); } });
 /* ---- blocs repliables (état mémorisé, try/catch) ---- */
 const FOLD = { mem: {}, get(k) { try { return JSON.parse(localStorage.getItem('cenacle_fold') || '{}')[k]; } catch (e) { return undefined; } }, set(k, v) { try { const o = JSON.parse(localStorage.getItem('cenacle_fold') || '{}'); o[k] = v; localStorage.setItem('cenacle_fold', JSON.stringify(o)); } catch (e) { } } };
-function foldOpen(k, seen) { if (FOLD.mem[k] === undefined) { const v = FOLD.get(k); FOLD.mem[k] = v === undefined ? !['cg', 'rel'].includes(k) : !!v; if (v === undefined && seen) FOLD.set(k, 0); } return FOLD.mem[k]; }
+function foldOpen(k, seen) { if (FOLD.mem[k] === undefined) { const v = FOLD.get(k); FOLD.mem[k] = v === undefined ? !['cg', 'rel', 'res'].includes(k) : !!v; if (v === undefined && seen) FOLD.set(k, 0); } return FOLD.mem[k]; }
 function foldHTML(k, title, body, seen) { const o = foldOpen(k, seen); return '<div class="fold' + (o ? ' open' : '') + '" data-fk="' + k + '"><button class="fh" aria-expanded="' + o + '">' + title + '<i>▸</i></button><div class="fb">' + body + '</div></div>'; }
 document.addEventListener('click', ev => { const b = ev.target.closest('.fold .fh'); if (!b) return; const f = b.parentNode, k = f.dataset.fk, o = !f.classList.contains('open'); f.classList.toggle('open', o); b.setAttribute('aria-expanded', o); FOLD.mem[k] = o; FOLD.set(k, o ? 1 : 0); });
 document.querySelectorAll('.fold[data-fk]').forEach(f => { const o = foldOpen(f.dataset.fk, false); f.classList.toggle('open', o); const b = f.querySelector('.fh'); if (b) b.setAttribute('aria-expanded', o); });
@@ -3173,7 +3182,7 @@ const costHTML = it => '<span style="color:' + (S.f >= resCost(it) ? 'var(--ok)'
 function drawResearch() {
   const box = $('rsg'), sig = S.lvl + '|' + Object.keys(S.rs).join() + '|' + (S.rq ? S.rq[0] : '');
   if (box.dataset.sig !== sig) {
-    box.dataset.sig = sig; let h = '<h3>Recherche</h3><p class="mut">Étudie pour débloquer des pouvoirs et des transports. Chaque monde a sa ressource : ramasse les cristaux, ouvre les coffres et bats les gardes des temples.</p><div class="card" id="rqc"></div><div class="rinv" id="rinv"></div><div id="ruse"></div>', cat = '';
+    box.dataset.sig = sig; let h = '<h3>Recherche</h3><div class="card" id="rqc"></div><div class="rinv" id="rinv"></div><div id="ruse"></div>', cat = '';
     RS.forEach(it => { if (it.g !== cat) { cat = it.g; h += '<h3>' + cat + '</h3>'; } h += '<div class="up" style="' + (resLocked(it) ? 'opacity:.55' : '') + '"><div class="ico">' + it.i + '</div><div><h4>' + it.n + '</h4><p>' + it.d + '</p><p class="cur" id="rc_' + it.id + '"></p></div><button class="buy" data-r="' + it.id + '" id="rb_' + it.id + '"></button></div>'; });
     if (has('voies')) h += '<h3>Voyage rapide</h3><div class="rinv">' + ZONES.map((z, i) => i <= S.lvl ? '<button class="buy" style="flex:1;min-width:110px" data-tr="' + i + '">' + z.n + '</button>' : '').join('') + '</div>';
     box.innerHTML = h;
@@ -3697,14 +3706,15 @@ function rstDraw(box, mk) {
   else { w.appendChild(mk('div', 'Tout effacer ? Fidèles, améliorations, reliques, églises, évêques, progression…', 'rstq')); const r = mk('div', '', 'mpr'), y = b('Oui, tout effacer', 'rst1', 'rstb rsty'); y.disabled = performance.now() - RST.t0 < 1500; r.appendChild(y); r.appendChild(b('Annuler', 'rstx')); w.appendChild(r); }
   box.appendChild(w);
 }
+function saveCode() { return 'CEN1:' + btoa(unescape(encodeURIComponent(mpSaveStr()))); }
 function saveExport() {
-  try { save(); const code = 'CEN1:' + btoa(unescape(encodeURIComponent(JSON.stringify(S))));
+  try { save(); const code = saveCode();
     const done = () => { try { note('Code copié', 'Colle-le sur l’autre appareil (Réglages → Importer)'); } catch (e) { } };
     if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(code).then(done, () => prompt('Copie ce code de sauvegarde :', code)); else prompt('Copie ce code de sauvegarde :', code);
   } catch (e) { alert('Export impossible.'); }
 }
-function saveImport() {
-  const c = (prompt('Colle ton code de sauvegarde (il remplacera la partie actuelle) :') || '').trim(); if (!c) return;
+function saveImport(given) {
+  const c = (typeof given === 'string' ? given : (prompt('Colle ton code de sauvegarde (il remplacera la partie actuelle) :') || '')).trim(); if (!c) return;
   let s; try { s = JSON.parse(decodeURIComponent(escape(atob(c.replace(/^CEN1:/, '').replace(/\s+/g, ''))))); s = migrateSave(s); } catch (e) { s = null; }
   if (!s || typeof s !== 'object' || !Array.isArray(s.conv)) { alert('Code invalide.'); return; }
   if (!confirm('Remplacer la partie actuelle par cette sauvegarde ?')) return;
@@ -4116,7 +4126,7 @@ function drawMM() {
 /* ---------- interface ---------- */
 function buildUI() {
   $('zbar').innerHTML = ZONES.map((z, i) => `<button class="zb" data-z="${i}" aria-label="${z.n}">${i + 1}</button>`).join('');
-  $('ups').innerHTML = UPG.map((u, i) => `<div class="up"><div class="ico" style="color:${['#ff9a6a', '#6fe39a', '#8fd0ff', '#ffe27a'][i]}">${u[2]}</div><div><h4>${u[0]} <span class="lv" id="ul${i}"></span></h4><p>${u[1]}</p><p class="cur" id="uc${i}"></p></div><button class="buy" data-u="${i}"></button></div>`).join('');
+  $('ups').innerHTML = UPG.map((u, i) => `<div class="up"><div class="ico" style="color:${['#ff9a6a', '#6fe39a', '#8fd0ff', '#ffe27a'][i]}">${u[2]}</div><div><h4>${u[0]} <span class="lv" id="ul${i}"></span></h4><p class="cur" id="uc${i}"></p><details class="upd"><summary>Détails</summary>${u[1]}</details></div><button class="buy" data-u="${i}"></button></div>`).join('');
 }
 $('zbar').addEventListener('click', ev => { const b = ev.target.closest('.zb'); if (!b) return; const z = +b.dataset.z; if (W.arena) return; if (z > S.lvl) { note('Zone verrouillée', 'Vaincs ' + ZONES[z - 1].boss + ' pour y accéder.'); return; } const [x, zz] = zoneStart(z); W.x = x; W.z = zz; camera.position.set(x, CAMH, zz + CAMZ); });
 $('ups').addEventListener('click', ev => { const b = ev.target.closest('button[data-u]'); if (!b) return; const i = +b.dataset.u, c = upCost(i); if (S.f < c || (i === 3 && S.up[3] >= 10)) return; const L0 = i === 3 ? UPEFFECT.rngMil : UPEFFECT.mil, m0 = upMul(S.up[i], L0), h0 = HPM(); S.f -= c; S.up[i]++; if (i === 1) hpTrack(); { const m1 = upMul(S.up[i], L0); if (m1 > m0) { note('Palier !', UPG[i][0] + ' niveau ' + S.up[i] + ' : bonus ×' + nf(m1 / m0, 2) + ' (total ×' + nf(m1, 2) + ')'); burst(W.x, 2.5, W.z, 0xffe27a, 50, 8, 10); } } save(); });
@@ -4187,7 +4197,7 @@ function paint() {
   if (sheetTab === 'ug') { drawApostles(); }
   if (sheetTab === 'ug') UPG.forEach((u, i) => { const c = upCost(i), mx = i === 3 && S.up[3] >= 10, b = document.querySelector('button[data-u="' + i + '"]'); $('ul' + i).textContent = 'niv. ' + S.up[i] + (mx ? ' (max)' : '');
     const fv = [() => ATK(), () => HPM(), () => REGEN(), () => RNG()], ff = [v => fmt(v), v => fmt(v), v => fmt(v) + ' / s', v => v.toFixed(1).replace('.', ',') + ' m'], fns = [() => ff[0](fv[0]()), () => ff[1](fv[1]()), () => ff[2](fv[2]()), () => ff[3](fv[3]())], now = fns[i](), v0 = fv[i]();
-    if (mx) $('uc' + i).innerHTML = 'Niveau max : <b>' + now + '</b>'; else { const L1 = i === 3 ? UPEFFECT.rngMil : UPEFFECT.mil, nm = L1.find(m => m[0] > S.up[i]), isP = L1.some(m => m[0] === S.up[i] + 1); S.up[i]++; const nx = fns[i](), v1 = fv[i](); S.up[i]--; $('uc' + i).innerHTML = 'Niv. ' + S.up[i] + ' <b>' + now + '</b><i>→</i>niv. ' + (S.up[i] + 1) + ' <b>' + nx + '</b> <em style="color:var(--ok);font-style:normal">(+' + Math.round((v1 / v0 - 1) * 100) + ' %)</em>' + (isP ? '<br><b style="color:#ffd24a">PALIER ! bond ×' + nf(nm[1], 2) + '</b>' : nm ? '<br><span style="opacity:.8">' + (nm[0] - S.up[i] - 1) + ' niveau' + (nm[0] - S.up[i] - 1 > 1 ? 'x' : '') + ' avant le palier ×' + nf(nm[1], 2) + '</span>' : ''); } b.innerHTML = mx ? 'Max' : fmt(c) + ' ' + COIN + '<small>Améliorer</small>'; b.disabled = mx || S.f < c; });
+    if (mx) $('uc' + i).innerHTML = 'Niveau max : <b>' + now + '</b>'; else { const L1 = i === 3 ? UPEFFECT.rngMil : UPEFFECT.mil, nm = L1.find(m => m[0] > S.up[i]), isP = L1.some(m => m[0] === S.up[i] + 1); S.up[i]++; const nx = fns[i](), v1 = fv[i](); S.up[i]--; $('uc' + i).innerHTML = '<b class="nw">' + now + '</b> <i>→</i> <b class="nw">' + nx + '</b> <span class="nw upg">(+' + Math.round((v1 / v0 - 1) * 100) + ' %)</span>' + (isP ? ' <span class="mbdg">★ Palier ×' + nf(nm[1], 2) + '</span>' : nm ? '<br><small class="ups2">Palier ×' + nf(nm[1], 2) + ' dans ' + (nm[0] - S.up[i]) + ' niv.</small>' : ''); } b.innerHTML = mx ? 'Max' : fmt(c) + ' ' + COIN + '<small>Améliorer</small>'; b.disabled = mx || S.f < c; });
   if (sheetTab === 'rg') { const c = relCost(); $('seekb').innerHTML = 'Chercher une relique · ' + fmt(c) + ' ' + COIN; $('seekb').disabled = S.f < c || S.rel.length >= 12; }
   if (sheetTab === 'hg' && T - lastHeroDraw > .6) { lastHeroDraw = T; drawHeroPanel(); }
 }
@@ -4369,7 +4379,7 @@ function sfx(n) { if (!AUD.ctx || AUD.ctx.state !== 'running' || AUD.cfg.mute ||
 /* appli installable : service worker (hors ligne) + astuce d'installation sur iPhone */
 if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol) && !window.claude) addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => { }));
 setTimeout(() => { try { const ios = /iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1), sa = navigator.standalone || matchMedia('(display-mode: standalone), (display-mode: fullscreen)').matches;
-  if (!ios || sa || window.claude || localStorage.getItem('cenacle_inst')) return; const d = document.createElement('div'); d.id = 'insth'; d.innerHTML = '<span>📲 <b>Installer l’appli</b> : touche <b>Partager</b> <svg width="14" height="16" viewBox="0 0 14 16"><path d="M7 1v9M3.5 4.5L7 1l3.5 3.5M2 7v8h10V7" stroke="#fff" stroke-width="1.6" fill="none"/></svg> puis <b>Sur l’écran d’accueil</b>.</span><button aria-label="Fermer">✕</button>';
+  if (true || !ios || sa || window.claude || localStorage.getItem('cenacle_inst')) return; const d = document.createElement('div'); d.id = 'insth'; d.innerHTML = '<span>📲 <b>Installer l’appli</b> : touche <b>Partager</b> <svg width="14" height="16" viewBox="0 0 14 16"><path d="M7 1v9M3.5 4.5L7 1l3.5 3.5M2 7v8h10V7" stroke="#fff" stroke-width="1.6" fill="none"/></svg> puis <b>Sur l’écran d’accueil</b>.</span><button aria-label="Fermer">✕</button>';
   d.style.cssText = 'position:fixed;left:50%;transform:translateX(-50%);bottom:calc(env(safe-area-inset-bottom,0px) + 10px);z-index:80;background:#1d1408ee;color:#fff;border:2px solid #d8b060;border-radius:12px;padding:8px 10px;font:600 .85rem system-ui,sans-serif;display:flex;gap:8px;align-items:center;max-width:92vw';
   d.querySelector('button').style.cssText = 'background:none;border:0;color:#fff;font-size:1rem'; d.querySelector('button').onclick = () => { d.remove(); localStorage.setItem('cenacle_inst', '1'); }; document.body.appendChild(d); setTimeout(() => d.remove(), 20000); } catch (e) { } }, 6000);
 
@@ -4384,6 +4394,65 @@ document.addEventListener('visibilitychange', () => { if (!AUD.ctx) return; if (
   const _ci = mpChatIn; mpChatIn = function (m) { const n = MP.chat ? MP.chat.length : 0; const r = _ci.apply(this, arguments); if (MP.chat && MP.chat.length !== n) sfx('chat'); return r; };
   const _nt = note; note = function (t) { const s = String(t || ''); if (/débloquée/.test(s)) sfx('gate'); else if (/boss (approche|apparaît)/i.test(s)) sfx('boss'); else if (/prière|Prière/.test(s)) sfx('pray'); else if (/amélior|Palier|Niveau|Arme spirituelle/.test(s)) sfx('up'); return _nt.apply(this, arguments); };
   const ub = $('ups'); if (ub) ub.addEventListener('click', ev => { if (ev.target.closest('button[data-u]')) sfx('up'); }); }
+/* ---------- menu principal ---------- */
+let _bip = null; addEventListener('beforeinstallprompt', e => { e.preventDefault(); _bip = e; try { menuDraw(); } catch (x) { } });
+const isStandalone = () => { try { return navigator.standalone || matchMedia('(display-mode: standalone), (display-mode: fullscreen)').matches; } catch (e) { return false; } };
+const MENU = { scr: 'home' };
+function menuOpen() {
+  if (document.getElementById('menu')) return; const m = document.createElement('div'); m.id = 'menu'; document.body.appendChild(m);
+  const st = document.createElement('style'); st.textContent = `#menu{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle at 50% 30%,#2a3566ee,#10142af5);padding:calc(env(safe-area-inset-top,0px) + 16px) calc(env(safe-area-inset-right,0px) + 16px) calc(env(safe-area-inset-bottom,0px) + 16px) calc(env(safe-area-inset-left,0px) + 16px);overflow:auto}
+#menu .mc{width:min(100%,380px);background:linear-gradient(#f8efd6,#ead7a6);border:3px solid #b8872a;border-radius:20px;box-shadow:0 8px 0 #5a3c10,0 20px 40px #0008;padding:18px 18px 16px;color:#3a2410;text-align:center;font-family:var(--body,system-ui)}
+#menu img.lg{width:96px;height:96px;border-radius:22px;box-shadow:0 4px 12px #0005;margin-top:-58px;border:3px solid #f8efd6}
+#menu h1{font:800 2.1rem var(--title,serif);margin:6px 0 0;color:#7a4a00;letter-spacing:.04em}#menu .sub{margin:0 0 14px;opacity:.75;font-size:.9rem}
+#menu button.mb{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;min-height:50px;margin:8px 0;border-radius:14px;border:2px solid #d8b060;background:linear-gradient(#4a78c8,#2a4a98);color:#fff;font:800 1.08rem var(--body,system-ui);box-shadow:0 4px 0 #1a2f66;cursor:pointer}
+#menu button.mb.pri{background:linear-gradient(#8ff0b4,#2f9a5a);color:#06240f;box-shadow:0 4px 0 #1b5a36;font-size:1.25rem;min-height:58px}
+#menu button.mb.alt{background:#e4d09a;color:#3d2a0c;border-color:#8a6a2a;box-shadow:0 3px 0 #8a6a2a}
+#menu .row{display:flex;gap:8px}#menu .row button{flex:1}#menu .box{background:#fff8;border-radius:12px;padding:10px;margin:8px 0;text-align:left;font-size:.92rem;line-height:1.35}
+#menu .stp{display:flex;gap:8px;align-items:center;margin:6px 0}#menu .stp b{flex:none;width:24px;height:24px;border-radius:50%;background:#b8872a;color:#fff;display:flex;align-items:center;justify-content:center;font-size:.8rem}
+#menu h2{font:800 1.3rem var(--title,serif);color:#7a4a00;margin:4px 0 8px}#menu .note{font-size:.78rem;opacity:.7;margin-top:6px}`; document.head.appendChild(st);
+  m.addEventListener('click', menuClick); ['keydown', 'keyup'].forEach(ev => m.addEventListener(ev, e => e.stopPropagation())); MENU.scr = 'home'; menuDraw();
+}
+function menuClose() { const m = document.getElementById('menu'); if (m) m.remove(); try { audInit(); } catch (e) { } }
+const SVG_SHARE = '<svg width="16" height="18" viewBox="0 0 14 16" style="vertical-align:-3px"><path d="M7 1v9M3.5 4.5L7 1l3.5 3.5M2 7v8h10V7" stroke="#2a4a98" stroke-width="1.6" fill="none"/></svg>';
+function menuDraw() {
+  const m = document.getElementById('menu'); if (!m) return; const has = (S.conv || []).some(v => v > 0) || S.f > 0 || S.lvl > 0, sa = isStandalone(); let h = '<div class="mc">';
+  if (MENU.scr === 'home') {
+    h += '<img class="lg" src="icons/icon-192.png" alt=""><h1>Cénacle</h1><p class="sub">De Jérusalem au monde entier</p>';
+    h += '<button class="mb pri" data-m="play">▶ ' + (has ? 'Continuer' : 'Jouer') + '</button>';
+    if (has) h += '<button class="mb alt" data-m="new">Nouvelle partie</button>';
+    h += '<button class="mb" data-m="saves">💾 Sauvegardes</button>';
+    if (!sa) h += '<button class="mb" data-m="install">📲 Installer l’appli</button>';
+    if (DONATE_URL) h += '<button class="mb alt" data-m="donate">❤ Faire un don</button>';
+  } else if (MENU.scr === 'new') {
+    h += '<h2>Nouvelle partie ?</h2><div class="box">Ta progression actuelle sera effacée (fidèles, églises, améliorations…). Pense à l’<b>exporter</b> d’abord si tu veux la garder.</div><div class="row"><button class="mb alt" data-m="home">Annuler</button><button class="mb" data-m="newok" style="background:linear-gradient(#e8554a,#a02020)">Tout effacer</button></div>';
+  } else if (MENU.scr === 'saves') {
+    const d = S.t ? new Date(S.t) : null; h += '<h2>Sauvegardes</h2><div class="box"><b>Partie actuelle</b><br>Niveau ' + (S.lvl + 1) + ' · ' + mpEsc(ZONES[Math.min(S.lvl, NZ - 1)].n) + '<br>' + fmt(S.f) + ' F · ' + fmt(S.pe || 0) + ' PE<br>' + (d ? 'Enregistrée le ' + d.toLocaleDateString('fr-FR') + ' à ' + d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }) : '') + '</div>';
+    h += '<div class="box" style="font-size:.84rem">La partie est enregistrée dans ce navigateur. Pour la transférer (PC ↔ iPhone), exporte le code ou le fichier ici, puis importe-le sur l’autre appareil.</div>';
+    h += '<div class="row"><button class="mb" data-m="exp">📋 Copier le code</button><button class="mb" data-m="dl">⬇ Fichier .txt</button></div><div class="row"><button class="mb" data-m="imp">📥 Coller un code</button><button class="mb" data-m="ul">📂 Ouvrir un fichier</button></div><input type="file" id="mfile" accept=".txt,text/plain" hidden><button class="mb alt" data-m="home">← Retour</button>';
+  } else if (MENU.scr === 'install') {
+    h += '<h2>Installer l’appli</h2>' + (_bip ? '<button class="mb pri" data-m="bip">📲 Installer maintenant</button>' : '');
+    h += '<div class="box"><b>iPhone · Safari</b><div class="stp"><b>1</b>Touche ' + SVG_SHARE + ' <b style="background:none;color:inherit;width:auto">Partager</b> en bas de l’écran</div><div class="stp"><b>2</b>Choisis « Sur l’écran d’accueil »</div></div>';
+    h += '<div class="box"><b>iPhone · Chrome</b><div class="stp"><b>1</b>Touche ' + SVG_SHARE + ' à droite de l’adresse</div><div class="stp"><b>2</b>Choisis « Ajouter à l’écran d’accueil »</div></div>';
+    h += '<div class="box"><b>Android · Chrome</b><div class="stp"><b>1</b>Touche le menu <b style="background:none;color:inherit;width:auto">⋮</b> en haut à droite</div><div class="stp"><b>2</b>« Installer l’application » ou « Ajouter à l’écran d’accueil »</div></div><p class="note">L’appli s’ouvre ensuite en plein écran et fonctionne même hors connexion (sauf la coop en ligne).</p><button class="mb alt" data-m="home">← Retour</button>';
+  } else if (MENU.scr === 'donate') {
+    h += '<h2>Faire un don</h2><div class="box">Le jeu est gratuit et sans publicité. Si tu l’aimes, tu peux soutenir son développement.</div><button class="mb pri" data-m="donego">❤ Ouvrir la page de don</button><button class="mb alt" data-m="home">← Retour</button>';
+  }
+  m.innerHTML = h + '</div>';
+  const f = document.getElementById('mfile'); if (f) f.addEventListener('change', () => { const file = f.files && f.files[0]; if (!file) return; file.text().then(tx => saveImport(tx.trim())); });
+}
+function menuClick(ev) {
+  const b = ev.target.closest('button[data-m]'); if (!b) return; const a = b.dataset.m;
+  if (a === 'play') menuClose(); else if (['home', 'new', 'saves', 'install', 'donate'].includes(a)) { MENU.scr = a; menuDraw(); }
+  else if (a === 'newok') { try { sessionStorage.setItem('cenacle_skipmenu', '1'); } catch (e) { } menuClose(); doReset(); }
+  else if (a === 'exp') saveExport();
+  else if (a === 'imp') saveImport();
+  else if (a === 'dl') { try { save(); const code = saveCode(), u = URL.createObjectURL(new Blob([code], { type: 'text/plain' })), l = document.createElement('a'); l.href = u; l.download = 'cenacle-sauvegarde-' + new Date().toISOString().slice(0, 10) + '.txt'; document.body.appendChild(l); l.click(); l.remove(); setTimeout(() => URL.revokeObjectURL(u), 2000); } catch (e) { alert('Téléchargement impossible.'); } }
+  else if (a === 'ul') { const f = document.getElementById('mfile'); if (f) f.click(); }
+  else if (a === 'bip' && _bip) { _bip.prompt(); _bip.userChoice.finally(() => { _bip = null; menuDraw(); }); }
+  else if (a === 'donego' && DONATE_URL) window.open(DONATE_URL, '_blank', 'noopener');
+}
+/* ouverture : pas de menu pour un lien d'invitation coop (on rejoint directement) ni juste après « Nouvelle partie » */
+{ let skip = false; try { skip = /coop=/.test(location.hash + location.search) || sessionStorage.getItem('cenacle_skipmenu') === '1' || !!window.claude; sessionStorage.removeItem('cenacle_skipmenu'); } catch (e) { } if (!skip) { menuOpen(); setTimeout(menuDraw, 1500); } }
 const IC_SND = { on: '<svg width="22" height="22" viewBox="0 0 24 24"><path d="M4 9h4l5-4v14l-5-4H4z" fill="#fff"/><path d="M16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round"/></svg>', off: '<svg width="22" height="22" viewBox="0 0 24 24"><path d="M4 9h4l5-4v14l-5-4H4z" fill="#fff"/><path d="M16 9l6 6M22 9l-6 6" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/></svg>' };
 { const b = document.createElement('button'); b.id = 'sndb'; b.innerHTML = AUD.cfg.mute ? IC_SND.off : IC_SND.on; b.setAttribute('aria-label', 'Son'); b.addEventListener('click', ev => { ev.stopPropagation(); audInit(); AUD.cfg.mute = AUD.cfg.mute ? 0 : 1; audSave(); audApply(); b.innerHTML = AUD.cfg.mute ? IC_SND.off : IC_SND.on; }); const gm = $('game') || document.body; gm.appendChild(b); }
 function sndDraw(box, mk) {
