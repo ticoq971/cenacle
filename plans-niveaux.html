@@ -1,0 +1,318 @@
+<meta charset="utf-8">
+<title>Plans de Cénacle</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Alegreya+Sans:wght@400;500;700&display=swap">
+<style>
+/* Plans cartographiques : papier calque bleuté, encre bleu-gris, routes dorées, repères terre cuite. Mise en page : onglets, carte à gauche, fiche à droite. */
+:root{--bg:#e9edf2;--panel:#f6f8fa;--ink:#22324a;--mut:#5a6b82;--line:#c3cdd9;--grid:#ced7e2;--accent:#b5553a;--road-main:#d6a437;--road-side:#e8c97a;--road-alley:#f1dfae;--casing:#8a6a22;--water:#8fc3df;--wall:#3a4560;--bld:#cdd5e0;--bld-line:#8c9bb0;--land:#e0b08a;--land-line:#a8613a;--park:#c5dcb4;--ok:#2f8a55;--font-d:'Cinzel','Georgia',serif;--font-b:'Alegreya Sans','Segoe UI',system-ui,sans-serif}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1626;--panel:#172036;--ink:#e3e9f3;--mut:#9aa8c0;--line:#2b3957;--grid:#223049;--accent:#e08a6a;--road-main:#d6a437;--road-side:#a88a3a;--road-alley:#6f6034;--casing:#3b2f12;--water:#2e6a8e;--wall:#9aa8c0;--bld:#2b3957;--bld-line:#566a90;--land:#6a4030;--land-line:#e08a6a;--park:#2d4a3a;--ok:#5fd08a;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0f1626;--panel:#172036;--ink:#e3e9f3;--mut:#9aa8c0;--line:#2b3957;--grid:#223049;--accent:#e08a6a;--road-main:#d6a437;--road-side:#a88a3a;--road-alley:#6f6034;--casing:#3b2f12;--water:#2e6a8e;--wall:#9aa8c0;--bld:#2b3957;--bld-line:#566a90;--land:#6a4030;--land-line:#e08a6a;--park:#2d4a3a;--ok:#5fd08a;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font-b);font-size:16px;line-height:1.45;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:18px 40px}
+.wrap{max-width:1180px;margin:0 auto}
+h1{font:700 1.7rem var(--font-d);letter-spacing:.04em;margin:0 0 4px;text-wrap:balance}
+h2{font:700 1.2rem var(--font-d);letter-spacing:.03em;margin:0 0 6px}
+h3{font:700 .8rem var(--font-b);letter-spacing:.12em;text-transform:uppercase;color:var(--mut);margin:16px 0 6px}
+p{margin:0 0 8px}.mut{color:var(--mut)}
+.lede{max-width:68ch;margin:0 0 14px}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0 14px}
+.tabs button{font:500 .92rem var(--font-b);padding:7px 12px;border-radius:8px;border:1px solid var(--line);background:var(--panel);color:var(--ink);cursor:pointer;min-height:40px}
+.tabs button[aria-selected="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.tabs button:focus-visible,.btn:focus-visible,summary:focus-visible,textarea:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.main{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:16px;align-items:start}
+@media(max-width:860px){.main{grid-template-columns:minmax(0,1fr)}}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px}
+.mapbox{padding:8px}
+svg.map{display:block;width:100%;height:auto;touch-action:none;user-select:none;-webkit-user-select:none}
+.layers{display:flex;flex-wrap:wrap;gap:6px 14px;margin:0 0 4px}
+.layers label{display:flex;gap:6px;align-items:center;font-size:.9rem;cursor:pointer;min-height:32px}
+.legend{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:6px 12px;font-size:.88rem}
+.legend span{display:flex;gap:7px;align-items:center}
+.dot{width:20px;height:20px;border-radius:50%;display:inline-grid;place-items:center;font:700 .72rem var(--font-b);color:#fff;flex:none}
+.sw{width:22px;height:8px;border-radius:2px;flex:none}
+table{border-collapse:collapse;width:100%;font-size:.9rem}
+th,td{text-align:left;padding:5px 6px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-weight:700;color:var(--mut);font-size:.76rem;letter-spacing:.08em;text-transform:uppercase}
+td.n{font-variant-numeric:tabular-nums;white-space:nowrap}
+textarea{width:100%;min-height:88px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);font:inherit;padding:8px;resize:vertical}
+.btn{font:700 .95rem var(--font-b);padding:9px 14px;border-radius:8px;border:1px solid var(--ink);background:var(--ink);color:var(--bg);cursor:pointer;min-height:42px}
+.btn.alt{background:transparent;color:var(--ink)}
+.row{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.out{white-space:pre-wrap;font:.82rem ui-monospace,Menlo,Consolas,monospace;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:8px;margin-top:8px;max-height:260px;overflow:auto}
+.pill{display:inline-block;font-size:.76rem;font-weight:700;letter-spacing:.06em;padding:2px 8px;border-radius:99px;border:1px solid var(--line);color:var(--mut)}
+.chain{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;max-width:520px}
+.chain div{border:1px solid var(--line);border-radius:8px;padding:8px;background:var(--bg);font-size:.88rem}
+.chain b{display:block;font-family:var(--font-d)}
+ul.rules{margin:0;padding-left:1.1em}ul.rules li{margin-bottom:6px}
+.scroll{overflow-x:auto}
+.toast{color:var(--ok);font-weight:700;margin-top:6px;min-height:1.2em}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+<div class="wrap">
+<h1>Plans de Cénacle</h1>
+<p class="lede mut">Proposition de plan pour chaque niveau : des routes principales et secondaires qui relient le départ, les objectifs et le boss, des quartiers lisibles et un Temple de Jérusalem que l'on visite. Déplace les objectifs et les bâtiments, écris tes remarques, puis copie le résultat dans le chat.</p>
+<div class="tabs" id="tabs" role="tablist"></div>
+<div id="view"></div>
+</div>
+<script>
+/* ---------- Données : coordonnées de jeu en mètres, x vers l'est, z vers le sud ; le haut de la carte est le nord (z négatif) ---------- */
+const KINDS={main:{w:6,l:'Route principale'},side:{w:4,l:'Rue secondaire'},alley:{w:2.5,l:'Ruelle'}};
+const OBJ={start:['S','#2f8a55','Départ'],exit:['⇥','#b5303a','Sortie (verrouillée tant que le boss vit)'],altar:['A','#3a6ea5','Autel de prière'],chest:['C','#c98a1a','Coffre'],sick:['+','#8a3ad0','Malade à guérir'],captive:['K','#6a7686','Captif'],church:['É','#e9edf2','Église à bâtir'],boss:['B','#b5303a','Boss / arène'],res:['R','#d9792a','Ressource de zone'],door:['P','#22324a','Porte / entrée']};
+const Z={};
+/* Jérusalem : une grande ville (240 m × 80 m) en trois secteurs, un par niveau (1 à 3) ; chaque secteur fait 80 m × 80 m et se débloque après le boss du précédent */
+Z.jer1={"t":"Jérusalem · Porte de Jaffa","s":"Niveau 1 · An 33","entry":"Départ à la Porte de Jaffa (ouest)","exit":"Porte des Quartiers (est), vers le niveau 2","boss":"Le Chef des marchands","water":[],"walls":[[[-38,-38],[38,-38],[38,38],[-38,38],[-38,-38]]],"roads":[{"n":"Route de Jaffa","k":"main","p":[[-38,15],[-26,12],[-14,6],[0,0],[6,-4]]},{"n":"Voie des Quartiers","k":"main","p":[[18,-6],[38,-6]]},{"n":"Rue des Artisans","k":"side","p":[[-26,12],[-24,28],[-6,30],[4,22]]},{"n":"Rue du Nord","k":"side","p":[[0,0],[-2,-18],[-16,-28]]},{"n":"Ruelle des tanneurs","k":"alley","p":[[-14,6],[-24,-6],[-30,-22]]},{"n":"Ruelle des potiers","k":"alley","p":[[4,22],[24,26],[32,14],[30,-6]]}],"plazas":[{"n":"Place de la Fontaine","x":12,"z":-6,"r":6}],"bld":[{"n":"Grand Marché","x":14,"z":11,"w":12,"d":7,"land":1},{"n":"Ateliers","x":-31,"z":25,"w":7,"d":7},{"n":"Ateliers","x":-14,"z":19,"w":8,"d":6},{"n":"Ateliers","x":-32,"z":-6,"w":6,"d":8},{"n":"Ateliers","x":-10,"z":-20,"w":8,"d":6},{"n":"Maisons","x":24,"z":-22,"w":9,"d":7},{"n":"Maisons","x":28,"z":6,"w":6,"d":6},{"n":"Maisons","x":-20,"z":-16,"w":7,"d":6},{"n":"Maisons","x":6,"z":-26,"w":9,"d":6},{"n":"Maisons","x":30,"z":32,"w":7,"d":6}],"obj":[{"id":"start","t":"start","x":-34,"z":15},{"id":"exit","t":"exit","x":38,"z":-6},{"id":"altar","t":"altar","x":-4,"z":10},{"id":"chest1","t":"chest","x":-34,"z":-34},{"id":"chest2","t":"chest","x":30,"z":-32},{"id":"chest3","t":"chest","x":-8,"z":35},{"id":"sick1","t":"sick","x":-18,"z":-4},{"id":"sick2","t":"sick","x":22,"z":20},{"id":"sick3","t":"sick","x":2,"z":-14},{"id":"capt1","t":"captive","x":-30,"z":33},{"id":"capt2","t":"captive","x":32,"z":-15},{"id":"church1","t":"church","x":-22,"z":20},{"id":"church2","t":"church","x":2,"z":18},{"id":"boss","t":"boss","x":14,"z":12},{"id":"temple","t":"door","x":14,"z":7},{"id":"res1","t":"res","x":-28,"z":-28},{"id":"res2","t":"res","x":22,"z":-14},{"id":"res3","t":"res","x":-2,"z":26}],"areas":[{"n":"Ruelles des tanneurs","x":-17,"z":-12,"r":5},{"n":"Abords du Nord","x":2,"z":-22,"r":5},{"n":"Cour des potiers","x":10,"z":27,"r":5},{"n":"Abords de la porte des Quartiers","x":26,"z":0,"r":4}],"patrol":[{"n":"Gardes du marché","p":[[2,-14],[22,-14],[22,-2]]}],"npc":[{"n":"Marchands : Porte de Jaffa → place","p":[[-34,15],[-14,6],[6,-4]]},{"n":"Badauds : place → Quartiers","p":[[12,-6],[34,-6]]},{"n":"Artisans","p":[[-26,12],[-24,28],[-6,30]]}],"note":"Niveau 1 : Porte de Jaffa (départ), quartier artisanal, place de la Fontaine et Grand Marché. Boss : le Chef des marchands, devant le Grand Marché. Sa défaite ouvre la Porte des Quartiers (est)."};
+Z.jer2={"t":"Jérusalem · Les Quartiers","s":"Niveau 2 · An 33","entry":"Porte des Quartiers (ouest)","exit":"Porte du Temple (est), vers le niveau 3","boss":"Le Chef des Pharisiens","gol":[-28,-27],"dg":[[-22,-38],[-10,38]],"water":[{"n":"Bassin de Bethesda","x":12,"z":-10,"w":10,"d":7}],"walls":[[[-38,-38],[38,-38],[38,38],[-38,38],[-38,-38]]],"roads":[{"n":"Grande rue","k":"main","p":[[-38,-6],[-20,-6],[-4,-2],[8,6],[24,14],[38,16]]},{"n":"Route du Nord","k":"main","p":[[-20,-6],[-20,-22],[-22,-38]]},{"n":"Route du Sud","k":"main","p":[[-4,-2],[-8,16],[-10,38]]},{"n":"Rue des Prêtres","k":"side","p":[[-20,-22],[-2,-26],[14,-22],[25,-8],[24,14]]},{"n":"Rue résidentielle","k":"side","p":[[-20,-6],[-32,2],[-30,20]]},{"n":"Rue des Pauvres","k":"side","p":[[-8,16],[8,24],[24,30]]},{"n":"Ruelle du Calvaire","k":"alley","p":[[-20,-22],[-17,-31]]}],"plazas":[{"n":"Carrefour des Quartiers","x":-4,"z":-2,"r":5}],"bld":[{"n":"Palais des Pharisiens","x":4,"z":-32,"w":14,"d":8,"land":1},{"n":"Portiques de Bethesda (nord)","x":17,"z":-11.6,"w":10,"d":1.4},{"n":"Portiques de Bethesda (sud)","x":17,"z":-1.5,"w":10,"d":1.4},{"n":"Maisons (quartier résidentiel)","x":-33,"z":10,"w":6,"d":7},{"n":"Maisons (quartier résidentiel)","x":-30,"z":-12,"w":7,"d":5},{"n":"Maisons (quartier des prêtres)","x":-8,"z":-32,"w":8,"d":6},{"n":"Maisons (quartier des prêtres)","x":12,"z":-18,"w":8,"d":5},{"n":"Maisons (quartier des pauvres)","x":-22,"z":28,"w":9,"d":6},{"n":"Maisons (quartier des pauvres)","x":4,"z":32,"w":8,"d":5}],"obj":[{"id":"start","t":"start","x":-34,"z":-6},{"id":"exit","t":"exit","x":38,"z":16},{"id":"altar","t":"altar","x":31,"z":-26},{"id":"chest1","t":"chest","x":-34,"z":34},{"id":"chest2","t":"chest","x":34,"z":-32},{"id":"chest3","t":"chest","x":30,"z":34},{"id":"sick1","t":"sick","x":-26,"z":24},{"id":"sick2","t":"sick","x":4,"z":26},{"id":"sick3","t":"sick","x":10,"z":-6},{"id":"capt1","t":"captive","x":-6,"z":-16},{"id":"capt2","t":"captive","x":30,"z":-20},{"id":"church1","t":"church","x":-20,"z":29},{"id":"church2","t":"church","x":-20,"z":8},{"id":"boss","t":"boss","x":4,"z":-33},{"id":"temple","t":"door","x":4,"z":-27.5},{"id":"res1","t":"res","x":-14,"z":30},{"id":"res2","t":"res","x":32,"z":-18},{"id":"res3","t":"res","x":-10,"z":-12}],"areas":[{"n":"Camp des pharisiens","x":-2,"z":-18,"r":5},{"n":"Quartier des pauvres","x":14,"z":32,"r":4},{"n":"Abords du Temple","x":30,"z":6,"r":4}],"patrol":[{"n":"Gardes de Bethesda","p":[[8,6],[24,14],[25,-8]]},{"n":"Garde de la Porte du Nord","p":[[-20,-8],[-20,-32]]}],"npc":[{"n":"Pèlerins : Grande rue","p":[[-34,-6],[-4,-2],[24,14]]},{"n":"Pauvres : Porte du Sud","p":[[-4,-2],[-8,16],[-10,34]]},{"n":"Malades : Bethesda","p":[[10,-6],[8,6],[24,14]]}],"note":"Niveau 2 : quartier résidentiel (ouest), quartier des prêtres et Porte du Nord (fermée), Bassin de Bethesda, quartier des pauvres et Porte du Sud (fermée). Le Calvaire est une colline au nord-ouest, près de la Porte du Nord. Boss : le Chef des Pharisiens, devant leur palais."};
+Z.jer3={"t":"Jérusalem · Le Temple","s":"Niveau 3 · An 33","entry":"Porte du Temple (ouest)","exit":"Porte de l’Est, vers Antioche","boss":"Le Grand Prêtre","water":[],"walls":[[[-38,-38],[38,-38],[38,38],[-38,38],[-38,-38]]],"roads":[{"n":"Voie du Temple","k":"main","p":[[-38,16],[-22,12],[-6,6]]},{"n":"Route de l’Est","k":"main","p":[[-22,12],[6,10],[24,12],[38,12]]},{"n":"Rue de la Synagogue","k":"side","p":[[6,10],[6,30],[24,30]]},{"n":"Rue de l’Est","k":"side","p":[[24,12],[22,-10],[28,-30]]},{"n":"Ruelle de l’esplanade","k":"alley","p":[[-22,12],[-28,30]]}],"plazas":[{"n":"Parvis du Temple","x":-6,"z":8,"r":5}],"bld":[{"n":"Esplanade du Temple","x":-6,"z":-17,"w":34,"d":36,"land":1},{"n":"Synagogue","x":-8,"z":24,"w":14,"d":9},{"n":"Maisons","x":24,"z":-22,"w":8,"d":8},{"n":"Maisons","x":32,"z":-4,"w":6,"d":6},{"n":"Maisons","x":20,"z":24,"w":8,"d":6},{"n":"Maisons","x":-30,"z":26,"w":6,"d":6},{"n":"Maisons","x":32,"z":30,"w":6,"d":6},{"n":"Maisons","x":-31,"z":-14,"w":6,"d":8},{"n":"Maisons","x":-31,"z":-30,"w":6,"d":6}],"obj":[{"id":"start","t":"start","x":-34,"z":16},{"id":"exit","t":"exit","x":38,"z":12},{"id":"altar","t":"altar","x":14,"z":20},{"id":"chest1","t":"chest","x":30,"z":-34},{"id":"chest2","t":"chest","x":-32,"z":34},{"id":"chest3","t":"chest","x":34,"z":22},{"id":"sick1","t":"sick","x":-16,"z":31},{"id":"sick2","t":"sick","x":18,"z":-14},{"id":"sick3","t":"sick","x":30,"z":4},{"id":"capt1","t":"captive","x":14,"z":-32},{"id":"capt2","t":"captive","x":-30,"z":0},{"id":"church1","t":"church","x":-28,"z":24},{"id":"church2","t":"church","x":16,"z":0},{"id":"boss","t":"boss","x":-6,"z":-28},{"id":"temple","t":"door","x":-6,"z":1},{"id":"res1","t":"res","x":16,"z":-26},{"id":"res2","t":"res","x":-20,"z":30},{"id":"res3","t":"res","x":30,"z":-12}],"areas":[{"n":"Parvis de la Synagogue","x":14,"z":24,"r":5},{"n":"Cour de l’Est","x":20,"z":-12,"r":5},{"n":"Abords de l’esplanade","x":-28,"z":6,"r":4}],"patrol":[{"n":"Gardes du Temple","p":[[-24,4],[12,4],[14,-34]]}],"npc":[{"n":"Pèlerins : Porte du Temple → esplanade","p":[[-34,16],[-22,12],[-6,6]]},{"n":"Marchands : Porte de l’Est","p":[[6,10],[38,12]]},{"n":"Fidèles : Synagogue","p":[[6,10],[6,28]]}],"note":"Niveau 3 : Temple (esplanade et intérieur visitable), Synagogue, Porte de l’Est (sortie vers Antioche, verrouillée tant que le Grand Prêtre vit)."};
+Z.ant={t:'Antioche',s:'Niveau 4 · vers 45',entry:'Arrivée par la Porte de l’Ouest',exit:'Porte du Sud, vers Rome',
+water:[{n:'Fleuve Oronte',x:-40,z:-28,w:80,d:6},{n:'Port',x:-14,z:32,w:36,d:8}],
+walls:[],
+roads:[
+{n:'Rue du Port (vers Rome)',k:'side',p:[[26,28],[26,38]]},
+{n:'Rue à colonnades',k:'main',p:[[-38,12],[-12,12],[0,5],[14,2],[38,-4]]},
+{n:'Route du pont',k:'main',p:[[2,-6],[6,-14],[6,-22],[6,-28],[6,-34]]},
+{n:'Quai du port',k:'side',p:[[0,12],[0,32]]},
+{n:'Allée de Daphné',k:'side',p:[[-12,8],[-22,0],[-30,-14]]},
+{n:'Rue des marchands',k:'side',p:[[14,2],[26,12],[26,28]]},
+{n:'Ruelle sud-ouest',k:'alley',p:[[-20,12],[-20,28]]},
+{n:'Berge nord ouest',k:'alley',p:[[6,-34],[-24,-34]]},
+{n:'Berge nord est',k:'alley',p:[[6,-34],[30,-34]]}],
+plazas:[{n:'Agora',x:0,z:3,r:10}],
+bld:[
+{n:'Temple d’Apollon',x:14,z:-34,w:22,d:8,land:1},
+{n:'Basilique',x:-18,z:-10,w:14,d:11,land:1},
+{n:'Jardins de Daphné',x:-32,z:-12,w:14,d:14,park:1},
+{n:'Entrepôts du port',x:22,z:28,w:12,d:8},{n:'Villa de l’Est',x:32,z:-12,w:10,d:10},
+{n:'Maisons',x:-28,z:22,w:10,d:8},{n:'Maisons',x:-8,z:22,w:8,d:8},{n:'Maisons',x:16,z:14,w:8,d:7},{n:'Maisons',x:-20,z:4,w:9,d:7}],
+obj:[
+{id:'start',t:'start',x:-34,z:12},{id:'exit',t:'exit',x:26,z:38},
+{id:'altar',t:'altar',x:6,z:6},
+{id:'chest1',t:'chest',x:-30,z:-17},{id:'chest2',t:'chest',x:22,z:31},{id:'chest3',t:'chest',x:33,z:-18},
+{id:'sick1',t:'sick',x:-20,z:24},{id:'sick2',t:'sick',x:18,z:10},{id:'sick3',t:'sick',x:-8,z:-14},
+{id:'capt1',t:'captive',x:28,z:6},{id:'capt2',t:'captive',x:0,z:30},
+{id:'church1',t:'church',x:-22,z:6},{id:'church2',t:'church',x:16,z:20},
+{id:'boss',t:'boss',x:14,z:-34},{id:'temple',t:'door',x:6,z:-30},
+{id:'res1',t:'res',x:-6,z:16},{id:'res2',t:'res',x:30,z:2},{id:'res3',t:'res',x:-14,z:-30}],
+areas:[{n:'Agora',x:0,z:-2,r:5},{n:'Pont',x:6,z:-18,r:4},{n:'Jardins',x:-26,z:-6,r:5},{n:'Port',x:8,z:24,r:5}],
+patrol:[{n:'Gardes du pont',p:[[3,-34],[3,-14],[9,-14],[9,-34]]},{n:'Prêtres païens : procession',p:[[0,3],[6,-14],[6,-34],[14,-34]]}],
+npc:[{n:'Dockers',p:[[0,14],[0,30],[10,30],[10,14]]},{n:'Marchands',p:[[16,2],[26,12],[26,24]]}],
+note:'Un fleuve coupe la ville : un seul pont mène au temple païen du boss. Le port (sud) est une aire d’objectifs.'};
+Z.rom={t:'Rome',s:'Niveau 5 · IIe siècle',entry:'Arrivée par la Porte du Nord',exit:'Porte de l’Ouest, vers Milan',
+water:[],walls:[],
+roads:[
+{n:'Via du Nord',k:'main',p:[[26,-38],[26,-4]]},
+{n:'Via Sacra',k:'main',p:[[-38,-4],[-12,-4],[12,-4],[38,-4]]},
+{n:'Via Lata (sortie)',k:'main',p:[[10,38],[10,-4]]},
+{n:'Voie du Colisée',k:'side',p:[[16,-6],[24,-12]]},
+{n:'Voie des Thermes',k:'side',p:[[-14,-6],[-14,-26],[-24,-26]]},
+{n:'Ruelle des insulae',k:'alley',p:[[10,10],[-28,10]]},
+{n:'Ruelle des boutiques',k:'alley',p:[[10,20],[28,20],[28,32]]},
+{n:'Ruelle des catacombes',k:'alley',p:[[-22,-4],[-22,26]]}],
+plazas:[{n:'Forum romain',x:2,z:-4,r:11}],
+bld:[
+{n:'Colisée',x:26,z:-26,w:24,d:22,land:1},{n:'Thermes',x:-28,z:-26,w:16,d:14,land:1},
+{n:'Temples du Forum',x:-4,z:-17,w:10,d:6,land:1},{n:'Temples du Forum',x:10,z:-17,w:9,d:6,land:1},
+{n:'Prison Mamertine',x:-6,z:-26,w:8,d:7},{n:'Aqueduc',x:-20,z:-37,w:36,d:3,land:1},
+{n:'Insulae',x:-32,z:4,w:10,d:9},{n:'Insulae',x:-10,z:2,w:9,d:8},{n:'Insulae',x:24,z:6,w:10,d:8},{n:'Insulae',x:-12,z:24,w:10,d:8},{n:'Insulae',x:20,z:28,w:10,d:8},{n:'Catacombes',x:-30,z:24,w:8,d:6}],
+obj:[
+{id:'start',t:'start',x:26,z:-34},{id:'exit',t:'exit',x:-38,z:-4},
+{id:'altar',t:'altar',x:-3,z:2},
+{id:'chest1',t:'chest',x:-33,z:-14},{id:'chest2',t:'chest',x:31,z:25},{id:'chest3',t:'chest',x:-16,z:30},
+{id:'sick1',t:'sick',x:-18,z:10},{id:'sick2',t:'sick',x:20,z:12},{id:'sick3',t:'sick',x:0,z:26},
+{id:'capt1',t:'captive',x:-6,z:-22},{id:'capt2',t:'captive',x:32,z:4},
+{id:'church1',t:'church',x:-28,z:18},{id:'church2',t:'church',x:18,z:20},
+{id:'boss',t:'boss',x:26,z:-26},{id:'temple',t:'door',x:24,z:-12},
+{id:'res1',t:'res',x:-8,z:16},{id:'res2',t:'res',x:30,z:-4},{id:'res3',t:'res',x:-24,z:-14}],
+areas:[{n:'Forum',x:2,z:2,r:6},{n:'Via Sacra est',x:24,z:-4,r:5},{n:'Thermes',x:-22,z:-20,r:5},{n:'Insulae sud',x:-6,z:20,r:5}],
+patrol:[{n:'Légion : Via Sacra',p:[[-34,-4],[34,-4],[-34,-4]]},{n:'Garde prétorienne',p:[[16,-14],[36,-14],[36,-36],[16,-36],[16,-14]]}],
+npc:[{n:'Citoyens : forum',p:[[-10,-4],[2,-10],[14,-4],[2,2],[-10,-4]]},{n:'Marchands',p:[[10,10],[-8,10],[10,10]]}],
+note:'La Via Sacra traverse la ville d’ouest en est jusqu’au Colisée ; la sortie sud suit la Via Lata.'};
+Z.mil={t:'Milan',s:'Niveau 6 · année 313',entry:'Arrivée par la Porte de l’Est',exit:'Porte de l’Ouest, vers la Chrétienté',
+water:[],walls:[[[-38,-38],[38,-38],[38,38],[-38,38],[-38,-38]]],
+roads:[
+{n:'Route de l’Est (depuis Rome)',k:'main',p:[[38,-4],[10,-6]]},
+{n:'Via Mediolanum',k:'main',p:[[10,-38],[10,-6],[4,8],[-38,8]]},
+{n:'Voie impériale',k:'main',p:[[10,2],[24,2],[24,12]]},
+{n:'Rue des orfèvres',k:'side',p:[[10,-22],[28,-22],[28,-8]]},
+{n:'Rue des écoles',k:'side',p:[[-4,8],[-4,26]]},
+{n:'Ruelle sud',k:'alley',p:[[-4,26],[-26,26]]},
+{n:'Ruelle ouest',k:'alley',p:[[-30,8],[-30,-12]]}],
+plazas:[{n:'Parvis de la basilique',x:3,z:2,r:8}],
+bld:[
+{n:'Basilique',x:-16,z:-8,w:22,d:24,land:1},{n:'Palais impérial',x:24,z:20,w:26,d:16,land:1},
+{n:'Baptistère',x:-30,z:-24,w:9,d:9,land:1},{n:'Écoles',x:-12,z:22,w:10,d:8},
+{n:'Ateliers',x:24,z:-14,w:10,d:8},{n:'Maisons',x:-30,z:-6,w:8,d:9},{n:'Maisons',x:-32,z:18,w:8,d:8},{n:'Maisons',x:30,z:-30,w:10,d:8},{n:'Maisons',x:-6,z:-28,w:9,d:8}],
+obj:[
+{id:'start',t:'start',x:34,z:-4},{id:'exit',t:'exit',x:-38,z:8},
+{id:'altar',t:'altar',x:-2,z:-2},
+{id:'chest1',t:'chest',x:-33,z:-30},{id:'chest2',t:'chest',x:33,z:-24},{id:'chest3',t:'chest',x:-27,z:30},
+{id:'sick1',t:'sick',x:-12,z:28},{id:'sick2',t:'sick',x:30,z:-12},{id:'sick3',t:'sick',x:-26,z:-8},
+{id:'capt1',t:'captive',x:16,z:30},{id:'capt2',t:'captive',x:-34,z:-14},
+{id:'church1',t:'church',x:-22,z:20},{id:'church2',t:'church',x:20,z:-10},
+{id:'boss',t:'boss',x:24,z:28},{id:'temple',t:'door',x:24,z:14},
+{id:'res1',t:'res',x:-8,z:16},{id:'res2',t:'res',x:16,z:-26},{id:'res3',t:'res',x:-22,z:-22}],
+areas:[{n:'Parvis',x:4,z:-8,r:5},{n:'Rue des orfèvres',x:20,z:-22,r:5},{n:'Écoles',x:-4,z:18,r:5},{n:'Cour du palais',x:24,z:26,r:5}],
+patrol:[{n:'Gardes impériaux',p:[[14,10],[36,10],[36,34],[14,34],[14,10]]},{n:'Clercs ariens',p:[[-4,8],[4,2],[-12,-8]]}],
+npc:[{n:'Fidèles : parvis ↔ baptistère',p:[[3,2],[-12,-8],[-30,-24],[3,2]]},{n:'Écoliers',p:[[-4,10],[-4,24]]}],
+note:'Ville fortifiée avec la basilique à l’ouest de la grande rue et le palais, siège du boss, à l’est.'};
+Z.chr={t:'Chrétienté',s:'Niveau 7 · Moyen Âge',entry:'Arrivée par la route de l’Est',exit:'Route de l’Ouest, vers le monde moderne',
+water:[{n:'Douves',x:-39,z:-39,w:30,d:3}],walls:[],
+roads:[
+{n:'Route du village',k:'main',p:[[38,8],[16,8],[0,6]]},
+{n:'Route du château',k:'main',p:[[-8,0],[-14,-12],[-22,-24],[-24,-27]]},
+{n:'Route de l’Ouest (sortie)',k:'main',p:[[-10,6],[-24,0],[-38,-6]]},
+{n:'Chemin des champs',k:'side',p:[[22,8],[22,-14],[34,-14]]},
+{n:'Chemin des moulins',k:'side',p:[[-12,6],[-26,16],[-34,22]]},
+{n:'Sentier du puits',k:'alley',p:[[10,8],[10,24],[28,26]]}],
+plazas:[{n:'Place du village (puits)',x:10,z:8,r:6},{n:'Parvis de la cathédrale',x:-4,z:3,r:8}],
+bld:[
+{n:'Château',x:-26,z:-30,w:26,d:18,land:1},{n:'Cathédrale',x:2,z:-12,w:20,d:22,land:1},
+{n:'Champs',x:24,z:-24,w:26,d:20,park:1},{n:'Moulin',x:-32,z:20,w:7,d:7,land:1},{n:'Moulin',x:-18,z:24,w:7,d:7,land:1},
+{n:'Maisons à colombages',x:20,z:16,w:9,d:8},{n:'Maisons à colombages',x:30,z:20,w:9,d:8},{n:'Maisons à colombages',x:6,z:20,w:9,d:8},{n:'Auberge',x:28,z:0,w:10,d:8}],
+obj:[
+{id:'start',t:'start',x:34,z:8},{id:'exit',t:'exit',x:-38,z:-6},
+{id:'altar',t:'altar',x:-4,z:-2},
+{id:'chest1',t:'chest',x:34,z:-20},{id:'chest2',t:'chest',x:28,z:28},{id:'chest3',t:'chest',x:-30,z:24},
+{id:'sick1',t:'sick',x:18,z:20},{id:'sick2',t:'sick',x:-18,z:12},{id:'sick3',t:'sick',x:30,z:-4},
+{id:'capt1',t:'captive',x:-12,z:-22},{id:'capt2',t:'captive',x:-34,z:20},
+{id:'church1',t:'church',x:14,z:-2},{id:'church2',t:'church',x:-20,z:-6},
+{id:'boss',t:'boss',x:-26,z:-30},{id:'temple',t:'door',x:-24,z:-24},
+{id:'res1',t:'res',x:6,z:26},{id:'res2',t:'res',x:30,z:-26},{id:'res3',t:'res',x:-8,z:-26}],
+areas:[{n:'Place du village',x:10,z:14,r:5},{n:'Route du château',x:-14,z:-14,r:5},{n:'Champs',x:26,z:-12,r:5},{n:'Moulins',x:-24,z:18,r:5}],
+patrol:[{n:'Gardes du château',p:[[-36,-38],[-14,-38],[-14,-22],[-36,-22],[-36,-38]]},{n:'Pillards : route de l’Est',p:[[38,8],[16,8],[22,-14]]}],
+npc:[{n:'Paysans : champs ↔ village',p:[[22,-14],[22,8],[10,8],[22,-14]]},{n:'Moines : cathédrale ↔ place',p:[[-4,3],[2,-12],[-4,3]]}],
+note:'Le château domine au nord-ouest, relié par une route montante ; le village s’étire le long de la route de l’Est.'};
+Z.mod={t:'Monde entier',s:'Niveau 8 · aujourd’hui',entry:'Arrivée par l’Avenue de l’Est',exit:'Aucune : dernière zone',
+water:[],walls:[],
+roads:[
+{n:'Avenue principale',k:'main',p:[[38,-6],[-38,-6]]},
+{n:'Avenue du Parc',k:'main',p:[[20,-38],[20,38]]},
+{n:'Avenue de l’Aiguille',k:'main',p:[[0,-38],[0,38]]},
+{n:'Avenue de la Tour',k:'main',p:[[-20,-38],[-20,38]]},
+{n:'Rue des bureaux',k:'side',p:[[-38,14],[38,14]]},
+{n:'Rue du marché',k:'side',p:[[-38,-24],[38,-24]]}],
+plazas:[{n:'Place de l’Aiguille',x:0,z:-6,r:9},{n:'Parvis de la Tour',x:-26,z:-14,r:7}],
+bld:[
+{n:'Tour de l’Indifférence',x:-30,z:-31,w:18,d:14,land:1},{n:'Parc',x:30,z:24,w:18,d:16,park:1},
+{n:'Gratte-ciel',x:-10,z:-14,w:12,d:12},{n:'Gratte-ciel',x:10,z:-14,w:12,d:12},{n:'Gratte-ciel',x:-30,z:4,w:12,d:12},{n:'Gratte-ciel',x:-10,z:4,w:12,d:12},{n:'Immeubles',x:10,z:4,w:12,d:12},
+{n:'Immeubles',x:-10,z:26,w:12,d:12},{n:'Immeubles',x:-30,z:26,w:12,d:12},{n:'Immeubles',x:10,z:26,w:12,d:12},{n:'Immeubles',x:30,z:-14,w:12,d:12},{n:'Bureaux',x:30,z:4,w:12,d:12}],
+obj:[
+{id:'start',t:'start',x:34,z:-6},
+{id:'altar',t:'altar',x:6,z:-1},
+{id:'chest1',t:'chest',x:-34,z:20},{id:'chest2',t:'chest',x:30,z:30},{id:'chest3',t:'chest',x:-8,z:-32},
+{id:'sick1',t:'sick',x:-14,z:14},{id:'sick2',t:'sick',x:14,z:22},{id:'sick3',t:'sick',x:26,z:-18},
+{id:'capt1',t:'captive',x:8,z:30},{id:'capt2',t:'captive',x:-34,z:-34},
+{id:'church1',t:'church',x:-6,z:20},{id:'church2',t:'church',x:20,z:-28},
+{id:'boss',t:'boss',x:-30,z:-31},{id:'temple',t:'door',x:-26,z:-18},
+{id:'res1',t:'res',x:-14,z:-10},{id:'res2',t:'res',x:28,z:10},{id:'res3',t:'res',x:-2,z:34}],
+areas:[{n:'Place',x:0,z:-14,r:5},{n:'Avenue de la Tour',x:-20,z:-6,r:5},{n:'Rue du marché',x:12,z:-24,r:5},{n:'Parc',x:24,z:14,r:5}],
+patrol:[{n:'Sécurité de la Tour',p:[[-38,-22],[-22,-22],[-22,-38]]},{n:'Détracteurs : avenue principale',p:[[38,-6],[0,-6],[-20,-6]]}],
+npc:[{n:'Piétons : place ↔ parc',p:[[0,-6],[20,-6],[20,20],[0,-6]]},{n:'Livreurs',p:[[-20,38],[-20,14],[0,14]]}],
+note:'Une grille d’avenues très lisible : la Tour du boss est au nord-ouest, la grande avenue y mène depuis l’entrée.'};
+/* Temple, intérieur (plan à part) : entrée au sud, sanctuaire au nord */
+const TEMPLE={t:'Temple, intérieur',s:'Niveau 3 · Esplanade et sanctuaire',
+roads:[{n:'Voie du Temple',k:'main',p:[[0,52],[0,40]]},{n:'Allée centrale',k:'side',p:[[0,40],[0,10]]},{n:'Allée de la cour des Femmes',k:'side',p:[[0,10],[0,-6]]}],
+bld:[
+{n:'Cour des Gentils',x:0,z:28,w:76,d:30,court:1},{n:'Cour des Femmes',x:0,z:6,w:40,d:14,court:1},{n:'Cour d’Israël',x:0,z:-4,w:28,d:6,court:1},{n:'Cour des Prêtres',x:0,z:-14,w:28,d:14,court:1,sacred:1},
+{n:'Vestibule (Oulam)',x:0,z:-26,w:22,d:7,land:1},{n:'Lieu saint (Hékal)',x:0,z:-33,w:14,d:12,land:1},{n:'Saint des saints',x:0,z:-41,w:11,d:6,land:1,locked:1},
+{n:'Portique royal',x:0,z:41,w:76,d:4,port:1},{n:'Portique de Salomon',x:-36,z:28,w:4,d:30,port:1},{n:'Portique est',x:36,z:28,w:4,d:30,port:1},
+{n:'Chambre',x:-16,z:6,w:6,d:6},{n:'Chambre',x:16,z:6,w:6,d:6},{n:'Grand autel',x:0,z:-16,w:8,d:8,altar:1},{n:'Bassin',x:0,z:-21,w:5,d:3,altar:1}],
+obj:[
+{id:'start',t:'start',x:0,z:50},{id:'g1',t:'door',x:0,z:43},{id:'g2',t:'door',x:-38,z:28},{id:'g3',t:'door',x:38,z:28},
+{id:'soreg',t:'door',x:0,z:16},{id:'nicanor',t:'door',x:0,z:-1},
+{id:'boss',t:'boss',x:0,z:-14},{id:'chest1',t:'chest',x:-24,z:20},{id:'chest2',t:'chest',x:24,z:20},
+{id:'sick1',t:'sick',x:-30,z:36},{id:'sick2',t:'sick',x:30,z:36},
+{id:'menorah',t:'res',x:-4,z:-33},{id:'table',t:'res',x:4,z:-33},{id:'altar',t:'altar',x:0,z:-28}],
+patrol:[{n:'Patrouille des portiques',p:[[-32,42],[32,42],[32,15],[-32,15],[-32,42]]},{n:'Garde des prêtres',p:[[-10,-8],[10,-8],[10,-20],[-10,-20],[-10,-8]]}],
+areas:[{n:'Postes aux portes (2 gardes)',x:0,z:43,r:4},{n:'Postes (2 gardes)',x:-38,z:28,r:4},{n:'Postes (2 gardes)',x:38,z:28,r:4}]};
+const GUARD=[['0 à 60 s','Veille','6 gardes postés aux 3 portes et au Nicanor ; 2 patrouilles sur les portiques ; les ennemis ne se réveillent qu’à portée.'],['60 s','Relève de la garde','4 gardes arrivent de la forteresse Antonia par la Porte sud ; pendant ~8 s, la porte est sans garde : fenêtre pour entrer sans combat.'],['90 à 110 s','Sacrifice du soir','Les prêtres s’alignent autour du grand autel, les gardes forment une haie dans la cour des Prêtres, personne n’attaque (20 s). On peut traverser ou observer.'],['110 s','Alarme possible','Si le joueur entre dans la cour des Prêtres sans permission (pendant la veille), les gardes des portiques convergent par les allées.'],['Après le boss','Voile déchiré','Le Hékal s’ouvre : ménorah, table des pains et autel de l’encens ; la porte de sortie de l’arène s’ouvre.']];
+/* ---------- Application ---------- */
+const $=(s,r)=>(r||document).querySelector(s);
+const NS='http://www.w3.org/2000/svg';
+let cur='principes';
+const store={get(k,d){try{const v=localStorage.getItem('plans:'+k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem('plans:'+k,JSON.stringify(v))}catch(e){}}};
+const orig={};
+function mapOf(id){return id==='tem'?TEMPLE:Z[id]}
+for(const id of Object.keys(Z).concat('tem')){const m=mapOf(id);orig[id]={obj:Object.fromEntries((m.obj||[]).map(o=>[o.id,[o.x,o.z]])),bld:(m.bld||[]).map(b=>[b.x,b.z])}}
+function applySaved(id){const m=mapOf(id),sv=store.get('mv:'+id,null);if(!sv)return;(m.obj||[]).forEach(o=>{const p=sv.obj&&sv.obj[o.id];if(p){o.x=p[0];o.z=p[1]}});(m.bld||[]).forEach((b,i)=>{const p=sv.bld&&sv.bld[i];if(p){b.x=p[0];b.z=p[1]}})}
+Object.keys(Z).concat('tem').forEach(applySaved);
+function saveMoves(id){const m=mapOf(id);store.set('mv:'+id,{obj:Object.fromEntries((m.obj||[]).map(o=>[o.id,[o.x,o.z]])),bld:(m.bld||[]).map(b=>[b.x,b.z])})}
+function tabs(){const items=[['principes','Principes'],['jerall','Jérusalem (niveaux 1-3)'],['jer1','1 Porte de Jaffa'],['jer2','2 Les Quartiers'],['jer3','3 Le Temple'],['tem','Temple, intérieur'],['ant','4 Antioche'],['rom','5 Rome'],['mil','6 Milan'],['chr','7 Chrétienté'],['mod','8 Monde entier']];
+const t=$('#tabs');t.innerHTML='';items.forEach(([id,l])=>{const b=document.createElement('button');b.textContent=l;b.setAttribute('role','tab');b.setAttribute('aria-selected',id===cur);b.onclick=()=>{cur=id;try{history.replaceState(null,'','#'+id)}catch(e){}tabs();show()};t.appendChild(b)})}
+function pts(p){return p.map(q=>q[0]+','+q[1]).join(' ')}
+function el(n,a,txt){const e=document.createElementNS(NS,n);for(const k in a)e.setAttribute(k,a[k]);if(txt!==undefined)e.textContent=txt;return e}
+function legendHTML(){return '<div class="legend">'+Object.values(OBJ).map(v=>'<span><i class="dot" style="background:'+v[1]+';'+(v[0]==='É'?'color:#22324a;border:1px solid #22324a':'')+'">'+v[0]+'</i>'+v[2]+'</span>').join('')+'<span><i class="sw" style="background:var(--road-main);border:1px solid var(--casing)"></i>Route principale (6 m)</span><span><i class="sw" style="background:var(--road-side);border:1px solid var(--casing)"></i>Rue secondaire (4 m)</span><span><i class="sw" style="background:var(--road-alley);border:1px solid var(--casing)"></i>Ruelle (2,5 m)</span><span><i class="sw" style="background:var(--land);border:1px solid var(--land-line)"></i>Monument / repère</span><span><i class="sw" style="background:var(--water)"></i>Eau</span><span><i class="sw" style="background:none;border-top:3px dashed #b5303a"></i>Patrouille ennemie</span><span><i class="sw" style="background:none;border-top:3px dashed #2f8a55"></i>Habitants (routine)</span><span><i class="sw" style="background:rgba(181,48,58,.25);border:1px solid #b5303a"></i>Groupe d’ennemis</span></div>'}
+function drawMap(id){const m=mapOf(id),isT=id==='tem';
+const x0=isT?-40:-40,x1=40,z0=isT?-48:-40,z1=isT?56:40,W=x1-x0,H=z1-z0;
+const svg=el('svg',{class:'map',viewBox:(x0-5)+' '+(z0-5)+' '+(W+10)+' '+(H+10),role:'img','aria-label':'Plan de '+m.t});
+svg.appendChild(el('rect',{x:x0-5,y:z0-5,width:W+10,height:H+10,fill:'var(--panel)'}));
+svg.appendChild(el('rect',{x:x0,y:z0,width:W,height:H,fill:'var(--bg)',stroke:'var(--line)','stroke-width':.3}));
+const g=(n)=>{const e=el('g',{'data-layer':n});svg.appendChild(e);return e};
+const gGrid=g('grid');for(let x=x0;x<=x1;x+=10){gGrid.appendChild(el('line',{x1:x,y1:z0,x2:x,y2:z1,stroke:'var(--grid)','stroke-width':.18}));if(x<x1)gGrid.appendChild(el('text',{x:x+5,y:z0-1.5,'text-anchor':'middle','font-size':2.6,fill:'var(--mut)'},String.fromCharCode(65+(x-x0)/10)))}
+for(let z=z0;z<=z1;z+=10){gGrid.appendChild(el('line',{x1:x0,y1:z,x2:x1,y2:z,stroke:'var(--grid)','stroke-width':.18}));if(z<z1)gGrid.appendChild(el('text',{x:x0-2,y:z+6,'text-anchor':'middle','font-size':2.6,fill:'var(--mut)'},String((z-z0)/10+1)))}
+const gW=g('water');(m.water||[]).forEach(w=>{gW.appendChild(el('rect',{x:w.x,y:w.z,width:w.w,height:w.d,fill:'var(--water)',opacity:.9}));gW.appendChild(el('text',{x:w.x+w.w/2,y:w.z+w.d/2+.9,'text-anchor':'middle','font-size':2.2,fill:'var(--ink)',opacity:.7},w.n))});
+const gB=g('bld');
+const gR=g('roads');(m.plazas||[]).forEach(p=>{gR.appendChild(el('circle',{cx:p.x,cy:p.z,r:p.r,fill:'var(--road-side)',stroke:'var(--casing)','stroke-width':.4}));gR.appendChild(el('text',{x:p.x,y:p.z+.8,'text-anchor':'middle','font-size':2.1,fill:'var(--ink)'},p.n))});
+(m.roads||[]).forEach(r=>{const w=KINDS[r.k].w,col=r.k==='main'?'var(--road-main)':r.k==='side'?'var(--road-side)':'var(--road-alley)';gR.appendChild(el('polyline',{points:pts(r.p),fill:'none',stroke:'var(--casing)','stroke-width':w+1,'stroke-linejoin':'round','stroke-linecap':'butt'}));gR.appendChild(el('polyline',{points:pts(r.p),fill:'none',stroke:col,'stroke-width':w,'stroke-linejoin':'round','stroke-linecap':'butt'}))});
+(m.roads||[]).forEach(r=>{const a=r.p[Math.floor(r.p.length/2)-1]||r.p[0],b=r.p[Math.floor(r.p.length/2)]||r.p[1];if(!a||!b)return;gR.appendChild(el('text',{x:(a[0]+b[0])/2,y:(a[1]+b[1])/2-(KINDS[r.k].w/2+.8),'text-anchor':'middle','font-size':1.9,fill:'var(--ink)',opacity:.85},r.n))});
+(m.walls||[]).forEach(w=>gR.appendChild(el('polyline',{points:pts(w),fill:'none',stroke:'var(--wall)','stroke-width':1.4,'stroke-dasharray':'0'})));
+const gA=g('enemies');(m.areas||[]).forEach(a=>{gA.appendChild(el('circle',{cx:a.x,cy:a.z,r:a.r,fill:'rgba(181,48,58,.22)',stroke:'#b5303a','stroke-width':.35}));gA.appendChild(el('text',{x:a.x,y:a.z+a.r+2.4,'text-anchor':'middle','font-size':1.9,fill:'#b5303a','font-weight':700},a.n))});
+const gP=g('patrol');(m.patrol||[]).forEach(p=>{gP.appendChild(el('polyline',{points:pts(p.p),fill:'none',stroke:'#b5303a','stroke-width':.6,'stroke-dasharray':'2 1.2'}));const a=p.p[0];gP.appendChild(el('text',{x:a[0],y:a[1]-1.2,'text-anchor':'middle','font-size':1.8,fill:'#b5303a'},p.n))});
+const gN=g('npc');(m.npc||[]).forEach(p=>{gN.appendChild(el('polyline',{points:pts(p.p),fill:'none',stroke:'#2f8a55','stroke-width':.6,'stroke-dasharray':'2 1.2'}));const a=p.p[0];gN.appendChild(el('text',{x:a[0],y:a[1]+2.6,'text-anchor':'middle','font-size':1.8,fill:'#2f8a55'},p.n))});
+const dragState={};
+function attachDrag(node,get,set){node.style.cursor='grab';node.addEventListener('pointerdown',e=>{e.preventDefault();node.setPointerCapture(e.pointerId);dragState.id=e.pointerId;dragState.n=node;node.style.cursor='grabbing'});node.addEventListener('pointermove',e=>{if(dragState.id!==e.pointerId||dragState.n!==node)return;const pt=svg.createSVGPoint();pt.x=e.clientX;pt.y=e.clientY;const q=pt.matrixTransform(svg.getScreenCTM().inverse());set(Math.max(-40,Math.min(40,Math.round(q.x))),Math.max(isT?-48:-40,Math.min(isT?56:40,Math.round(q.y))))});const end=e=>{if(dragState.id===e.pointerId){dragState.id=null;dragState.n=null;node.style.cursor='grab';saveMoves(id);refreshList(id)}};node.addEventListener('pointerup',end);node.addEventListener('pointercancel',end)}
+(m.bld||[]).forEach((b,i)=>{const gg=el('g',{});const fill=b.land?'var(--land)':b.park?'var(--park)':b.court?'var(--bld)':'var(--bld)';const stroke=b.land?'var(--land-line)':'var(--bld-line)';
+const r=el('rect',{x:-b.w/2,y:-b.d/2,width:b.w,height:b.d,rx:.8,fill,stroke,'stroke-width':b.sacred?.9:.4,'fill-opacity':b.court||b.port?.55:1,'stroke-dasharray':b.locked?'1.5 1':'0'});gg.appendChild(r);
+const fs=Math.min(2.2,Math.max(1.5,b.w/Math.max(6,b.n.length)*1.5));gg.appendChild(el('text',{x:0,y:.6,'text-anchor':'middle','font-size':fs,fill:'var(--ink)','font-weight':b.land?700:400},b.n));
+gg.setAttribute('transform','translate('+b.x+' '+b.z+')');gB.appendChild(gg);attachDrag(gg,null,(x,z)=>{b.x=x;b.z=z;gg.setAttribute('transform','translate('+x+' '+z+')')})});
+const gO=g('obj');(m.obj||[]).forEach(o=>{const d=OBJ[o.t];const gg=el('g',{transform:'translate('+o.x+' '+o.z+')','data-id':o.id});
+gg.appendChild(el('circle',{r:o.t==='boss'?2.6:2.1,fill:d[1],stroke:'#22324a','stroke-width':.35}));gg.appendChild(el('text',{y:.8,'text-anchor':'middle','font-size':o.t==='boss'?2.5:2.1,'font-weight':700,fill:o.t==='church'?'#22324a':'#fff'},d[0]));
+const lab=el('text',{y:-3,'text-anchor':'middle','font-size':1.7,fill:'var(--ink)',stroke:'var(--panel)','stroke-width':.5,'paint-order':'stroke'},o.id.replace(/\d$/,'')+(/\d$/.test(o.id)?o.id.slice(-1):''));gg.appendChild(lab);
+gO.appendChild(gg);attachDrag(gg,null,(x,z)=>{o.x=x;o.z=z;gg.setAttribute('transform','translate('+x+' '+z+')')})});
+return svg}
+function layersHTML(){return '<div class="layers" id="layers">'+[['grid','Grille'],['roads','Routes'],['bld','Bâtiments'],['obj','Objectifs'],['enemies','Ennemis'],['patrol','Patrouilles'],['npc','Habitants'],['water','Eau']].map(([k,l])=>'<label><input type="checkbox" data-l="'+k+'" checked> '+l+'</label>').join('')+'</div>'}
+function bindLayers(box){box.querySelectorAll('#layers input').forEach(i=>i.onchange=()=>{box.querySelectorAll('[data-layer="'+i.dataset.l+'"]').forEach(g=>g.style.display=i.checked?'':'none')})}
+function cell(x,z,isT){return String.fromCharCode(65+Math.min(7,Math.floor((x+40)/10)))+(Math.floor((z-(isT?-48:-40))/10)+1)}
+function listHTML(id){const m=mapOf(id),isT=id==='tem';const cnt={};(m.obj||[]).forEach(o=>cnt[o.t]=(cnt[o.t]||0)+1);
+const rows=(m.obj||[]).filter(o=>o.t!=='res'||true).map(o=>{const d=OBJ[o.t],oo=orig[id].obj[o.id],moved=oo&&(oo[0]!==o.x||oo[1]!==o.z);return '<tr><td><i class="dot" style="background:'+d[1]+';'+(d[0]==='É'?'color:#22324a;border:1px solid #22324a':'')+'">'+d[0]+'</i></td><td>'+d[2].split(' (')[0]+' <span class="mut">'+o.id+'</span></td><td class="n">'+o.x+' ; '+o.z+'</td><td class="n">'+cell(o.x,o.z,isT)+(moved?' <span class="pill">déplacé</span>':'')+'</td></tr>'}).join('');
+return '<table><thead><tr><th></th><th>Repère</th><th>x ; z</th><th>Case</th></tr></thead><tbody>'+rows+'</tbody></table>'}
+function refreshList(id){const b=$('#objlist');if(b)b.innerHTML=listHTML(id)}
+function roadsHTML(id){const m=mapOf(id);return '<table><thead><tr><th>Route</th><th>Type</th></tr></thead><tbody>'+(m.roads||[]).map(r=>'<tr><td>'+r.n+'</td><td>'+KINDS[r.k].l+' · '+KINDS[r.k].w+' m</td></tr>').join('')+'</tbody></table>'}
+function exportText(){let out='PLAN CÉNACLE : modifications\n';const ids=Object.keys(Z).concat('tem');ids.forEach(id=>{const m=mapOf(id),lines=[];(m.obj||[]).forEach(o=>{const oo=orig[id].obj[o.id];if(oo&&(oo[0]!==o.x||oo[1]!==o.z))lines.push('  '+o.id+' ('+o.t+') : ('+oo[0]+' ; '+oo[1]+') -> ('+o.x+' ; '+o.z+')')});(m.bld||[]).forEach((b,i)=>{const oo=orig[id].bld[i];if(oo&&(oo[0]!==b.x||oo[1]!==b.z))lines.push('  bâtiment « '+b.n+' » : ('+oo[0]+' ; '+oo[1]+') -> ('+b.x+' ; '+b.z+')')});const note=store.get('note:'+id,'');if(lines.length||note)out+='\n['+m.t+']\n'+lines.join('\n')+(note?'\n  Remarques : '+note:'')+'\n'});return out}
+function zoneView(id){const m=mapOf(id),isT=id==='tem';const v=document.createElement('div');
+v.innerHTML='<h2>'+m.t+' <span class="pill">'+m.s+'</span></h2>'+(m.entry?'<p class="mut">'+m.entry+' · '+m.exit+'</p>':'<p class="mut">Plan à part : on entre par l’esplanade depuis la Voie du Temple (niveau 3, Jérusalem · Le Temple). L’entrée est au sud, le sanctuaire au nord.</p>')+
+'<div class="main"><div class="card mapbox"><div id="mapslot"></div></div><div><div class="card">'+layersHTML()+'<p class="mut" style="margin:4px 0 0;font-size:.9rem">Déplace un repère ou un bâtiment avec le doigt ou la souris (cases de 1 m).</p><h3>Légende</h3>'+legendHTML()+'</div>'+
+'<div class="card" style="margin-top:12px"><h3 style="margin-top:0">Routes</h3><div class="scroll">'+roadsHTML(id)+'</div></div></div></div>'+
+'<div class="main" style="margin-top:16px"><div class="card"><h3 style="margin-top:0">Repères et coordonnées</h3><div class="scroll" id="objlist">'+listHTML(id)+'</div></div><div class="card"><h3 style="margin-top:0">Intention</h3><p>'+(m.note||'Le Temple se visite : cours successives, gardes à des moments précis, boss devant le grand autel, sanctuaire qui s’ouvre ensuite.')+'</p>'+(isT?'<h3>Horaire des gardes (boucle de 180 s)</h3><div class="scroll"><table><thead><tr><th>Moment</th><th>Événement</th></tr></thead><tbody>'+GUARD.map(g=>'<tr><td class="n">'+g[0]+'</td><td><b>'+g[1]+'</b><br>'+g[2]+'</td></tr>').join('')+'</tbody></table></div>':'')+
+'<h3>Tes remarques</h3><textarea id="note" placeholder="Ex. : mettre le marché plus près de l’entrée, ajouter une route vers le coffre 3…"></textarea><div class="row"><button class="btn" id="cp">Copier mes modifications</button><button class="btn alt" id="rs">Rétablir cette carte</button></div><div class="toast" id="toast" role="status"></div><div class="out" id="out" hidden></div></div></div>';
+v.querySelector('#mapslot').appendChild(drawMap(id));bindLayers(v);
+const ta=v.querySelector('#note');ta.value=store.get('note:'+id,'');ta.oninput=()=>store.set('note:'+id,ta.value);
+v.querySelector('#rs').onclick=()=>{const mm=mapOf(id);(mm.obj||[]).forEach(o=>{const p=orig[id].obj[o.id];o.x=p[0];o.z=p[1]});(mm.bld||[]).forEach((b,i)=>{b.x=orig[id].bld[i][0];b.z=orig[id].bld[i][1]});store.set('mv:'+id,null);show()};
+v.querySelector('#cp').onclick=()=>{const t=exportText(),o=v.querySelector('#out'),ts=v.querySelector('#toast');o.hidden=false;o.textContent=t;const sel=()=>{const r=document.createRange();r.selectNodeContents(o);const s=getSelection();s.removeAllRanges();s.addRange(r)};try{navigator.clipboard.writeText(t).then(()=>ts.textContent='Copié : colle-le dans le chat.',()=>{sel();ts.textContent='Sélectionné : copie-le puis colle-le dans le chat.'})}catch(e){sel();ts.textContent='Sélectionné : copie-le puis colle-le dans le chat.'}};
+return v}
+function principes(){const v=document.createElement('div');
+v.innerHTML='<h2>Principes de conception</h2><div class="main"><div class="card"><h3 style="margin-top:0">Règles communes aux huit niveaux</h3><ul class="rules"><li><b>Une route principale par niveau</b> relie l’entrée, la place centrale et l’arène du boss. On ne s’y perd jamais.</li><li><b>Deux à quatre rues secondaires</b> partent de la place vers les quartiers ; chaque objectif (coffre, malade, captif, autel, église) est au plus à une ruelle d’une route.</li><li><b>Pas d’impasse sans récompense</b> : toute ruelle se termine sur un objectif ou boucle.</li><li><b>Un monument par zone</b>, visible de loin, pour s’orienter (Temple, temple d’Apollon, Colisée, basilique, château, Tour).</li><li><b>Bâtiments alignés sur les rues</b>, façade vers la voie, jamais posés au milieu d’une chaussée ni d’un objectif.</li><li><b>Ennemis par groupes</b> aux carrefours et devant les objectifs, plus une patrouille ; les habitants ont leur routine sur les routes.</li><li><b>Portes et ponts</b> là où une route traverse un rempart ou l’eau ; la sortie est une porte, fermée tant que le boss vit.</li></ul><h3>Largeurs</h3><div class="scroll"><table><tbody><tr><td>Route principale</td><td class="n">6 m</td><td>deux personnages se croisent à l’aise</td></tr><tr><td>Rue secondaire</td><td class="n">4 m</td><td>un groupe d’ennemis tient dedans</td></tr><tr><td>Ruelle</td><td class="n">2,5 m</td><td>passage étroit vers un objectif</td></tr><tr><td>Grille de navigation</td><td class="n">0,5 m</td><td>collisions et pathfinding</td></tr></tbody></table></div></div>'+
+'<div class="card"><h3 style="margin-top:0">Enchaînement des huit niveaux</h3><p class="mut">Chaque niveau fait 80 m × 80 m ; Jérusalem en occupe trois côte à côte (une ville de 240 m × 80 m). Les portes de sortie et d’entrée sont alignées d’un niveau à l’autre.</p><div class="chain" style="grid-template-columns:repeat(4,minmax(0,1fr));max-width:680px"><div><b>1 Jérusalem · Jaffa</b>entrée ouest · sortie est</div><div><b>2 Jérusalem · Quartiers</b>entrée ouest · sortie est</div><div><b>3 Jérusalem · Temple</b>entrée ouest · Porte de l’Est</div><div><b>4 Antioche</b>entrée ouest · sortie sud</div><div><b>8 Monde entier</b>entrée est · fin</div><div><b>7 Chrétienté</b>entrée est · sortie ouest</div><div><b>6 Milan</b>entrée est · sortie ouest</div><div><b>5 Rome</b>entrée nord · sortie ouest</div></div><p class="mut" style="margin-top:8px">Ordre de parcours : 1 → 2 → 3 → 4 (vers l’est), 5 (vers le sud), puis 6 → 7 → 8 (vers l’ouest). La ligne du haut est la rangée nord, la ligne du bas la rangée sud.</p>'+
+'<h3>Le Temple se visite</h3><p>À Jérusalem, l’esplanade mène à une vraie visite : cours successives (Gentils, Femmes, Israël, Prêtres), grand autel, vestibule et sanctuaire. Des gardes y sont postés, patrouillent et changent de poste à des moments précis (relève, sacrifice du soir). Le boss se bat devant le grand autel, puis le sanctuaire s’ouvre.</p><h3>Comment réagir à ces plans</h3><p>Ouvre une zone, déplace ce que tu veux, ajoute une remarque, puis appuie sur « Copier mes modifications » et colle le texte dans le chat. Les cases (A à H, 1 à 8) servent à se repérer : par exemple « le coffre 2 en D5 ».</p></div></div>';return v}
+function show(){const v=$('#view');v.innerHTML='';v.appendChild(cur==='principes'?principes():cur==='jerall'?jerAll():zoneView(cur))}
+/* vue d'ensemble : les 3 secteurs de Jérusalem côte à côte, teinte par niveau, barrières entre secteurs */
+function jerAll(){const v=document.createElement('div');const ids=['jer1','jer2','jer3'],col=['rgba(47,138,85,.13)','rgba(58,110,165,.14)','rgba(181,85,58,.14)'],lab=['Niveau 1 · Porte de Jaffa','Niveau 2 · Les Quartiers','Niveau 3 · Le Temple'];
+const svg=el('svg',{class:'map',viewBox:'-46 -50 252 98',role:'img','aria-label':'Plan d’ensemble de Jérusalem'});
+ids.forEach((id,i)=>{const m=Z[id],dx=i*80,g=el('g',{transform:'translate('+dx+' 0)'});svg.appendChild(g);
+g.appendChild(el('rect',{x:-40,y:-40,width:80,height:80,fill:col[i]}));
+for(let k=0;k<8;k++){const t=-40+k*10;g.appendChild(el('line',{x1:-40+k*10+(k?0:0),y1:-40,x2:-40+k*10,y2:-38,stroke:'var(--grid)','stroke-width':.2}))}
+(m.water||[]).forEach(w=>g.appendChild(el('rect',{x:w.x,y:w.z,width:w.w,height:w.d,fill:'var(--water)'})));
+(m.plazas||[]).forEach(p=>g.appendChild(el('circle',{cx:p.x,cy:p.z,r:p.r,fill:'var(--road-side)',stroke:'var(--casing)','stroke-width':.3})));
+(m.roads||[]).forEach(r=>{const w=KINDS[r.k].w;g.appendChild(el('polyline',{points:pts(r.p),fill:'none',stroke:'var(--casing)','stroke-width':w+.8,'stroke-linecap':'round','stroke-linejoin':'round'}));g.appendChild(el('polyline',{points:pts(r.p),fill:'none',stroke:r.k==='main'?'var(--road-main)':r.k==='side'?'var(--road-side)':'var(--road-alley)','stroke-width':w,'stroke-linecap':'round','stroke-linejoin':'round'}))});
+(m.bld||[]).forEach(b=>g.appendChild(el('rect',{x:b.x-b.w/2,y:b.z-b.d/2,width:b.w,height:b.d,rx:.6,fill:b.land?'var(--land, #e6c98a)':'var(--bld)',stroke:'var(--bld-line)','stroke-width':.3})));
+if(m.gol)g.appendChild(el('circle',{cx:m.gol[0],cy:m.gol[1],r:10,fill:'rgba(140,110,70,.35)',stroke:'#7a5a2a','stroke-width':.4,'stroke-dasharray':'1.5 1'}));
+(m.dg||[]).forEach(q=>{g.appendChild(el('rect',{x:q[0]-3,y:q[1]-1.5,width:6,height:3,fill:'#6a4520'}))});
+(m.obj||[]).forEach(o=>{const d=OBJ[o.t];if(!d)return;const gg=el('g',{transform:'translate('+o.x+' '+o.z+')'});gg.appendChild(el('circle',{r:1.9,fill:d[1],stroke:'#fff','stroke-width':.35}));gg.appendChild(el('text',{y:.75,'text-anchor':'middle','font-size':2.1,fill:d[0]==='É'?'#22324a':'#fff','font-weight':700},d[0]));g.appendChild(gg)});
+g.appendChild(el('rect',{x:-38,y:-38,width:76,height:76,fill:'none',stroke:'var(--wall)','stroke-width':1.1}));
+g.appendChild(el('text',{x:0,y:-43,'text-anchor':'middle','font-size':3.6,'font-weight':700,fill:'var(--ink)'},lab[i]));
+const ex=m.obj.find(o=>o.id==='exit');if(ex&&i<2){const bx=ex.x;g.appendChild(el('rect',{x:bx-1.4,y:ex.z-5,width:2.8,height:10,fill:'url(#hatch)',stroke:'#b5303a','stroke-width':.5}));g.appendChild(el('text',{x:bx-2,y:ex.z+8.5,'text-anchor':'end','font-size':2.2,fill:'#b5303a','font-weight':700},'Barrière : débloquée au niveau '+(i+2)))}});
+const defs=el('defs',{});const pat=el('pattern',{id:'hatch',width:2,height:2,patternUnits:'userSpaceOnUse',patternTransform:'rotate(45)'});pat.appendChild(el('rect',{width:2,height:2,fill:'#f6e3d6'}));pat.appendChild(el('line',{x1:0,y1:0,x2:0,y2:2,stroke:'#b5303a','stroke-width':.8}));defs.appendChild(pat);svg.insertBefore(defs,svg.firstChild);
+v.innerHTML='<h2>Jérusalem <span class="pill">Niveaux 1 à 3 · An 33</span></h2><p class="mut">Une grande ville fortifiée de 240 m × 80 m, en trois secteurs de 80 m × 80 m. On entre par la Porte de Jaffa (ouest). Chaque boss ouvre la barrière du secteur suivant ; la Porte de l’Est mène à Antioche après le Grand Prêtre. Les Portes du Nord et du Sud sont fermées (décor).</p><div class="card mapbox" id="jall"></div><div class="main" style="margin-top:12px"><div class="card"><h3 style="margin-top:0">Secteurs</h3><div class="scroll"><table><thead><tr><th>Niveau</th><th>Quartiers</th><th>Boss</th></tr></thead><tbody><tr><td class="n">1</td><td>Porte de Jaffa (départ), quartier artisanal, place de la Fontaine, Grand Marché</td><td>Le Chef des marchands</td></tr><tr><td class="n">2</td><td>Quartier résidentiel, quartier des prêtres, Porte du Nord, Bassin de Bethesda, quartier des pauvres, Porte du Sud, colline du Calvaire</td><td>Le Chef des Pharisiens</td></tr><tr><td class="n">3</td><td>Esplanade et Temple (intérieur visitable), Synagogue, Porte de l’Est</td><td>Le Grand Prêtre</td></tr></tbody></table></div></div><div class="card"><h3 style="margin-top:0">Légende</h3>'+legendHTML()+'<p class="mut" style="margin-top:8px">Hachures rouges : barrière de quartier fermée tant que le boss du secteur vit. Rond pointillé : colline du Calvaire (trésor ×20, bien gardé).</p></div></div>';
+v.querySelector('#jall').appendChild(svg);return v}
+const h=(location.hash||'').slice(1);if(h&&(h==='principes'||h==='tem'||h==='jerall'||Z[h]))cur=h;
+tabs();show();
+</script>
