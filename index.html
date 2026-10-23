@@ -55,6 +55,41 @@ body.rs2r #setb,body.rs2r #sndb{top:calc(env(safe-area-inset-top,0px) + 118px)!i
 #quest:not(.mini) #qt{white-space:normal!important;overflow-wrap:anywhere;text-overflow:clip!important;overflow:visible!important}
 @media (max-width:700px){#quest:not(.mini){align-self:flex-start!important;margin-left:max(10px,env(safe-area-inset-left,0px))!important;margin-right:0!important;width:auto!important;max-width:calc(100vw - 132px - env(safe-area-inset-right,0px) - max(10px,env(safe-area-inset-left,0px)))!important}}
 #sheet{z-index:45!important}
+#side .hb2.glow .r{background:radial-gradient(circle at 50% 35%,#ffe9a0,#d8a030);border-color:#fff3c0;box-shadow:0 0 0 3px #ffd24a88,0 0 16px #ffd24a,0 3px 0 #6a4010;animation:hbglow 1.6s ease-in-out infinite}
+#side .hb2.glow .r svg{filter:none!important}#side .hb2.glow .r svg *{stroke:#3a2410}
+#side .hb2.glow .l{background:linear-gradient(#4a78c8,#2a4a98);color:#fff;border-color:#d8b060}
+@keyframes hbglow{0%,100%{box-shadow:0 0 0 3px #ffd24a88,0 0 16px #ffd24a,0 3px 0 #6a4010}50%{box-shadow:0 0 0 5px #ffd24aaa,0 0 26px #ffd24a,0 3px 0 #6a4010}}
+@media (prefers-reduced-motion:reduce){#side .hb2.glow .r{animation:none}}
+#sp .hgrows{display:flex;flex-direction:column;gap:7px}#sp .hgd{margin-top:10px}#sp .hgd>summary{cursor:pointer;font:800 .8rem var(--title);color:#7a4a10;padding:6px 4px}#sp .hgdb>*{margin-bottom:8px}
+/* Paramètres : panneau parchemin à onglets */
+html body #mpl{position:fixed!important;left:max(12px,env(safe-area-inset-left,0px))!important;right:max(12px,env(safe-area-inset-right,0px))!important;top:calc(env(safe-area-inset-top,0px) + 56px)!important;width:auto!important;max-width:460px;margin:0 auto;max-height:calc(100vh - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px) - 80px);max-height:calc(100dvh - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px) - 80px);box-sizing:border-box;z-index:46!important;border-radius:22px!important;background:linear-gradient(#f0e3bd,#d3b676)!important;border:3px solid #b8872a!important;box-shadow:0 6px 0 #5a3c10,0 12px 30px #000a,inset 0 0 0 2px #fff6!important;padding:12px 12px 12px!important;color:#33200a!important;font:700 .9rem var(--body)!important;flex-direction:column;overflow:hidden}
+#mpl[style*="block"]{display:flex!important}
+#mpl .st-hd{position:relative;text-align:center;flex:none}
+#mpl .st-hd h2{margin:0;font:800 1.45rem var(--title);color:#5a3a0c;text-shadow:0 1px 0 #fff9}
+#mpl .st-sub{margin:0;font:800 .7rem var(--title);color:#7a4a10;letter-spacing:.12em;text-transform:uppercase}
+#mpl .st-hd .x,#mpl .st-hd .bk{position:absolute;top:-2px;width:40px;height:40px;min-height:0;border-radius:12px;display:grid;place-items:center;font:400 1.3rem var(--display);color:#fff;border:2px solid #d8b060;padding:0;margin:0;cursor:pointer}
+#mpl .st-hd .x{right:-2px;background:linear-gradient(#b23a4c,#8a2a3a);box-shadow:0 3px 0 #4a1018}
+#mpl .st-hd .bk{left:-2px;background:linear-gradient(#4a78c8,#2a4a98);box-shadow:0 3px 0 #1a2f66;font-size:1.15rem}
+#mpl .st-tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin:10px 0 8px}
+#mpl .st-tabs button{display:flex;flex-direction:column;align-items:center;gap:1px;padding:5px 2px;min-height:0;margin:0;border-radius:12px;background:#e4d09a;border:1.5px solid #b8872a;color:#5a3a0c;font:800 .62rem var(--title);box-shadow:none;cursor:pointer}
+#mpl .st-tabs button span{font-size:1.2rem;line-height:1}
+#mpl .st-tabs button.on{background:linear-gradient(#4a78c8,#2a4a98);color:#fff;border-color:#d8b060}
+#mpl .stp{flex:1 1 auto;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;display:flex;flex-direction:column;gap:8px;padding:2px}
+#mpl .stp[hidden]{display:none}
+#mpl .stp h4{display:none}
+#mpl .stp .mut,#mpl .stp .rstq{color:#6a5030!important;font:700 .78rem/1.3 var(--body)!important}
+#mpl .stp .mpr{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+#mpl .stp button{min-height:44px;border-radius:12px;padding:6px 12px;background:linear-gradient(#4a78c8,#2a4a98);color:#fff;border:2px solid #d8b060;box-shadow:0 3px 0 #1a2f66;font:400 1rem var(--display);cursor:pointer;flex:1 1 auto}
+#mpl .stp button:disabled{background:#b8a878;color:#7a6a4a;border-color:#a8946a;box-shadow:0 3px 0 #8a7a58}
+#mpl .stp input[type=text],#mpl .stp .mpi,#mpl .stp .mpn{flex:1 1 120px;min-width:0;min-height:42px;border-radius:12px;border:2px solid #b8872a;background:#fff8e6;color:#33200a;padding:0 10px;font:700 1rem var(--body);box-sizing:border-box}
+#mpl .stp .mpcode{font:400 1.6rem var(--display);text-align:center;color:#5a3a0c;letter-spacing:.12em}
+#mpl .stp .mps{font:800 .85rem var(--body)}
+#mpl .stp .sndr{display:grid;grid-template-columns:110px 1fr;gap:8px;align-items:center;padding:8px 10px;border-radius:12px;background:linear-gradient(#f9f1da,#ecdeb4);border:1.5px solid #b8985a;font:800 .9rem var(--title);color:#5a3a0c}
+#mpl .stp .sndr input[type=range]{width:100%;accent-color:#2a4a98}
+#mpl .stp .sndr input[type=checkbox]{width:22px;height:22px;accent-color:#2a4a98;justify-self:end}
+#mpl .stp .svst{padding:10px;border-radius:12px;background:linear-gradient(#f9f1da,#ecdeb4);border:1.5px solid #b8985a;text-align:center;color:#2a7a3a;font:800 .9rem var(--body)}
+#mpl .stp .rstb{background:linear-gradient(#d0464e,#9a2a32)!important;box-shadow:0 3px 0 #4a1018!important}
+#mpl .stp .mphome{display:block;width:100%;margin:0;background:linear-gradient(#4a78c8,#2a4a98)!important;color:#fff!important;border:2px solid #d8b060!important;box-shadow:0 3px 0 #1a2f66!important}
 /* colonne de boutons */
 #side .hb2{position:relative!important;width:66px!important;height:auto!important;display:flex!important;flex-direction:column!important;align-items:center!important;gap:0!important;padding:0!important;margin:0!important;background:none!important;border:0!important;box-shadow:none!important;font-size:0!important;-webkit-text-stroke:0!important;cursor:pointer;color:inherit}
 #side .hb2 .r{width:52px;height:52px;border-radius:50%;background:radial-gradient(circle at 50% 35%,#5a4022,#2a1a0c);border:3px solid #d8b060;box-shadow:0 3px 0 #3a2410,inset 0 0 0 2px #0006,0 2px 6px #0008;display:grid;place-items:center;box-sizing:border-box}
@@ -3814,19 +3849,32 @@ async function goHome() {
   if (MP.code) { try { await mpLeave(true); } catch (e) { } }
   window.MENU_PZ = 1; MENU.scr = 'home'; menuOpen(); menuDraw();
 }
+let STTAB = 'son';
+const STT = [['son', '🔊', 'Son'], ['coop', '🤝', 'Coop'], ['save', '💾', 'Sauvegarde'], ['partie', '🏠', 'Partie']];
+function stLayout(box) {
+  let hd = box.querySelector('.st-hd');
+  if (!hd) { hd = document.createElement('div'); hd.className = 'st-hd'; hd.innerHTML = '<button class="bk" data-a="home" aria-label="Menu principal">⌂</button><h2>Paramètres</h2><p class="st-sub"></p><button class="x" data-a="close" aria-label="Fermer">✕</button><div class="st-tabs">' + STT.map(t => '<button data-st="' + t[0] + '"><span>' + t[1] + '</span>' + t[2] + '</button>').join('') + '</div>'; box.insertBefore(hd, box.firstChild);
+    STT.forEach(t => { const d = document.createElement('div'); d.className = 'stp'; d.dataset.t = t[0]; box.appendChild(d); }); }
+  const pane = t => box.querySelector('.stp[data-t="' + t + '"]');
+  [...box.children].forEach(el => { if (el === hd || el.classList.contains('stp')) return; let t = 'coop'; if (el.id === 'sndw') t = 'son'; else if (el.id === 'rstw') t = 'partie'; else if (el.classList.contains('svst')) t = 'save'; else if (el.classList.contains('mphome')) t = 'partie'; pane(t).appendChild(el); });
+  const sv = pane('partie').querySelector('button[data-a="svx"]'); if (sv) { const row = sv.parentNode; const old = pane('save').querySelector('.svrow'); if (old) old.remove(); row.classList.add('svrow'); pane('save').appendChild(row); }
+  const ph = pane('partie').querySelector('.mphome'); if (ph && pane('partie').firstChild !== ph) pane('partie').insertBefore(ph, pane('partie').firstChild);
+  box.querySelectorAll('.stp').forEach(d => d.hidden = d.dataset.t !== STTAB); hd.querySelectorAll('[data-st]').forEach(b => b.classList.toggle('on', b.dataset.st === STTAB));
+  const sub = hd.querySelector('.st-sub'), lab = (STT.find(t => t[0] === STTAB) || [, , ''])[2]; if (sub.textContent !== lab) sub.textContent = lab;
+}
 function mpDraw(full) {
   const box = $('mpl'), st = MP.st, conn = mpStatus(), mode = st !== 'ready' ? st : (MP.code ? 'in' : 'out'), mk = (tag, t, cls) => { const e = document.createElement(tag); if (t) e.textContent = t; if (cls) e.className = cls; return e; }, btn = (t, a) => { const e = mk('button', t); e.dataset.a = a; return e; };
   if (!box) return;
   if (full || box.dataset.mode !== mode) {
-    box.dataset.mode = mode; box.textContent = ''; box.appendChild(mk('h4', 'Paramètres · Jouer en coop')); box.appendChild(mk('div', '', 'svst')); box.appendChild(mk('div', '', 'mps'));
+    box.dataset.mode = mode; box.textContent = '';  box.appendChild(mk('div', '', 'svst')); box.appendChild(mk('div', '', 'mps'));
     if (mode === 'init') box.appendChild(mk('div', 'Le salon en direct se prépare… (quelques secondes).', 'mut'));
     else if (mode === 'none' || mode === 'err') { box.appendChild(mk('div', MP.err || 'Coop indisponible dans cette vue.', 'mut')); const r = mk('div', '', 'mpr'); r.appendChild(btn('↻ Réessayer', 'retry')); box.appendChild(r); }
     else if (mode === 'out') {
-      box.appendChild(mk('div', 'Crée une salle et envoie son code à tes amis, ou entre le code d\'un ami. Seuls ceux qui ont le même code se retrouvent.', 'mut'));
+      box.appendChild(mk('div', 'Crée une salle ou entre le code d\'un ami.', 'mut'));
       mpNickRow(box, mk, btn); const r0 = mk('div', '', 'mpr'); r0.appendChild(btn('🤝 Jouer en coop · créer une salle', 'create')); box.appendChild(r0);
       const r = mk('div', '', 'mpr'), i = mk('input'); i.type = 'text'; i.maxLength = 10; i.placeholder = 'Code d\'un ami'; i.autocapitalize = 'characters'; i.autocomplete = 'off'; i.className = 'mpi'; i.setAttribute('autocorrect', 'off'); i.setAttribute('spellcheck', 'false');
       ['keydown', 'keyup'].forEach(ev => i.addEventListener(ev, e => { e.stopPropagation(); if (ev === 'keydown' && e.key === 'Enter') mpJoin(i.value); })); r.appendChild(i); r.appendChild(btn('Rejoindre', 'join')); box.appendChild(r);
-      box.appendChild(mk('div', '', 'mpe2')); box.appendChild(mk('div', (MP.lobby && MP.lobby.p2p ? 'Ta salle garde toujours le même code : tes amis peuvent revenir quand tu la recrées.' : 'Tes amis doivent ouvrir la même page depuis Claude (menu Partager).'), 'mut'));
+      box.appendChild(mk('div', '', 'mpe2')); box.appendChild(mk('div', (MP.lobby && MP.lobby.p2p ? 'Ta salle garde toujours le même code.' : 'Tes amis doivent ouvrir la même page depuis Claude (menu Partager).'), 'mut'));
     } else {
       box.appendChild(mk('div', MP.code.toUpperCase(), 'mpcode')); mpNickRow(box, mk, btn);
       const r = mk('div', '', 'mpr'); r.appendChild(btn('📋 Inviter', 'copy')); r.appendChild(btn('Quitter la salle', 'leave')); if (MP.host) r.appendChild(btn('🔄 Nouveau code', 'newc')); box.appendChild(r);
@@ -3836,7 +3884,7 @@ function mpDraw(full) {
       box.appendChild(mk('div', '', 'mpe2')); box.appendChild(mk('div', 'Ensemble : +10 % de Puissance par ami à moins de 14 m (3 max).', 'mut'));
     }
   }
-  { const hb = btn('🏠 ' + MMT.fr[0], 'home'); hb.className = 'mphome'; box.insertBefore(hb, box.children[1] || null); } rstDraw(box, mk); try { sndDraw(box, mk); } catch (e) { }
+  if (!box.querySelector('.mphome')) { const hb = btn('🏠 ' + MMT.fr[0], 'home'); hb.className = 'mphome'; box.appendChild(hb); } rstDraw(box, mk); try { sndDraw(box, mk); } catch (e) { } stLayout(box);
   { const s = box.querySelector('.mps'); if (s) { const lab = { init: '⏳ Connexion au salon…', none: '⛔ Coop indisponible', err: '⛔ Coop interrompu', out: conn === 'on' ? '🟢 Connecté · prêt' : conn === 'retry' ? '🟠 Reconnexion…' : '🔴 Hors ligne', in: conn === 'on' ? '🟢 Connecté · ' + MP.cnt + ' joueur' + (MP.cnt > 1 ? 's' : '') : conn === 'retry' ? '🟠 Reconnexion… (ta partie est conservée)' : '🔴 Hors ligne' }[mode]; if (s.textContent !== lab) s.textContent = lab; } }
   { const e2 = box.querySelector('.mpe2'); if (e2) e2.textContent = MP.err2 || ''; }
   box.querySelectorAll('.mpe button').forEach(b => b.disabled = conn !== 'on');
@@ -3847,7 +3895,7 @@ function mpDraw(full) {
   if (MP.host && S.ban && Object.keys(S.ban).length) { dl.appendChild(mk('div', 'Joueurs expulsés :', 'mut')); Object.keys(S.ban).forEach(id => { const r = mk('div', '', 'mpr'); r.appendChild(mk('div', '🚫 ' + (S.ban[id].nm || id))); const u = mk('button', 'Annuler'); u.dataset.ub = id; r.appendChild(u); dl.appendChild(r); }); }
 }
 function mpClick(ev) {
-  const b = ev.target.closest('button'); if (!b) return; const a = b.dataset.a;
+  const b = ev.target.closest('button'); if (!b) return; const a = b.dataset.a; if (b.dataset.st) { STTAB = b.dataset.st; stLayout($('mpl')); return; } if (a === 'close') { $('mpl').style.display = 'none'; MP.open = false; return; }
   if (a === 'svx') { saveExport(); return; } if (a === 'svi') { saveImport(); return; }
   if (a === 'home') { goHome(); return; } if (a === 'rst0') { RST.step = 1; RST.t0 = performance.now(); mpDraw(true); setTimeout(() => { if (RST.step === 1) mpDraw(true); }, 1600); return; } if (a === 'rstx') { RST.step = 0; mpDraw(true); return; } if (a === 'rst1') { if (performance.now() - RST.t0 < 1500) return; doReset(); return; } if (a === 'create') mpJoin(mpRoomCode(), false, true); else if (a === 'nick') { if (mpSetNick($('mpl').querySelector('.mpn').value)) note('Pseudo', 'Tu t\'appelles maintenant ' + S.nick + '.'); } else if (a === 'newc') { mpLeave(true); mpJoin(mpRoomCode(true), false, true); } else if (b.dataset.k) mpKick(b.dataset.k); else if (b.dataset.ub) mpUnban(b.dataset.ub); else if (a === 'join') mpJoin($('mpl').querySelector('.mpi').value); else if (a === 'copy') mpCopy(); else if (a === 'leave') mpLeave(); else if (a === 'retry') mpInit();
   else if (b.dataset.e && MP.lobby && MP.code) { MP.lobby.emit('emo', { e: b.dataset.e, code: MP.code }).catch(() => {}); } else if (b.dataset.b) mpBlessSend(b.dataset.b);
@@ -4225,14 +4273,32 @@ function fidCard() {
   const lv = relB(2), wp = wpOn(4) ? .2 : 0, pn = has('pain') ? .2 : 0, m = FM(), ex = f => fmt(10 * f).replace(/s+$/, '');
   return '<div class="card"><h4><span style="color:var(--gold)">Fidèles gagnés</span><span style="color:var(--gold)">×' + m.toFixed(2).replace('.', ',') + '</span></h4><div class="line"><span>Reliques Livre</span><b>+' + Math.round(lv * 100) + ' %</b></div><div class="line"><span>Casque du salut</span><b>+' + Math.round(wp * 100) + ' %</b></div><div class="line"><span>Multiplication des pains</span><b>+' + Math.round(pn * 100) + ' %</b></div><p class="mut" style="margin-top:4px">Multiplie tous les fidèles que tu reçois (ennemis, coffres, évêques…). Exemple : un ennemi qui donne 10 F t’en donne ' + ex(m) + '.</p></div>';
 }
+let HGOPEN = false;
+function heroRows() {
+  const fv = [() => ATK(), () => HPM(), () => REGEN(), () => RNG()], ff = [v => fmt(v), v => fmt(v), v => fmt(v) + '/s', v => v.toFixed(1).replace('.', ',') + ' m'];
+  let h = '<div class="sec">Jésus</div>';
+  UPG.forEach((u, i) => { const mx = i === 3 && S.up[3] >= 10, c = upCost(i), now = ff[i](fv[i]()); let nx = ''; if (!mx) { S.up[i]++; nx = ff[i](fv[i]()); S.up[i]--; } const r = mx ? null : upRes(i), short = r && S.res[r[0]] < r[1];
+    h += '<div class="up r2"><div class="ic">' + u[2] + '</div><div class="mid"><div class="nm">' + u[0].replace('Héros : ', '') + '</div><div class="vl">' + now + (mx ? '' : ' › <em>' + nx + '</em>') + '</div></div><div class="rt"><div class="lv">' + (mx ? 'NIVEAU MAX' : 'NIVEAU ' + S.up[i]) + '</div><button class="buy b2' + (mx ? ' max' : '') + '" data-hu="' + i + '"' + (mx || !upOk(i) ? ' disabled' : '') + '>' + (mx ? 'Max' : fmt(c) + COIN + (r ? ' ' + (short ? '<span class="miss">' + r[1] + '</span>' : r[1]) + rIco(r[0]) : '')) + '</button></div></div>'; });
+  const L = []; for (let z = 0; z < NZ; z++) if (S.ap[z] > 0) L.push(z);
+  h += '<div class="sec">Apôtres <small>' + apN() + ' / ' + AP.length + '</small></div>';
+  if (!L.length) h += '<div class="up r2"><div class="ic">' + IC.dis + '</div><div class="mid"><div class="nm">Aucun apôtre</div><div class="vl" style="font-size:.85rem">Libère le captif d’une zone</div></div><div></div></div>';
+  L.forEach(z => { const l = S.al[z], c = apCost(z, l), pr = apPRes(l), short = pr && S.res[pr[0]] < pr[1], cor = S.ap[z] === 2;
+    h += '<div class="up r2"><div class="ic">' + IC.dis + '</div><div class="mid"><div class="nm">' + AP[z].n + '</div><div class="vl">⚔ ' + fmt(apDmg(l)) + ' › <em>' + fmt(apDmg(l + 1)) + '</em></div>' + (cor ? '<span class="pal miss2">Corrompu</span>' : '') + '</div><div class="rt"><div class="lv">NIVEAU ' + l + '</div><button class="buy b2" data-ha="' + z + '"' + (S.f < c || short ? ' disabled' : '') + '>' + fmt(c) + COIN + (pr ? ' ' + (short ? '<span class="miss">' + pr[1] + '</span>' : pr[1]) + rIco(pr[0]) : '') + '</button></div></div>'; });
+  return h;
+}
 function drawHeroPanel() {
+  const box = $('hg'), rows = heroRows(); let rw = box.querySelector('.hgrows');
+  if (!rw) { box.innerHTML = '<div class="hgrows"></div><details class="hgd"' + (HGOPEN ? ' open' : '') + '><summary>Détails</summary><div class="hgdb"></div></details>'; rw = box.querySelector('.hgrows'); box.querySelector('.hgd').addEventListener('toggle', e => { HGOPEN = e.target.open; if (HGOPEN) drawHeroPanel(); }); }
+  if (rw.dataset.h !== rows) { rw.dataset.h = rows; rw.innerHTML = rows; }
+  if (!HGOPEN) return; const db = box.querySelector('.hgdb');
   const ua = Math.round(upM(0) * 100), uh = Math.round(upM(1) * 100), ra = Math.round(relB(0) * 100), rh = Math.round(relB(1) * 100);
   let h = heroNew() + fidCard() + `<div class="card"><h4><span style="color:var(--atk)">${IC.atk} Puissance</span><span style="color:var(--gold)">${fmt(ATK())}</span></h4><div class="line"><span>Base</span><b>5</b></div><div class="line"><span>Convertis et boss</span><b>+${fmt(S.bA)}</b></div><div class="line"><span>Améliorations</span><b>+${ua} %</b></div><div class="line"><span>Reliques (croix)</span><b>+${ra} %</b></div><div class="line"><span>Armes spirituelles</span><b>+${Math.round(wpAtk() * 100)} %</b></div>${cityLines('a')}</div>
   <div class="card"><h4><span style="color:var(--ok)">${IC.hp} Vie maximale</span><span style="color:var(--gold)">${fmt(HPM())}</span></h4><div class="line"><span>Base</span><b>60</b></div><div class="line"><span>Gardiens, malades guéris, églises, boss</span><b>+${fmt(S.bH)}</b></div><div class="line"><span>Améliorations</span><b>+${uh} %</b></div><div class="line"><span>Reliques (calices)</span><b>+${rh} %</b></div><div class="line"><span>Armes spirituelles</span><b>+${Math.round(wpHp() * 100)} %</b></div>${cityLines('h')}<div class="line"><span>Régénération hors combat</span><b>${fmt(REGEN())} / s</b></div>${cityLines('r')}</div>
   <div class="card"><h4><span>Apôtres</span><span style="color:var(--gold)">${apN()}/${AP.length}</span></h4>${AP.map((q, z) => `<div class="line"><span>${q.n} · ${ZONES[z].n}</span><b>${S.ap[z] === 1 ? 'niv. ' + S.al[z] : S.ap[z] === 2 ? 'corrompu' : z > S.lvl ? 'zone verrouillée' : 'à libérer'}</b></div>`).join('')}<p class="mut" style="margin-top:4px">Un apôtre par ville : libère le captif de la zone. Ils combattent à tes côtés, mais les pharisiens peuvent les corrompre.</p></div><div class="card"><h4>Comment grandir</h4><div class="line"><span>Convertir un combattant</span><b style="color:var(--atk)">+ Puissance</b></div><div class="line"><span>Convertir un gardien</span><b style="color:var(--ok)">+ Vie</b></div><div class="line"><span>Guérir un malade</span><b style="color:var(--ok)">+ Vie</b></div><div class="line"><span>Convertir le boss</span><b>+ les deux, relique, zone suivante</b></div><div class="line"><span>Bâtir une église</span><b>+ Vie, évêque, soin</b></div><p class="mut" style="margin-top:4px">Chaque zone donne des bonus pour ses ${CAP} premiers convertis. Les zones suivantes donnent des bonus bien plus gros.</p></div><h3>Les 6 zones</h3><div class="card">`;
   for (let z = 0; z < NZ; z++) { const lk = z > S.lvl, ch = S.ch[z][0] + S.ch[z][1], tr = S.cx[z].reduce((a, b) => a + b, 0); h += `<div class="zr${lk ? ' lk' : ''}"><div class="n">${z + 1}</div><div><h5><span>${ZONES[z].n}</span><small>${lk ? 'Verrouillée' : S.boss[z] ? 'Terminée' : 'En cours'}</small></h5><div class="bar"><i style="width:${Math.min(100, S.conv[z] / CAP * 100)}%"></i></div><small>Convertis ${Math.min(S.conv[z], CAP)}/${CAP} · Boss ${S.boss[z] ? 'converti' : 'à vaincre'} · Églises ${ch}/2 · Trésors ${tr}/3</small></div></div>`; }
-  $('hg').innerHTML = h + '</div>' + crossCard() + '<div class="card"><p class="mut">Crédits : icônes Twemoji © Twitter, Inc. et contributeurs (fork jdecked/twemoji), licence CC-BY 4.0 : creativecommons.org/licenses/by/4.0/. Polices : Google Fonts (Cinzel, Lilita One, Alegreya Sans).</p></div>';
+  const dh = h + '</div>' + crossCard() + '<div class="card"><p class="mut">Crédits : icônes Twemoji © Twitter, Inc. et contributeurs (fork jdecked/twemoji), licence CC-BY 4.0 : creativecommons.org/licenses/by/4.0/. Polices : Google Fonts (Cinzel, Lilita One, Alegreya Sans).</p></div>'; if (db.dataset.h !== dh) { db.dataset.h = dh; db.innerHTML = dh; }
 }
+$('hg').addEventListener('click', ev => { const b = ev.target.closest('button[data-hu],button[data-ha]'); if (!b || b.disabled) return; if (b.dataset.hu !== undefined) { const t = document.querySelector('#ups button[data-u="' + b.dataset.hu + '"]'); if (t) { t.disabled = false; t.click(); } } else { drawApostles(); const t = document.querySelector('#apl button[data-a="' + b.dataset.ha + '"]'); if (t) { t.disabled = false; t.click(); } } drawHeroPanel(); });
 $('cgl').addEventListener('click', churchClick); $('cgl').addEventListener('toggle', ev => { const d = ev.target; if (d && d.dataset && d.dataset.d) { if (d.open) CHOPEN.add(d.dataset.d); else CHOPEN.delete(d.dataset.d); d.closest('#cgl').dataset.h = ''; } }, true);
 $('pep').addEventListener('click', () => openSheet('cg'));
 function drawApostles() {
@@ -4255,7 +4321,7 @@ $('mapb').addEventListener('click', () => mapOpen());
 $('stabs').addEventListener('click', ev => { const b = ev.target.closest('button'); if (b) openSheet(b.dataset.s); });
 $('sx').addEventListener('click', () => $('sheet').classList.remove('open')); $('shome').addEventListener('click', () => { $('sheet').classList.remove('open'); goHome(); });
 $('sheet').addEventListener('pointerdown', ev => { if (ev.target === $('sheet')) $('sheet').classList.remove('open'); });
-let lastHeroDraw = 0, _hbT = -9;
+let lastHeroDraw = 0, _hbT = -9, _hbL = -9;
 function paint() {
   const zn = W.zone, Z = ZONES[zn];
   $('vf').textContent = fmt(S.f); $('vp').textContent = fmt(passive()); $('pep').style.display = (nChurch() || S.pe > 0) ? 'flex' : 'none'; peFlush(); bishopHud(); $('vpe').textContent = fmt(S.pe); $('vr').textContent = S.res[RZ(zn)]; { const ri = $('rsi'); if (ri.dataset.z !== '' + zn) { ri.dataset.z = '' + zn; ri.style.cssText = 'background:none;transform:none;border:0;box-shadow:none;border-radius:0'; ri.innerHTML = ICO[['myrrh', 'bag', 'marble', 'purple', 'gem', 'light'][RZ(zn)]]; } } { const fb = $('fire'); fb.style.display = has('feu') ? 'grid' : 'none'; fb.classList.toggle('no', W.fireCd > 0); $('fcd').textContent = W.fireCd > 0 ? Math.ceil(W.fireCd) : ''; } $('sd').innerHTML = IC.dis + ' <em class="sl">Apôtres</em> ' + apN() + '/' + AP.length + (nCross() ? ' <span style="color:#ffe27a">✝ ' + nCross() + '/6</span>' : '');
@@ -4274,9 +4340,9 @@ function paint() {
   const a = $('act'), p = W.plot; if (p) { a.style.display = 'block'; const ok = canBuild(p), need = CNEED[p.p]; a.classList.toggle('no', !ok); a.innerHTML = S.conv[p.zn] < need ? 'Église verrouillée<small>Convertis ' + need + ' âmes dans cette zone (' + S.conv[p.zn] + '/' + need + ')</small>' : S.f < CCOST(p.zn, p.p) ? 'Pas assez de fidèles<small>Il faut ' + fmt(CCOST(p.zn, p.p)) + ' F</small>' : 'Bâtir une église<small>' + fmt(CCOST(p.zn, p.p)) + ' F · +' + fmt(10 * K(p.zn)) + ' Vie</small>'; } else if (W.nob) { const c = bishopCost(W.nob.zn, W.nob.p), ok = S.f >= c; a.style.display = 'block'; a.classList.toggle('no', !ok); a.innerHTML = ok ? 'Nommer un évêque<small>' + fmt(c) + ' F · il convertit pour toi (points d\'Église)</small>' : 'Pas assez de fidèles<small>Évêque : ' + fmt(c) + ' F</small>'; } else if (W.inCh) { const ic = W.inCh, on = massOn(ic.zn, ic.p), c = massCost(ic.zn, ic.p), ok = !on && S.pe >= c; a.style.display = 'block'; a.classList.toggle('no', !ok); a.innerHTML = on ? 'Messe en cours<small>' + massLeft(ic.zn, ic.p) + ' · évêque ×2, PE ×1,5</small>' : S.pe < c ? 'Messe : ' + fmt(c) + ' PE<small>Il te manque ' + fmt(c - S.pe) + ' PE</small>' : 'Célébrer une messe<small>' + massShort(ic.zn, ic.p) + '</small>'; } else if (W.gol) { a.style.display = 'block'; const n = nCross(); a.classList.toggle('no', !S.gl && n < 6); a.innerHTML = S.gl ? 'Calvaire<small>Tu es déjà ressuscité</small>' : n < 6 ? 'Calvaire<small>Fragments de la Croix : ' + n + ' / 6</small>' : 'Se donner sur la Croix<small>Mourir, puis ressusciter</small>'; } else if (W.ep) { const E = EPR[W.ep.zn], l = eprLeft(W.ep.zn); a.style.display = 'block'; a.classList.toggle('no', l > 0); a.innerHTML = l > 0 ? E.n + '<small>Repos : encore ' + Math.ceil(l / 60) + ' min</small>' : E.act + '<small>' + E.n + ' · ' + E.waves.length + ' vagues · F et relique</small>'; } else if (W.por) { a.style.display = 'block'; a.classList.toggle('no', !!S.sp); a.innerHTML = S.sp ? 'Monde spirituel<small>Le diable est vaincu</small>' : 'Entrer dans le monde spirituel<small>' + (S.gl ? 'Affronte Satan' : 'Sans la Croix, Satan est invincible') + '</small>'; } else a.style.display = 'none';
   { const rz = RZ(zn); document.querySelectorAll('#hl .rc').forEach(el => { const r = +el.dataset.r, v = S.res[r], sp = el.lastChild, ic = el.firstChild; if (!ic.dataset.k) { ic.dataset.k = 1; ic.innerHTML = ICO[RICO[r]]; } const pv = +(el.dataset.v || 0); if (sp.textContent !== String(v)) { sp.textContent = v; if (v > pv && el.dataset.v !== undefined) { el.classList.remove('pop'); void el.offsetWidth; el.classList.add('pop'); } } el.dataset.v = v; const vis = r === rz || resOpen(r) || v > 0; if (el.hidden === vis) el.hidden = !vis; el.classList.toggle('off', r !== rz); el.classList.toggle('cur', r === rz); }); { const rw = document.querySelector('#hl .rs2'), two = rw.offsetHeight > 44; document.body.classList.toggle('rs2r', two); }
     const zt = 'Zone ' + (zn + 1) + ' · ' + Z.n + ' — ' + RES[rz].n + ' récoltable'; if ($('zl').textContent !== zt) $('zl').textContent = zt; }
-  if (T - _hbT > .5) { _hbT = T; const op = $('sheet').classList.contains('open'); document.querySelectorAll('#side .hb2[data-s]').forEach(b => b.classList.toggle('on', op && b.dataset.s === sheetTab));
+  if (performance.now() - _hbL > 500 || _hbT === -9) { _hbL = performance.now(); _hbT = 0; const op = $('sheet').classList.contains('open'); document.querySelectorAll('#side .hb2[data-s]').forEach(b => b.classList.toggle('on', op && b.dataset.s === sheetTab));
     const setB = (id, txt, green) => { const e = $(id); if (!e) return; const h = !txt; if (e.hidden !== h) e.hidden = h; if (e.textContent !== (txt || '')) e.textContent = txt || ''; e.classList.toggle('n', !!green); };
-    setB('bd_hg', UPG.some((u, i) => upOk(i)) ? '!' : ''); const nr = S.rel.filter(r => r.nw).length; setB('bd_rg', nr ? String(nr) : '', true); const ca = churchActs(); setB('bd_cg', ca ? String(ca) : '');
+    setB('bd_hg', UPG.some((u, i) => upOk(i)) ? '!' : ''); { let ok = UPG.some((u, i) => upOk(i)); for (let z = 0; z < NZ && !ok; z++) if (S.ap[z] === 1) { const pr = apPRes(S.al[z]); ok = (S.f >= apCost(z, S.al[z]) && (!pr || S.res[pr[0]] >= pr[1])) || S.f >= apHCost(z, ahL(z)); } const ub = $('upb'); if (ub) ub.classList.toggle('glow', ok && !ub.classList.contains('on')); } const nr = S.rel.filter(r => r.nw).length; setB('bd_rg', nr ? String(nr) : '', true); const ca = churchActs(); setB('bd_cg', ca ? String(ca) : '');
     if (op) { const TT = { hg: ['Héros', ZONES[W.zone].n], ug: ['Améliorer', 'Héros de la Parole'], rsg: ['Recherche', S.rq ? 'En cours : ' + (RS.find(q => q.id === S.rq[0]) || { n: '' }).n : 'Transports · Pouvoirs · Savoirs'], cg: ['Églises', 'Évêques · ' + fmt(window._bTot || 0) + ' F/min'], rg: ['Reliques', S.rel.length + ' / 12'] }[sheetTab] || ['', ''];
       if ($('sht').textContent !== TT[0]) $('sht').textContent = TT[0]; if ($('shs').textContent !== TT[1]) $('shs').textContent = TT[1]; } }
   if (!S.tut && !$('sheet').classList.contains('open')) $('tut').style.display = 'block';
@@ -4579,9 +4645,9 @@ const IC_SND = { on: '<svg viewBox="0 0 24 24"><path d="M3.5 9h4l5.5-4.5v15L7.5 
 function sndDraw(box, mk) {
   if (box.querySelector('#sndw')) return; const w = mk('div', '', 'sndw'); w.id = 'sndw'; w.appendChild(mk('h4', 'Son'));
   const row = (lab, k) => { const r = mk('div', '', 'mpr sndr'), i = mk('input'); i.type = 'range'; i.min = 0; i.max = 100; i.value = Math.round(AUD.cfg[k] * 100); i.setAttribute('aria-label', lab); i.addEventListener('input', () => { AUD.cfg[k] = i.value / 100; audInit(); audApply(); audSave(); if (k !== 'm') sfx(k === 'c' ? 'click' : 'coin'); }); ['keydown', 'keyup'].forEach(ev => i.addEventListener(ev, e => e.stopPropagation())); r.appendChild(mk('div', lab)); r.appendChild(i); w.appendChild(r); };
-  row('Musique', 'm'); row('Bruitages', 's'); row('Clics', 'c');
+  row('🎵 Musique', 'm'); row('💥 Bruitages', 's'); row('👆 Clics', 'c');
   const r = mk('div', '', 'mpr sndr'), cb = mk('input'); cb.type = 'checkbox'; cb.checked = !!AUD.cfg.mute; cb.id = 'sndmu'; cb.addEventListener('change', () => { AUD.cfg.mute = cb.checked ? 1 : 0; audInit(); audApply(); audSave(); }); const l = mk('label', 'Couper tout le son'); l.htmlFor = 'sndmu'; r.appendChild(cb); r.appendChild(l); w.appendChild(r);
-  w.appendChild(mk('div', 'Sur iPhone, le bouton silencieux (sur le côté) coupe aussi le son du jeu.', 'mut')); box.appendChild(w);
+  w.appendChild(mk('div', 'iPhone : le bouton silencieux coupe aussi le son.', 'mut')); box.appendChild(w);
 }
 </script>
 
