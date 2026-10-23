@@ -1007,7 +1007,7 @@ function foeStat0(z, kind, boss) { const k = Math.pow(5.1, ZT(z));
   return boss ? { hp: 1150 * k, dmg: 13 * k, cd: 1.1, sp: 6.2, aggro: 20, reach: 4.6 } : kind ? { hp: 75 * k, dmg: 3.8 * k, cd: 1.3, sp: 4.6, aggro: 14, reach: 2.6 } : { hp: 40 * k, dmg: 5.2 * k, cd: 1.2, sp: 5.2, aggro: 15, reach: 2.6 }; }
 const foeStat = (z, kind, boss) => { const q = foeStat0(z, kind, boss); q.dmg *= DMGM; return q; };
 const bonusOf = (z, kind) => { const k = K(z); return kind === 6 ? { a: .6 * k, h: 1.2 * k, f: 8 * k } : kind === 4 ? { a: .7 * k, h: 0, f: 5 * k } : kind === 5 ? { a: 0, h: 0, f: 8 * k } : kind === 0 ? { a: .45 * k, h: 0, f: 4 * k } : kind === 1 ? { a: 0, h: 2.8 * k, f: 6 * k } : kind === 2 ? { a: 0, h: 0, f: 8 * k } : kind === 7 ? { a: 0, h: 0, f: 0 } : kind === 8 ? { a: .6 * k, h: 1.2 * k, f: 8 * k } : kind === 14 ? { a: .9 * k, h: 2 * k, f: 12 * k } : kind >= 9 ? { a: 0, h: 0, f: 3 * k } : { a: 3.5 * k, h: 16 * k, f: 150 * k }; };
-function save() { if (window.RESETTING) return; const pd = typeof coinPending === 'function' ? coinPending() : 0; S.f += pd; try { S.t = Date.now(); const str = JSON.stringify(S); try { localStorage.setItem(KEY, str); } catch (e) { } dbQueue(str); } catch (e) {} S.f -= pd; }
+function save() { if (window.RESETTING) return; const pd = typeof coinPending === 'function' ? coinPending() : 0; S.f += pd; try { S.t = Date.now(); const str = mpSaveStr(); try { localStorage.setItem(KEY, str); } catch (e) { } dbQueue(str); } catch (e) {} S.f -= pd; }
 /* migration v2 (6 zones) -> v3 (8 niveaux : Jérusalem = 3 secteurs) : ancienne zone 0 -> niveau 1 (ou 1-3 si le Grand Prêtre était vaincu), zones 1-5 -> niveaux 4-8 */
 function migrateSave(s) {
   if (!s || s.ver >= 3 || !Array.isArray(s.conv) || s.conv.length !== 6) return s;
@@ -3432,7 +3432,17 @@ const mpMe = () => { try { const p = MP.lobby.peers().find(q => q.isMe && q.same
 const MPURL = 'https://claude.ai/artifact/46faEjTFA9MG4L7yy7acr4';
 const mpNorm = s => String(s || '').toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 10);
 function mpGen() { const a = 'abcdefghjkmnpqrstuvwxyz23456789'; let s = ''; for (let i = 0; i < 5; i++) s += a[Math.floor(Math.random() * a.length)]; return s; }
-const mpOthers = code => { try { return MP.lobby.peers().filter(p => !p.isMe && p.kind === 'viewer' && p.presence && mpNorm(p.presence.code) === code); } catch (e) { return []; } };
+const mpOthers = code => { try { const bn = mpBanSet(); return MP.lobby.peers().filter(p => !p.isMe && p.kind === 'viewer' && p.presence && mpNorm(p.presence.code) === code && !bn.has(String(p.presence.pid))); } catch (e) { return []; } };
+function mpBanSet() { if (MP.host) return new Set(Object.keys(S.ban || {})); try { const h = MP.lobby.peers().find(p => !p.isMe && p.presence && p.presence.h && mpNorm(p.presence.code) === MP.code); return new Set(h && Array.isArray(h.presence.bn) ? h.presence.bn.map(String) : []); } catch (e) { return new Set(); } }
+function mpPeerQ(peer) { try { const p = MP.lobby.peers().find(x => x.peer === peer); return p ? p.presence || {} : null; } catch (e) { return null; } }
+const mpBannedPeer = peer => { const q = mpPeerQ(peer); return !!(q && mpBanSet().has(String(q.pid))); };
+function mpKickIn(m) { const d = m && m.data; if (!d || m.sameTab || !MP.code || MP.host || mpNorm(d.code) !== MP.code || d.pid !== mpPid()) return; const q = mpPeerQ(m.peer); if (!q || !q.h || mpNorm(q.code) !== MP.code) return;
+  mpLeave(true); note('Coop', 'Tu as été expulsé par l\'hôte.'); MP.err2 = 'Tu as été expulsé par l\'hôte.'; mpDraw(true); }
+function mpKick(peer) { if (!MP.host) return; const g = MP.ghosts.get(peer); if (!g || !g.pid) return; S.ban = S.ban || {}; S.ban[g.pid] = { nm: mpName(g), t: Date.now() }; save(); try { MP.lobby.emit('kick', { code: MP.code, pid: g.pid }); } catch (e) { } MP.sig = ''; mpPush(true); mpSync(); mpDraw(true); note('Coop', mpName(g) + ' a été expulsé.'); }
+function mpUnban(id) { if (S.ban) delete S.ban[id]; save(); MP.sig = ''; mpPush(true); mpDraw(true); }
+function mpSetNick(v) { v = String(v || '').replace(/[\u0000-\u001f<>]/g, '').trim().slice(0, 16); if (!v) return false; S.nick = v; MP.me.name = v; save(); MP.sig = ''; mpPush(true); mpDraw(true); return true; }
+function mpNickRow(box, mk, btn) { const r = mk('div', '', 'mpr'), i = mk('input'); i.type = 'text'; i.maxLength = 16; i.placeholder = 'Ton pseudo'; i.value = S.nick || ''; i.className = 'mpn'; i.autocomplete = 'off'; ['keydown', 'keyup'].forEach(ev => i.addEventListener(ev, e => { e.stopPropagation(); if (ev === 'keydown' && e.key === 'Enter') { if (mpSetNick(i.value)) note('Pseudo', 'Tu t\'appelles maintenant ' + S.nick + '.'); } })); r.appendChild(mk('div', 'Pseudo :')); r.appendChild(i); r.appendChild(btn('OK', 'nick')); box.appendChild(r); }
+function mpRoomCode(fresh) { if (fresh || !S.room || !/^[a-z0-9]{4,10}$/.test(S.room)) { S.room = mpGen(); save(); } return S.room; }
 const mpPeerErr = e => { const c = e && e.code; MP.st = 'err'; MP.err = c === 'revoked' || c === 'not_granted' ? 'Accès au salon refusé pour ce profil (ouvre la page depuis Claude avec un compte autorisé).' : 'Connexion au salon interrompue (' + (c || 'erreur') + ').'; mpLocalLeave(); mpDraw(true); };
 function mpStatus() { if (MP.st !== 'ready') return MP.st; if (MP.rawConn || Date.now() - MP.ct < 2500) return 'on'; return Date.now() - MP.ct < 20000 ? 'retry' : 'off'; }
 /* ---------- objectif repliable ---------- */
@@ -3491,11 +3501,64 @@ function mpInit() {
 async function mpReady(room) {
   MP.lobby = room; let usr = null; try { if (!room.p2p) usr = await window.claude.use('user'); } catch (e) {} MP.usr = usr;
   try { if (usr && usr.me) { const me = await usr.me(); MP.me.name = String(me.name || '').slice(0, 20); if (me.color) MP.me.col = me.color; } } catch (e) {}
+  if (S.nick) MP.me.name = String(S.nick).slice(0, 16); if (!MP.me.name) MP.me.name = 'Disciple ' + mpPid().slice(-3).toUpperCase();
   MP.st = 'ready'; MP.err = ''; MP.rawConn = room.connected ? !!room.connected() : true; MP.ct = Date.now();
-  MP.un = [room.onConnection(c => { MP.rawConn = !!c; MP.ct = Date.now(); if (c) MP.sig = ''; mpDraw(); if (!c) { setTimeout(mpDraw, 2600); setTimeout(mpDraw, 20500); } }, mpPeerErr), room.onPeers(() => mpSync(), mpPeerErr), room.on('emo', mpEmo, () => {}), room.on('bless', mpBless, () => {}), room.on('bossdown', mpBossDown, () => {})];
+  MP.un = [room.onConnection(c => { MP.rawConn = !!c; MP.ct = Date.now(); if (c) MP.sig = ''; mpDraw(); if (!c) { setTimeout(mpDraw, 2600); setTimeout(mpDraw, 20500); } }, mpPeerErr), room.onPeers(() => mpSync(), mpPeerErr), room.on('emo', mpEmo, () => {}), room.on('bless', mpBless, () => {}), room.on('bossdown', mpBossDown, () => {}), room.on('chat', mpChatIn, () => {}), room.on('gst', mpGstIn, () => {}), room.on('kick', mpKickIn, () => {})];
   let c = ''; try { const m = /coop=([A-Za-z0-9]{4,10})/.exec((location.hash || '') + (location.search || '')); c = m ? m[1] : (localStorage.getItem('cenacle_coop') || ''); } catch (e) {}
   mpDraw(true); if (c) mpJoin(c, true);
 }
+/* coop : l'invité est hissé au niveau de l'hôte pendant la session (jamais abaissé, sauvegarde perso conservée) */
+const BKEYS = ['lvl', 'bA', 'bH'];
+function mpReal() { const o = { lvl: S.lvl, bA: S.bA, bH: S.bH, up: S.up.slice() }; const O = MP.orig, B = MP.bst; if (!O) return o;
+  BKEYS.forEach(k => { o[k] = O[k] + Math.max(0, S[k] - B[k]); }); o.up = O.up.map((v, i) => v + Math.max(0, S.up[i] - B.up[i])); return o; }
+function mpSaveStr() { try { if (MP.orig) { const r = mpReal(); return JSON.stringify(Object.assign({}, S, r)); } } catch (e) { } return JSON.stringify(S); }
+function mpApply(v) { const h0 = HPM(), l0 = S.lvl; BKEYS.forEach(k => { S[k] = v[k]; }); S.up = v.up.slice(); if (S.lvl !== l0) { try { syncWalls(); } catch (e) { } } try { hpFollow(h0); } catch (e) { } }
+function mpBoost(pl, rec) {
+  if (!Array.isArray(pl) || pl.length < 7) return; const r = mpReal();
+  const tg = { lvl: Math.min(NZ - 1, Math.max(r.lvl, pl[0] | 0)), up: r.up.map((v, i) => Math.max(v, Math.min(i === 3 ? 10 : 999, pl[i + 1] | 0))), bA: Math.max(r.bA, +pl[5] || 0), bH: Math.max(r.bH, +pl[6] || 0) };
+  const cur = { lvl: S.lvl, up: S.up, bA: S.bA, bH: S.bH }, up = tg.lvl > cur.lvl || tg.bA > cur.bA + .05 || tg.bH > cur.bH + .05 || tg.up.some((v, i) => v > cur.up[i]);
+  if (!up) return; if (!MP.orig) MP.orig = { lvl: r.lvl, bA: r.bA, bH: r.bH, up: r.up.slice() };
+  const nv = { lvl: Math.max(S.lvl, tg.lvl), bA: Math.max(S.bA, tg.bA), bH: Math.max(S.bH, tg.bH), up: S.up.map((v, i) => Math.max(v, tg.up[i])) };
+  mpApply(nv); MP.bst = { lvl: nv.lvl, bA: nv.bA, bH: nv.bH, up: nv.up.slice() };
+  if (rec) note('Personnage retrouvé', 'L\'hôte a gardé ta progression dans son monde.'); else if (!MP.bNote) { MP.bNote = 1; note('Niveau ajusté à celui de l\'hôte', 'Bonus valable dans cette salle ; ta propre progression est conservée.'); }
+}
+function mpUnboost() { if (!MP.orig) return; const r = mpReal(); MP.orig = null; MP.bst = null; MP.bNote = 0; mpApply(r);
+  try { if (W.zone > S.lvl && !W.arena) { const [x, z] = zoneStart(S.lvl); W.x = x; W.z = z; camera.position.set(x, CAMH, z + CAMZ); } } catch (e) { } }
+function mpHostSync() {
+  let hq = null; try { mpOthers(MP.code).forEach(p => { if (p.presence && p.presence.h && !hq) hq = p.presence; }); } catch (e) { } if (!hq) return;
+  mpBoost(hq.pl); if (MP.gRec) mpBoost(MP.gRec, 0);
+  if (!MP.pulled && typeof hq.x === 'number' && (hq.ar | 0) === 0 && !W.arena && !W.spirit && !W.tmp && !W.dead) { MP.pulled = 1; let x = hq.x + 1.5, z = hq.z; try { if (NV.raw && NAVON() && nvBlk(x, z, .5, false)) { const f = nvFree(x, z, .6, false); x = f[0]; z = f[1]; } } catch (e) { } W.x = x; W.z = z; camera.position.set(x, CAMH, z + CAMZ); note('Partie coop', 'Tu as rejoint l\'hôte : ' + ZONES[Math.max(0, Math.min(NZ - 1, hq.zn | 0))].n + '.'); }
+}
+function mpPid() { try { let p = localStorage.getItem('cenacle_pid'); if (!p || !/^[a-z0-9]{6,16}$/.test(p)) { p = Math.random().toString(36).slice(2, 12); localStorage.setItem('cenacle_pid', p); } return p; } catch (e) { return MP._pid || (MP._pid = Math.random().toString(36).slice(2, 12)); } }
+/* hôte : garde dans SA sauvegarde la progression de chaque invité (par identifiant), et la lui rend quand il revient */
+function mpGstTick(dt) {
+  const now = Date.now(); if (now - (MP.gAt || 0) < 1000) return; MP.gAt = now; if (!S.gst || typeof S.gst !== 'object') S.gst = {}; let ch = 0;
+  { const here = new Set(); try { MP.lobby.peers().forEach(p => { const q = p.presence || {}; if (p.isMe || mpNorm(q.code) !== MP.code) return; here.add(String(q.pid)); if (S.ban && S.ban[q.pid]) MP.lobby.emit('kick', { code: MP.code, pid: q.pid }); }); } catch (e) { } Object.keys(MP.gSent).forEach(k => { if (!here.has(k)) delete MP.gSent[k]; }); }
+  mpOthers(MP.code).forEach(p => { const q = p.presence || {}, id = String(q.pid || ''); if (!/^[a-z0-9]{6,16}$/.test(id)) return; const old = S.gst[id];
+    if (!MP.gSent[id]) { MP.gSent[id] = 1; if (old && old.c) { try { MP.lobby.emit('gst', { code: MP.code, pid: id, c: old.c }); } catch (e) { } } }
+    if (Array.isArray(q.gc) && q.gc.length === 7) { const c = q.gc.map((v, i) => Math.max(+v || 0, old && old.c ? +old.c[i] || 0 : 0)); if (!old || JSON.stringify(c) !== JSON.stringify(old.c)) { S.gst[id] = { nm: String(q.nm || '').slice(0, 20), c, t: Date.now() }; ch = 1; } } });
+  if (ch) { const k = Object.keys(S.gst); if (k.length > 24) k.sort((a, b) => S.gst[a].t - S.gst[b].t).slice(0, k.length - 24).forEach(x => delete S.gst[x]); save(); }
+}
+function mpGstIn(m) { const d = m && m.data; if (!d || m.sameTab || MP.host || !MP.code || mpNorm(d.code) !== MP.code || d.pid !== mpPid() || !Array.isArray(d.c)) return; MP.gRec = d.c; mpBoost(d.c, 1); }
+/* chat écrit */
+const mpEsc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
+function mpChatUI() {
+  let w = document.getElementById('chatw');
+  if (!w) { w = document.createElement('div'); w.id = 'chatw'; w.innerHTML = '<div id="chatt"></div><div id="chatr"><button id="chatb" title="Message">💬</button><input id="chati" maxlength="120" placeholder="Message à la salle…" enterkeyhint="send" autocomplete="off"><button id="chats">Envoyer</button></div><div id="chath"></div>'; document.body.appendChild(w);
+    const st = document.createElement('style'); st.textContent = '#chatw{position:fixed;left:8px;bottom:calc(8px + env(safe-area-inset-bottom));z-index:60;font:13px system-ui,sans-serif;max-width:min(92vw,360px);pointer-events:none}#chatw *{pointer-events:auto}#chatr{display:flex;gap:4px;align-items:center}#chati,#chats{display:none}#chatw.op #chati,#chatw.op #chats{display:block}#chati{flex:1;min-width:0;font-size:16px;padding:6px 8px;border-radius:8px;border:1px solid #c9a24a;background:#1d1408e6;color:#fff}#chatb,#chats{border:1px solid #c9a24a;background:#2a1d0ce6;color:#ffe9b0;border-radius:8px;padding:6px 9px;font-size:15px}#chath{display:none;max-height:140px;overflow:auto;margin-top:4px;background:#000a;border-radius:8px;padding:4px 7px;color:#eee}#chatw.op #chath{display:block}#chatt{position:fixed;top:64px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;gap:4px;align-items:center;pointer-events:none}.cht{background:#1d1408e6;color:#fff;border:1px solid #c9a24a;border-radius:10px;padding:6px 12px;max-width:80vw;transition:opacity .5s}.cht b,#chath b{color:#ffd36a}';
+    document.head.appendChild(st);
+    const i = w.querySelector('#chati'), send = () => { const v = i.value.trim().slice(0, 120); if (!v) return; i.value = ''; mpChatSend(v); };
+    w.querySelector('#chatb').addEventListener('click', () => { w.classList.toggle('op'); if (w.classList.contains('op')) i.focus(); });
+    w.querySelector('#chats').addEventListener('click', send);
+    ['keydown', 'keyup', 'keypress'].forEach(ev => i.addEventListener(ev, e => { e.stopPropagation(); if (ev === 'keydown' && e.key === 'Enter') { e.preventDefault(); send(); } if (ev === 'keydown' && e.key === 'Escape') { w.classList.remove('op'); i.blur(); } }));
+  }
+  w.style.display = MP.code ? 'block' : 'none'; if (!MP.code) w.classList.remove('op'); mpChatHist();
+}
+function mpChatHist() { const h = document.getElementById('chath'); if (h) { h.innerHTML = (MP.chat || []).map(c => '<div><b>' + mpEsc(c.n) + '</b> : ' + mpEsc(c.t) + '</div>').join('') || '<i>Aucun message</i>'; h.scrollTop = 1e6; } }
+function mpChatSend(v) { if (!MP.lobby || !MP.code) return; try { MP.lobby.emit('chat', { code: MP.code, n: MP.me.name || '', t: v }); } catch (e) { } }
+function mpChatIn(m) { const d = m && m.data; if (!d || (!m.sameTab && mpBannedPeer(m.peer)) || !MP.code || mpNorm(d.code) !== MP.code || typeof d.t !== 'string') return; const t = d.t.trim().slice(0, 120); if (!t) return; const n = String(d.n || '').slice(0, 20) || 'Disciple';
+  (MP.chat = MP.chat || []).push({ n, t }); if (MP.chat.length > 30) MP.chat.shift(); mpChatHist();
+  const box = document.getElementById('chatt'); if (!box) return; const el = document.createElement('div'); el.className = 'cht'; el.innerHTML = '<b>' + mpEsc(n) + '</b> : ' + mpEsc(t); box.appendChild(el); while (box.children.length > 3) box.firstChild.remove(); setTimeout(() => { el.style.opacity = '0'; setTimeout(() => el.remove(), 600); }, 5000); }
 async function mpJoin(code, quiet, create) {
   code = mpNorm(code); MP.err2 = '';
   const fail = t => { MP.err2 = t; if (!quiet) note('Coop', t); mpDraw(true); return false; };
@@ -3503,18 +3566,19 @@ async function mpJoin(code, quiet, create) {
   if (MP.st !== 'ready') return fail(MP.err || 'Coop indisponible dans cette vue.');
   if (code.length < 4) return fail('Code invalide : 4 à 10 lettres ou chiffres.');
   if (mpStatus() === 'off') return fail('Hors ligne : le salon est injoignable pour le moment.');
+  if (!S.nick) { try { const v = prompt('Choisis ton pseudo en ligne (16 caractères max) :', MP.me.name || ''); if (v) mpSetNick(v); } catch (e) { } }
   if (MP.code && MP.code !== code) mpLocalLeave();
   if (mpOthers(code).length >= MPMAX - 1) return fail('Salle pleine (' + MPMAX + ' joueurs maximum).');
-  MP.code = code; MP.sig = ''; mpClear(); try { localStorage.setItem('cenacle_coop', code); } catch (e) {}
+  MP.code = code; MP.sig = ''; mpClear(); MP.pulled = 0; MP.gSent = {}; MP.gRec = null; MP.chat = []; mpChatUI(); try { localStorage.setItem('cenacle_coop', code); if (create) localStorage.setItem('cenacle_coop_host', code); MP.host = !!create || localStorage.getItem('cenacle_coop_host') === code; } catch (e) { MP.host = !!create; }
   mpPush(true); mpSync(); mpDraw(true);
   if (!quiet) note('Partie coop', create ? 'Salle ' + code.toUpperCase() + ' créée. Envoie le code à tes amis.' : 'Tu as rejoint ' + code.toUpperCase() + '.');
   if (!create) setTimeout(() => { if (MP.code === code && !mpOthers(code).length) { MP.err2 = 'Personne n\'a encore ce code : vérifie-le ou attends tes amis.'; mpDraw(); } }, 3500);
   return true;
 }
-function mpLocalLeave() { MP.code = ''; mpClear(); const b = document.getElementById('mpb'); if (b) b.style.display = 'none'; }
+function mpLocalLeave() { mpUnboost(); try { mpChatUI(); } catch (e) { } MP.host = false; MP.code = ''; mpClear(); const b = document.getElementById('mpb'); if (b) b.style.display = 'none'; }
 async function mpLeave(silent) {
-  const had = MP.code; mpLocalLeave(); try { localStorage.removeItem('cenacle_coop'); } catch (e) {}
-  try { if (MP.lobby && had) await MP.lobby.presence({ code: null, x: null, z: null, zn: null, ar: null, mv: null, f: null, hp: null, nm: null, col: null }); } catch (e) {}
+  const had = MP.code; mpLocalLeave(); try { localStorage.removeItem('cenacle_coop'); localStorage.removeItem('cenacle_coop_host'); } catch (e) {}
+  try { if (MP.lobby && had) await MP.lobby.presence({ code: null, x: null, z: null, zn: null, ar: null, mv: null, f: null, hp: null, nm: null, col: null, h: null, pl: null, pid: null, gc: null, pw: null, ha: null, hm: null, bn: null }); } catch (e) {}
   MP.sig = ''; mpDraw(true); if (!silent) note('Coop', 'Tu as quitté la salle.');
 }
 const mpInvite = () => 'Rejoins ma partie coop de Cénacle ! Code : ' + MP.code.toUpperCase() + '\n' + (MP.lobby && MP.lobby.p2p ? location.origin + location.pathname : MPURL) + '#coop=' + MP.code;
@@ -3532,8 +3596,8 @@ function mpSync() {
   if (!MP.lobby) return; const keep = new Set(), ids = [];
   if (MP.code) mpOthers(MP.code).slice(0, MPMAX - 1).forEach(p => {
     keep.add(p.peer); if (p.by) ids.push(p.by); let g = MP.ghosts.get(p.peer); const q = p.presence || {};
-    if (!g) { const col = (typeof q.col === 'string' && /^#[0-9a-fA-F]{6}$/.test(q.col)) ? q.col : MPC[mpHash(p.peer) % MPC.length]; g = { m: mpGhost(col), col, el: mkLabel('<div class="nm"></div><div class="eb2"><i></i></div>', 'sm hot ally'), x: 0, z: 0, init: 0, ph: Math.random() * 6, nm: '', hp: 100, zn: -1, ar: 0, mv: 0, by: p.by, peer: p.peer }; MP.ghosts.set(p.peer, g); }
-    g.by = p.by; g.nm = String(q.nm || '').slice(0, 20);
+    if (!g) { const col = (typeof q.col === 'string' && /^#[0-9a-fA-F]{6}$/.test(q.col)) ? q.col : MPC[mpHash(p.peer) % MPC.length]; g = { m: mpGhost(col), col, el: mkLabel('<div class="nm"></div><div class="eb2"><i></i></div><div class="gpw" style="font-size:11px;color:#ffe9b0;text-shadow:0 1px 2px #000"></div>', 'sm hot ally'), x: 0, z: 0, init: 0, ph: Math.random() * 6, nm: '', hp: 100, zn: -1, ar: 0, mv: 0, by: p.by, peer: p.peer }; MP.ghosts.set(p.peer, g); }
+    g.by = p.by; g.nm = String(q.nm || '').slice(0, 20); g.pid = String(q.pid || '');
   });
   MP.ghosts.forEach((g, k) => { if (!keep.has(k)) { scene.remove(g.m); if (g.el) g.el.remove(); MP.ghosts.delete(k); } });
   MP.cnt = MP.ghosts.size + 1;
@@ -3544,20 +3608,20 @@ const mpName = g => g.nm || (g.by && MP.names[g.by]) || 'Disciple ' + g.peer.sli
 function mpBadge() { let b = document.getElementById('mpb'); const sb = $('setb'); if (!sb) return; if (!b) { b = document.createElement('i'); b.id = 'mpb'; sb.appendChild(b); } if (MP.code) { b.style.display = 'block'; b.textContent = '👥' + MP.cnt; } else b.style.display = 'none'; }
 function mpPush(force) {
   if (!MP.lobby || !MP.code) return;
-  const o = { code: MP.code, nm: MP.me.name || '', col: MP.me.col, x: Math.round(W.x * 10) / 10, z: Math.round(W.z * 10) / 10, zn: W.zone, ar: mpAr(), mv: W.moving ? 1 : 0, f: Math.round(hero.rotation.y * 100) / 100, hp: Math.round(100 * Math.max(0, W.hp) / HPM()) }; { const b = bossEnt && bossEnt.done <= 0 && bossEnt.zn === W.zone ? bossEnt : null; o.bz = b ? b.zn : -1; o.bh = b ? Math.round(1000 * Math.max(0, b.hp) / b.max) / 1000 : 1; } const sg = JSON.stringify(o);
+  const o = { code: MP.code, nm: MP.me.name || '', col: MP.me.col, x: Math.round(W.x * 10) / 10, z: Math.round(W.z * 10) / 10, zn: W.zone, ar: mpAr(), mv: W.moving ? 1 : 0, f: Math.round(hero.rotation.y * 100) / 100, hp: Math.round(100 * Math.max(0, W.hp) / HPM()) }; o.pid = mpPid(); if (!MP.host) o.gc = [S.lvl, S.up[0], S.up[1], S.up[2], S.up[3], Math.round(S.bA * 10) / 10, Math.round(S.bH * 10) / 10]; o.pw = Math.round(ATK()); o.ha = Math.round(Math.max(0, W.hp)); o.hm = Math.round(HPM()); if (MP.host) { o.bn = Object.keys(S.ban || {}); const r = mpReal(); o.h = 1; o.pl = [r.lvl, r.up[0], r.up[1], r.up[2], r.up[3], Math.round(r.bA * 10) / 10, Math.round(r.bH * 10) / 10]; } { const b = bossEnt && bossEnt.done <= 0 && bossEnt.zn === W.zone ? bossEnt : null; o.bz = b ? b.zn : -1; o.bh = b ? Math.round(1000 * Math.max(0, b.hp) / b.max) / 1000 : 1; } const sg = JSON.stringify(o);
   if (force || sg !== MP.sig) { MP.sig = sg; MP.lobby.presence(o).catch(() => {}); }
 }
 function mpTick(dt) {
   if (!MP.lobby || !MP.code) return;
   let ally = 0; const ar = mpAr();
   MP.lobby.peers().forEach(p => { if (p.isMe || p.kind !== 'viewer') return; const g = MP.ghosts.get(p.peer), q = p.presence || {}; if (!g || mpNorm(q.code) !== MP.code) return; if (typeof q.x !== 'number' || typeof q.z !== 'number') return;
-    g.zn = q.zn | 0; g.ar = q.ar | 0; g.mv = q.mv ? 1 : 0; g.hp = Math.max(0, Math.min(100, +q.hp || 0)); g.f = +q.f || 0;
+    g.zn = q.zn | 0; g.ar = q.ar | 0; g.pw = +q.pw || 0; g.ha = +q.ha || 0; g.hm = +q.hm || 0; g.mv = q.mv ? 1 : 0; g.hp = Math.max(0, Math.min(100, +q.hp || 0)); g.f = +q.f || 0;
     if (!g.init || Math.hypot(q.x - g.x, q.z - g.z) > 25 || g.zn !== W.zone) { g.x = q.x; g.z = q.z; g.init = 1; } else { const k = Math.min(1, dt * 8); g.x += (q.x - g.x) * k; g.z += (q.z - g.z) * k; } });
   MP.ghosts.forEach(g => {
     const same = g.init && g.zn === W.zone && g.ar === ar; g.m.visible = !!same && Math.hypot(g.x - W.x, g.z - W.z) < 90;
     if (g.m.visible) { if (NV.raw && NAVON() && nvBlk(g.x, g.z, .3, false)) { const f = nvFree(g.x, g.z, .4, false); g.x = f[0]; g.z = f[1]; } g.m.position.set(g.x, sg(g, gy(g.x, g.z)), g.z); let d = g.f - g.m.rotation.y; d = Math.atan2(Math.sin(d), Math.cos(d)); g.m.rotation.y += d * Math.min(1, dt * 10); animH(g.m, T, !!g.mv, false, g.ph); g.m.userData.halo.rotation.z = T * 2; if (Math.hypot(g.x - W.x, g.z - W.z) < 14) ally++; }
   });
-  ALLY = ally;
+  ALLY = ally; if (!MP.host) mpHostSync(); else mpGstTick(dt);
   /* boss partagé : chacun voit la vie du boss la plus basse parmi les disciples présents dans la même zone (les dégâts s'additionnent) */
   const b = bossEnt && bossEnt.done <= 0 && bossEnt.zn === W.zone ? bossEnt : null;
   if (b) { let mf = b.hp / b.max; MP.lobby.peers().forEach(p => { if (p.isMe || p.kind !== 'viewer') return; const q = p.presence || {}; if (mpNorm(q.code) !== MP.code || (q.ar | 0) !== ar || q.bz !== b.zn || typeof q.bh !== 'number') return; mf = Math.min(mf, q.bh); }); if (mf * b.max < b.hp - b.max * .005) { b.hp = Math.max(1, mf * b.max); b.flash = .1; } }
@@ -3565,10 +3629,11 @@ function mpTick(dt) {
   MP.dr -= dt; if (MP.dr <= 0) { MP.dr = 1; MP.cnt = MP.ghosts.size + 1; mpBadge(); if (MP.open) mpDraw(); }
 }
 function mpOverlay() {
-  MP.ghosts.forEach(g => { const el = g.el; if (!el) return; const show = g.m.visible; if (show) { const n = mpName(g); if (el.dataset.n !== n) { el.dataset.n = n; el.firstChild.textContent = n; } el.children[1].firstChild.style.width = g.hp + '%'; } place(el, g.x, 3.9, g.z, show, 12); });
+  MP.ghosts.forEach(g => { const el = g.el; if (!el) return; const show = g.m.visible; if (show) { const n = mpName(g); if (el.dataset.n !== n) { el.dataset.n = n; el.firstChild.textContent = n; } el.children[1].firstChild.style.width = g.hp + '%'; const s = '⚔ ' + fmt(g.pw || 0) + ' · ❤ ' + fmt(g.ha || 0) + '/' + fmt(g.hm || 0); if (el.children[2] && el.children[2].textContent !== s) el.children[2].textContent = s; } place(el, g.x, 3.9, g.z, show, 12); });
 }
 function mpPos(m) { const d = m && m.data; if (!m.sameTab) { const g = MP.ghosts.get(m.peer); return g && g.m.visible ? [g.x, g.z, g.col] : null; } return [W.x, W.z, MP.me.col]; }
 function mpEmo(m) {
+  if (m && !m.sameTab && mpBannedPeer(m.peer)) return;
   const d = m && m.data, e = d && d.e; if (!MPE.includes(e) || !MP.code || mpNorm(d.code) !== MP.code) return; const p = mpPos(m); if (!p) return;
   floatT(e, p[0], 6.2, p[1], 'c'); try { burst(p[0], 3.2, p[1], parseInt(String(p[2]).slice(1), 16) || 0xffe27a, 14, 4, 6); } catch (x) {}
 }
@@ -3585,6 +3650,7 @@ function mpBossDown(m) {
   const g = MP.ghosts.get(m.peer), who = g ? mpName(g) : 'Un ami'; note('Boss converti en coop', who + ' et toi avez converti ' + b.name + ' !'); convertEnemy(b);
 }
 function mpBless(m) {
+  if (m && !m.sameTab && mpBannedPeer(m.peer)) return;
   const d = m && m.data; if (!d || !MP.code || mpNorm(d.code) !== MP.code) return; const me = mpMe(), toMe = d.to === me; let tx, tz, tn; const src = mpPos(m);
   if (toMe) { tx = W.x; tz = W.z; tn = 'toi'; } else { const g = MP.ghosts.get(d.to); if (!g || !g.m.visible) return; tx = g.x; tz = g.z; tn = mpName(g); }
   const sn = m.sameTab ? 'Tu' : (() => { const g = MP.ghosts.get(m.peer); return g ? mpName(g) : 'Un ami'; })();
@@ -3634,13 +3700,13 @@ function mpDraw(full) {
     else if (mode === 'none' || mode === 'err') { box.appendChild(mk('div', MP.err || 'Coop indisponible dans cette vue.', 'mut')); const r = mk('div', '', 'mpr'); r.appendChild(btn('↻ Réessayer', 'retry')); box.appendChild(r); }
     else if (mode === 'out') {
       box.appendChild(mk('div', 'Crée une salle et envoie son code à tes amis, ou entre le code d\'un ami. Seuls ceux qui ont le même code se retrouvent.', 'mut'));
-      const r0 = mk('div', '', 'mpr'); r0.appendChild(btn('🤝 Jouer en coop · créer une salle', 'create')); box.appendChild(r0);
+      mpNickRow(box, mk, btn); const r0 = mk('div', '', 'mpr'); r0.appendChild(btn('🤝 Jouer en coop · créer une salle', 'create')); box.appendChild(r0);
       const r = mk('div', '', 'mpr'), i = mk('input'); i.type = 'text'; i.maxLength = 10; i.placeholder = 'Code d\'un ami'; i.autocapitalize = 'characters'; i.autocomplete = 'off'; i.className = 'mpi'; i.setAttribute('autocorrect', 'off'); i.setAttribute('spellcheck', 'false');
       ['keydown', 'keyup'].forEach(ev => i.addEventListener(ev, e => { e.stopPropagation(); if (ev === 'keydown' && e.key === 'Enter') mpJoin(i.value); })); r.appendChild(i); r.appendChild(btn('Rejoindre', 'join')); box.appendChild(r);
-      box.appendChild(mk('div', '', 'mpe2')); box.appendChild(mk('div', 'Tes amis doivent ouvrir la même page depuis Claude (menu Partager).', 'mut'));
+      box.appendChild(mk('div', '', 'mpe2')); box.appendChild(mk('div', (MP.lobby && MP.lobby.p2p ? 'Ta salle garde toujours le même code : tes amis peuvent revenir quand tu la recrées.' : 'Tes amis doivent ouvrir la même page depuis Claude (menu Partager).'), 'mut'));
     } else {
-      box.appendChild(mk('div', MP.code.toUpperCase(), 'mpcode'));
-      const r = mk('div', '', 'mpr'); r.appendChild(btn('📋 Inviter', 'copy')); r.appendChild(btn('Quitter la salle', 'leave')); box.appendChild(r);
+      box.appendChild(mk('div', MP.code.toUpperCase(), 'mpcode')); mpNickRow(box, mk, btn);
+      const r = mk('div', '', 'mpr'); r.appendChild(btn('📋 Inviter', 'copy')); r.appendChild(btn('Quitter la salle', 'leave')); if (MP.host) r.appendChild(btn('🔄 Nouveau code', 'newc')); box.appendChild(r);
       const t = mk('textarea', '', 'mpt'); t.readOnly = true; t.rows = 3; t.style.display = 'none'; box.appendChild(t);
       box.appendChild(mk('div', '', 'mpd'));
       const er = mk('div', '', 'mpe'); MPE.forEach(e => { const b = mk('button', e); b.dataset.e = e; er.appendChild(b); }); box.appendChild(er);
@@ -3652,14 +3718,15 @@ function mpDraw(full) {
   { const e2 = box.querySelector('.mpe2'); if (e2) e2.textContent = MP.err2 || ''; }
   box.querySelectorAll('.mpe button').forEach(b => b.disabled = conn !== 'on');
   const dl = box.querySelector('.mpd'); if (!dl) return; dl.textContent = '';
-  { const r = mk('div', '', 'mpr'); r.appendChild(mk('div', '⭐ Toi · ' + (MP.me.name || 'Disciple'))); dl.appendChild(r); }
+  { const r = mk('div', '', 'mpr'); r.appendChild(mk('div', '⭐ Toi' + (MP.host ? ' (hôte)' : '') + ' · ' + (MP.me.name || 'Disciple') + ' · ⚔ ' + fmt(Math.round(ATK())) + ' · ❤ ' + fmt(Math.round(Math.max(0, W.hp))) + '/' + fmt(Math.round(HPM())))); dl.appendChild(r); }
   if (!MP.ghosts.size) dl.appendChild(mk('div', 'Personne d\'autre pour l\'instant : envoie le code à tes amis.', 'mut'));
-  MP.ghosts.forEach(g => { const r = mk('div', '', 'mpr'), same = g.init && g.zn === W.zone && g.ar === mpAr(); r.appendChild(mk('div', mpName(g) + ' · ' + (g.ar === 1 ? 'arène' : g.ar === 2 ? 'monde spirituel' : ZONES[Math.max(0, Math.min(NZ - 1, g.zn))].n) + (same ? ' · ' + Math.round(Math.hypot(g.x - W.x, g.z - W.z)) + ' m' : ''))); const b = mk('button', '🙏 Bénir'); b.dataset.b = g.peer; b.disabled = !same || conn !== 'on'; r.appendChild(b); dl.appendChild(r); });
+  MP.ghosts.forEach(g => { const r = mk('div', '', 'mpr'), same = g.init && g.zn === W.zone && g.ar === mpAr(); r.appendChild(mk('div', mpName(g) + ' · ' + (g.ar === 1 ? 'arène' : g.ar === 2 ? 'monde spirituel' : ZONES[Math.max(0, Math.min(NZ - 1, g.zn))].n) + (same ? ' · ' + Math.round(Math.hypot(g.x - W.x, g.z - W.z)) + ' m' : '') + ' · ⚔ ' + fmt(g.pw || 0) + ' · ❤ ' + fmt(g.ha || 0) + '/' + fmt(g.hm || 0))); const b = mk('button', '🙏 Bénir'); b.dataset.b = g.peer; b.disabled = !same || conn !== 'on'; r.appendChild(b); if (MP.host && g.pid) { const k = mk('button', 'Expulser'); k.dataset.k = g.peer; r.appendChild(k); } dl.appendChild(r); });
+  if (MP.host && S.ban && Object.keys(S.ban).length) { dl.appendChild(mk('div', 'Joueurs expulsés :', 'mut')); Object.keys(S.ban).forEach(id => { const r = mk('div', '', 'mpr'); r.appendChild(mk('div', '🚫 ' + (S.ban[id].nm || id))); const u = mk('button', 'Annuler'); u.dataset.ub = id; r.appendChild(u); dl.appendChild(r); }); }
 }
 function mpClick(ev) {
   const b = ev.target.closest('button'); if (!b) return; const a = b.dataset.a;
   if (a === 'svx') { saveExport(); return; } if (a === 'svi') { saveImport(); return; }
-  if (a === 'rst0') { RST.step = 1; RST.t0 = performance.now(); mpDraw(true); setTimeout(() => { if (RST.step === 1) mpDraw(true); }, 1600); return; } if (a === 'rstx') { RST.step = 0; mpDraw(true); return; } if (a === 'rst1') { if (performance.now() - RST.t0 < 1500) return; doReset(); return; } if (a === 'create') mpJoin(mpGen(), false, true); else if (a === 'join') mpJoin($('mpl').querySelector('.mpi').value); else if (a === 'copy') mpCopy(); else if (a === 'leave') mpLeave(); else if (a === 'retry') mpInit();
+  if (a === 'rst0') { RST.step = 1; RST.t0 = performance.now(); mpDraw(true); setTimeout(() => { if (RST.step === 1) mpDraw(true); }, 1600); return; } if (a === 'rstx') { RST.step = 0; mpDraw(true); return; } if (a === 'rst1') { if (performance.now() - RST.t0 < 1500) return; doReset(); return; } if (a === 'create') mpJoin(mpRoomCode(), false, true); else if (a === 'nick') { if (mpSetNick($('mpl').querySelector('.mpn').value)) note('Pseudo', 'Tu t\'appelles maintenant ' + S.nick + '.'); } else if (a === 'newc') { mpLeave(true); mpJoin(mpRoomCode(true), false, true); } else if (b.dataset.k) mpKick(b.dataset.k); else if (b.dataset.ub) mpUnban(b.dataset.ub); else if (a === 'join') mpJoin($('mpl').querySelector('.mpi').value); else if (a === 'copy') mpCopy(); else if (a === 'leave') mpLeave(); else if (a === 'retry') mpInit();
   else if (b.dataset.e && MP.lobby && MP.code) { MP.lobby.emit('emo', { e: b.dataset.e, code: MP.code }).catch(() => {}); } else if (b.dataset.b) mpBlessSend(b.dataset.b);
 }
 
