@@ -1244,7 +1244,15 @@ const foeStat = (z, kind, boss) => { const q = foeStat0(z, kind, boss); q.dmg *=
 const bonusOf = (z, kind) => { const k = K(z) * feltF(z, 'rew'); return kind === 6 ? { a: .6 * k, h: 1.2 * k, f: 8 * k } : kind === 4 ? { a: .7 * k, h: 0, f: 5 * k } : kind === 5 ? { a: 0, h: 0, f: 8 * k } : kind === 0 ? { a: .45 * k, h: 0, f: 4 * k } : kind === 1 ? { a: 0, h: 2.8 * k, f: 6 * k } : kind === 2 ? { a: 0, h: 0, f: 8 * k } : kind === 7 ? { a: 0, h: 0, f: 0 } : kind === 8 ? { a: .6 * k, h: 1.2 * k, f: 8 * k } : kind === 14 ? { a: .9 * k, h: 2 * k, f: 12 * k } : kind >= 9 ? { a: 0, h: 0, f: 3 * k } : { a: 3.5 * k, h: 16 * k, f: 150 * k }; };
 function save() { if (window.RESETTING) return; const pd = typeof coinPending === 'function' ? coinPending() : 0; S.f += pd; try { S.t = Date.now(); const str = mpSaveStr(); try { localStorage.setItem(KEY, str); } catch (e) { } dbQueue(str); } catch (e) {} S.f -= pd; }
 /* migration v2 (6 zones) -> v3 (8 niveaux : Jérusalem = 3 secteurs) : ancienne zone 0 -> niveau 1 (ou 1-3 si le Grand Prêtre était vaincu), zones 1-5 -> niveaux 4-8 */
-function migrateSave(s) { return migr4(migrateSave3(s)); }
+function migrateSave(s) { return migrRS(migr4(migrateSave3(s))); }
+/* 24o : Char romain et Voies romaines retirés de la Recherche. Remboursement de ce qui a été payé (F et ressources), drapeaux supprimés. */
+const RS_GONE = { char: { n: 'Char romain', f: 200, r: [[1, 8], [2, 6]] }, voies: { n: 'Voies romaines', f: 240, r: [[2, 8]] } };
+function migrRS(s) {
+  if (!s || typeof s !== 'object') return s; const got = [];
+  Object.keys(RS_GONE).forEach(id => { const own = s.rs && s.rs[id], run = Array.isArray(s.rq) && s.rq[0] === id; if (!own && !run) return; const g = RS_GONE[id];
+    s.f = (s.f || 0) + g.f; if (Array.isArray(s.res)) g.r.forEach(([z, n]) => { s.res[z] = (s.res[z] || 0) + n; }); if (s.rs) delete s.rs[id]; if (run) s.rq = null; got.push(g.n); });
+  if (got.length) window._rsGone = got; return s;
+}
 /* migration v3 (8 niveaux) -> v4 (12 villes + monde spirituel) : Jérusalem 1-3 et Antioche gardent leur place ; Rome 5 -> 7, Milan 6 -> Nicée 9, Chrétienté 7 -> Constantinople 10, Monde entier 8 -> Hippone 11. Les villes intercalées déjà dépassées sont comptées comme libérées. */
 function migr4(s) {
   if (!s || s.ver >= 4 || !Array.isArray(s.conv) || s.conv.length !== 8) return s;
@@ -3359,9 +3367,7 @@ const RES = [{ n: 'Myrrhe', c: '#d98a3a' }, { n: 'Huile', c: '#d8d84a' }, { n: '
 const RS = [
   { id: 'ane', n: 'Âne', g: 'Transports', i: '🐴', d: 'Jésus voyage à dos d\'âne : +25 % de vitesse.', c: 30, q: 0, r: [[0, 4]], t: 15 },
   { id: 'cheval', n: 'Cheval', g: 'Transports', i: '🐎', d: 'Plus rapide : +50 % de vitesse au total.', c: 40, q: 1, r: [[0, 6], [1, 5]], t: 30, pre: 'ane' },
-  { id: 'char', n: 'Char romain', g: 'Transports', i: '🏇', d: 'Le plus rapide : +80 % de vitesse.', c: 25, q: 2, r: [[1, 8], [2, 6]], t: 50, pre: 'cheval' },
-  { id: 'voies', n: 'Voies romaines', g: 'Transports', i: '🛤️', d: 'Voyage rapide : retourne dans n\'importe quelle zone débloquée.', c: 30, q: 2, r: [[2, 8]], t: 40 },
-  { id: 'wk', n: 'Marcher sur les eaux', g: 'Pouvoirs', i: '🌊', d: 'Fleuves et lacs deviennent praticables : nouvelles zones et îles au trésor.', c: 25, q: 2, r: [[1, 6]], t: 30 },
+  { id: 'wk', n: 'Marcher sur les eaux', g: 'Pouvoirs', i: '🌊', d: 'Bassins, fleuves et lacs deviennent praticables, dans tous les niveaux.', c: 57, q: 0, qa: 1, r: [[0, 8]], t: 30 },
   { id: 'souffle', n: 'Souffle de l\'Esprit', g: 'Pouvoirs', i: '🕊️', d: '+15 % de portée de prédication.', c: 20, q: 1, r: [[0, 8], [1, 4]], t: 30 },
   { id: 'pain', n: 'Multiplication des pains', g: 'Pouvoirs', i: '🍞', d: '+20 % de fidèles : un ennemi qui donne 10 F t’en donne 12 (ennemis, coffres, évêques…).', c: 20, q: 2, r: [[1, 10], [2, 4]], t: 45 },
   { id: 'feu', n: 'Langues de feu', g: 'Pouvoirs', i: '🔥', d: 'Pouvoir actif (bouton) : le feu de l\'Esprit frappe tous les ennemis proches. Recharge 25 s.', c: 25, q: 3, r: [[2, 8], [3, 6]], t: 60 },
@@ -3371,9 +3377,9 @@ const RS = [
   { id: 'ecoles', n: 'Écoles épiscopales', g: 'Savoirs', i: '🏫', d: 'Le délai entre deux conversions des évêques est réduit de 40 % (soit 1,67 fois plus de conversions).', c: 20, q: 4, r: [[4, 10], [3, 8]], t: 60 }
 ];
 const has = id => !!S.rs[id];
-const speedM = () => (W.bf.spd > 0 ? 1.2 : 1) * (wpOn(2) ? 1.25 : 1) * (has('char') ? 1.8 : has('cheval') ? 1.5 : has('ane') ? 1.25 : 1) * vsM('spd');
+const speedM = () => (W.bf.spd > 0 ? 1.2 : 1) * (wpOn(2) ? 1.25 : 1) * (has('cheval') ? 1.5 : has('ane') ? 1.25 : 1) * vsM('spd');
 const resCost = it => Math.round(it.c * K(it.q) * ed(Math.floor(it.q * 1.5)));
-RS.forEach(it => { if (it.q) it.q += 2; }); /* paliers de recherche : anciennes zones 1-5 -> niveaux 4-8 */
+RS.forEach(it => { if (it.q) it.q += 2; if (it.qa !== undefined) it.q = it.qa; }); /* paliers de recherche : anciennes zones 1-5 -> niveaux 4-8 */
 const resLocked = it => S.lvl < it.q || (it.pre && !has(it.pre));
 const canRes = it => !S.rq && !has(it.id) && !resLocked(it) && S.f >= resCost(it) && it.r.every(([z, n]) => S.res[z] >= n);
 function startRes(it) { if (!canRes(it)) return; S.f -= resCost(it); it.r.forEach(([z, n]) => S.res[z] -= n); S.rq = [it.id, Date.now() + it.t * 1000]; note('Recherche lancée', it.n + ' · ' + it.t + ' s'); save(); }
@@ -3432,7 +3438,6 @@ function drawResearch() {
     box.dataset.sig = sig; const CT = RCATS[RCAT]; let h = '<div class="cbar2">' + RCATS.map((c, i) => '<button data-cat="' + i + '" class="' + (i === RCAT ? 'on' : '') + '"><i>' + c[0] + '</i>' + c[1] + '<em>' + c[2].filter(id => has(id)).length + '/' + c[2].length + '</em></button>').join('') + '</div>';
     CT[2].forEach(id => { const it = RS.find(q => q.id === id); if (!it) return; h += '<div class="rrow" id="rr_' + id + '" title="' + it.d.replace(/"/g, '') + '"><div class="ri2">' + it.i + '</div><div class="rt"><b>' + it.n + '</b><span>' + RSD[id] + '</span><small id="rc_' + id + '"></small></div><button class="bt" data-r="' + id + '" id="rb_' + id + '"></button></div>'; });
     h += '<div class="card" id="rqc"></div><div class="rinv" id="rinv"></div><div id="ruse"></div>';
-    if (has('voies')) h += '<h3>Voyage rapide</h3><div class="rinv">' + ZONES.map((z, i) => i <= S.lvl ? '<button class="buy" style="flex:1;min-width:110px" data-tr="' + i + '">' + z.n + '</button>' : '').join('') + '</div>';
     box.innerHTML = h;
   }
   const inv = RES.map((r, i) => i <= RZ(S.lvl) || S.res[i] ? '<span class="rp" style="border-color:' + r.c + '"><i style="background:' + r.c + '"></i>' + r.n + ' <b>' + S.res[i] + '</b></span>' : '').join('');
@@ -3446,7 +3451,7 @@ function drawResearch() {
     if (b.dataset.h !== bt) { b.dataset.h = bt; b.innerHTML = bt; } b.className = 'bt' + (done ? ' dn' : lk ? ' lk' : ''); b.disabled = done || run || lk || !canRes(it); rr.classList.toggle('lk', lk && !done);
   });
 }
-$('rsg').addEventListener('click', ev => { const b = ev.target.closest('button'); if (!b) return; if (b.dataset.cat !== undefined) { RCAT = +b.dataset.cat; drawResearch(); return; } if (b.dataset.r) { const it = RS.find(q => q.id === b.dataset.r); if (it) startRes(it); } else if (b.dataset.tr !== undefined) { const z = +b.dataset.tr, [x, zz] = zoneStart(z); W.x = x; W.z = zz; camera.position.set(x, CAMH, zz + CAMZ); $('sheet').classList.remove('open'); } });
+$('rsg').addEventListener('click', ev => { const b = ev.target.closest('button'); if (!b) return; if (b.dataset.cat !== undefined) { RCAT = +b.dataset.cat; drawResearch(); return; } if (b.dataset.r) { const it = RS.find(q => q.id === b.dataset.r); if (it) startRes(it); } });
 
 /* montures */
 let mountG = null, mountId = '', MH = 0;
@@ -3464,7 +3469,7 @@ function makeMount(id) {
   } else horse(0);
   g.userData.legs = legs; return g;
 }
-function mountKey() { return has('char') ? 'char' : has('cheval') ? 'cheval' : has('ane') ? 'ane' : ''; }
+function mountKey() { return has('cheval') ? 'cheval' : has('ane') ? 'ane' : ''; }
 function syncMount() {
   const k = mountKey(); if (k === mountId) return; mountId = k; if (mountG) { scene.remove(mountG); mountG = null; } MH = 0;
   if (k) { mountG = makeMount(k); scene.add(mountG); MH = (k === 'ane' ? 1.15 : k === 'cheval' ? 1.5 : .88) * .8; mountG.scale.setScalar(.8); }
@@ -4617,8 +4622,8 @@ function dClaim() {
 }
 setInterval(() => { try { if (document.getElementById('menu') || window.MENU_PZ || !S.tut || W.cine || W.spirit || W.arena) return; const st = dState(); if (st.claimed || DG_SHOWN === st.today || $('sheet').classList.contains('open')) return; DG_SHOWN = st.today; openSheet('dg'); } catch (e) { } }, 3000);
 /* ---------- Recherche : 3 catégories ---------- */
-const RCATS = [['🐴', 'Déplacement', ['ane', 'cheval', 'char', 'voies', 'wk']], ['⚔️', 'Combat', ['souffle', 'feu', 'lumiere']], ['⛪', 'Église', ['pain', 'gueri', 'cate', 'ecoles']]];
-const RSD = { ane: '+25 % vitesse', cheval: '+50 % vitesse', char: '+80 % vitesse', voies: 'Voyage rapide entre zones', wk: 'Traverse fleuves et mers', souffle: '+15 % portée', feu: 'Feu sur les ennemis proches · 25 s', lumiere: '+12 % Puissance · +10 % critiques', pain: '+20 % fidèles', gueri: 'Soins des églises ×1,6', cate: 'Apôtres : corruption −40 %', ecoles: 'Évêques : conversions ×1,67' };
+const RCATS = [['🐴', 'Déplacement', ['ane', 'cheval', 'wk']], ['⚔️', 'Combat', ['souffle', 'feu', 'lumiere']], ['⛪', 'Église', ['pain', 'gueri', 'cate', 'ecoles']]];
+const RSD = { ane: '+25 % vitesse', cheval: '+50 % vitesse', wk: 'Bassins, fleuves et lacs', souffle: '+15 % portée', feu: 'Feu sur les ennemis proches · 25 s', lumiere: '+12 % Puissance · +10 % critiques', pain: '+20 % fidèles', gueri: 'Soins des églises ×1,6', cate: 'Apôtres : corruption −40 %', ecoles: 'Évêques : conversions ×1,67' };
 
 function paint() {
   const zn = W.zone, Z = ZONES[zn];
@@ -4793,7 +4798,7 @@ window.addEventListener('pagehide', cloudNow);
 setInterval(() => { const el = document.querySelector('#mpl .svst'); if (!el) return; const t = CLD.where === 'cloud' ? CLD.at : CLD.lt; const hm = t ? new Date(t).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }) : '—'; el.textContent = 'Sauvegardé ✓ ' + hm + ' · ' + (CLD.where === 'cloud' ? 'en ligne' : 'sur cet appareil'); }, 1000);
 
 /* ---------- démarrage ---------- */
-load(); setTimeout(cloudInit, 0);
+load(); setTimeout(cloudInit, 0); setTimeout(function rsGoneNote() { if (document.getElementById('menu')) return setTimeout(rsGoneNote, 1500); if (window._rsGone) { note('Recherche remboursée', window._rsGone.join(' et ') + ' ' + (window._rsGone.length > 1 ? 'ont' : 'a') + ' été retiré' + (window._rsGone.length > 1 ? 's' : '') + ' du jeu : tes fidèles et ressources t’ont été rendus.'); window._rsGone = null; } }, 4000);
 let NEWGAME = 0; try { if (localStorage.getItem('cenacle_newgame')) { localStorage.removeItem('cenacle_newgame'); NEWGAME = 1; } } catch (e) { }
 const away = Math.min(2 * 3600, (Date.now() - S.t) / 1000); let offGain = 0; if (away > 60) for (let z = 0; z < NZ; z++) for (let p = 0; p < 2; p++) if (S.bs[z][p]) offGain += Math.floor(away / chIv(S.bl[z][p])) * chAmt(z, S.cl[z][p]); S.pe += offGain; try { S.f += bishopOffF(away); } catch (e) { }
 { const [x, z] = zoneStart(Math.min(S.lvl, NZ - 1)); W.x = x; W.z = z; W.zone = Math.min(S.lvl, NZ - 1); }
@@ -4892,8 +4897,14 @@ function mDone() { return Math.min(12, S.lvl + (S.gl ? 1 : 0)); }
 function mState(i) { if (i < 12) { if (i < S.lvl || (i === 11 && S.gl)) return 'done'; if (i === S.lvl) return 'cur'; return 'lk'; } return S.sp ? 'done' : S.gl ? 'cur' : 'lk'; }
 function mCurIdx() { return S.gl && S.lvl >= 11 ? 12 : Math.min(S.lvl, 11); }
 function mSub() { if (S.sp) return 'Jésus · Satan est vaincu'; const i = mCurIdx(); return 'Jésus · Niv. ' + (i + 1) + ' · ' + MNZ[i]; }
-function mFit() { const w = document.querySelector('#menu .mzw'); if (!w) return; const k = Math.min(innerWidth / 390, (innerHeight - (w.dataset.st ? 0 : 0)) / 844); w.style.setProperty('--k', k); w.style.width = 390 * k + 'px'; w.style.height = 844 * k + 'px'; }
-addEventListener('resize', mFit);
+function mFit() {
+  const m = document.getElementById('menu'), w = m && m.querySelector('.mzw'); if (!w) return; const z = w.firstElementChild, cs = getComputedStyle(m);
+  const W = m.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight), H = m.clientHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom), home = MENU.scr === 'home';
+  const fl = home && W < 600, k = Math.max(.5, fl ? Math.min(W / 390, H / 690) : Math.min(W / 390, H / 844)), dh = fl ? Math.min(Math.max(690, H / k), 930) : 844;
+  w.style.setProperty('--k', k); z.style.height = dh + 'px'; w.style.width = 390 * k + 'px'; w.style.height = dh * k + 'px';
+  const bg = home && z.querySelector('.m-bg'); if (bg) bg.style.backgroundSize = Math.round(Math.max(390, bg.offsetHeight * 1.16)) + 'px auto';
+}
+if (window.visualViewport) visualViewport.addEventListener('resize', mFit);
 function mToast(t) { const e = document.getElementById('mtoast'); if (!e) return; e.textContent = t; e.classList.add('on'); clearTimeout(mToast.t); mToast.t = setTimeout(() => e.classList.remove('on'), 2600); }
 function mChips(i) {
   const c = []; if (i === 12) { c.push('⚔️ Boss final'); c.push('✝ Fragments ' + nCross() + ' / 6'); return c; }
@@ -4904,15 +4915,15 @@ function mChips(i) {
   return c;
 }
 function mHome() {
-  const has = (S.conv || []).some(v => v > 0) || S.f > 0 || S.lvl > 0, sa = isStandalone(), x = mDone(), dot = !dState().claimed ? '<span class="m-dot"></span>' : '';
-  let h = '<div class="m-bg"></div><div class="m-rays"></div><div class="m-fade"></div><div class="m-motes"></div>';
-  h += '<div class="m-tb l"><div class="m-rb m-gift" data-m="gift" role="button" aria-label="Cadeau du jour">🎁' + dot + '</div><div class="m-rb" data-m="vers" role="button" aria-label="Versets">📜</div><div class="m-rb" data-m="rel" role="button" aria-label="Reliques">✝️</div></div>';
-  h += '<div class="m-tb r"><div class="m-rb" data-m="set" role="button" aria-label="Réglages">⚙️</div><div class="m-rb" data-m="snd" role="button" aria-label="Son">' + (AUD.cfg.mute ? '🔇' : '🔊') + '</div></div>';
-  h += '<div class="m-main"><div class="m-cont" data-m="play" role="button"><b>▶ ' + (has ? 'Continuer' : 'Jouer') + '</b><small>' + mSub() + '</small></div>';
-  h += '<div class="m-sec">CHAPITRES</div><div class="m-row"><div class="m-card on" data-m="chap" role="button"><div class="m-ill" style="background-image:url(menu/th-jesus.jpg)"><span class="m-tag">I</span></div><div class="m-tx"><b>Jésus</b><small>La vie du Christ · ' + x + '/12</small><div class="m-pb"><i style="width:' + (x / 12 * 100).toFixed(1) + '%"></i></div></div></div>';
-  h += '<div class="m-card lk" data-m="lk2" role="button"><div class="m-ill" style="background-image:url(menu/th-apo.jpg)"><span class="m-tag">II</span></div><div class="m-tx"><b>Apôtres</b><small>Termine le chapitre de Jésus</small></div></div></div>';
-  h += '<div class="m-sec" style="margin-top:10px;font-size:.66rem">ANCIEN TESTAMENT</div><div class="m-row4">' + [['🚢', 'Noé', '#5a9ac8,#2a5a88'], ['⭐', 'Abraham', '#e8b860,#a86a28'], ['🌊', 'Moïse', '#4ab0c8,#2a6a8a'], ['🪨', 'David', '#c8a060,#7a5a2a']].map(o => '<div class="m-card lk" data-m="lkot" role="button"><div class="m-ill m-ot" style="background:linear-gradient(' + o[2] + ')">' + o[0] + '</div><div class="m-tx"><b>' + o[1] + '</b></div></div>').join('') + '</div></div>';
-  h += '<div class="m-bot"><div data-m="saves" role="button">💾 Sauvegardes</div>' + (sa ? '' : '<div data-m="install" role="button">📲 Installer</div>') + (DONATE_URL ? '<div class="alt" data-m="donate" role="button">❤ Don</div>' : '') + '</div><div id="mtoast" class="m-toast"></div>';
+  const has = (S.conv || []).some(v => v > 0) || S.f > 0 || S.lvl > 0, sa = isStandalone(), x = mDone(), dot = !dState().claimed ? '<span class="m-dot"></span>' : '', LK = '<svg class="m-lki" viewBox="0 0 24 24"><path d="M7 11V8a5 5 0 0 1 10 0v3" stroke="#f3cf6a" stroke-width="2.4" fill="none"/><rect x="4.5" y="10.5" width="15" height="11" rx="2.5" fill="#3a2410" stroke="#f3cf6a" stroke-width="2"/><circle cx="12" cy="15.5" r="1.8" fill="#f3cf6a"/><path d="M12 16v3" stroke="#f3cf6a" stroke-width="1.6"/></svg>', OT = {"Noé": "<svg viewBox=\"0 0 48 48\"><path d=\"M24 7v6M21 9.5l3 1.6 3-1.6\" stroke=\"#f3cf6a\" stroke-width=\"2\" fill=\"none\" stroke-linecap=\"round\"/><path d=\"M13 22h22v7H13z\" fill=\"#7a4a1c\" stroke=\"#f3cf6a\" stroke-width=\"2\" stroke-linejoin=\"round\"/><path d=\"M11 22l13-7 13 7\" fill=\"#5a3410\" stroke=\"#f3cf6a\" stroke-width=\"2\" stroke-linejoin=\"round\"/><path d=\"M21 24h6v5h-6z\" fill=\"#2a1a08\"/><path d=\"M5 29h38l-5 9H10z\" fill=\"#8a5a24\" stroke=\"#f3cf6a\" stroke-width=\"2\" stroke-linejoin=\"round\"/><path d=\"M8 33h32\" stroke=\"#f3cf6a\" stroke-width=\"1.3\" opacity=\".7\"/><path d=\"M4 42c4-2 6 2 10 0s6 2 10 0 6 2 10 0 6 2 10 0\" stroke=\"#9ad0e8\" stroke-width=\"2\" fill=\"none\" stroke-linecap=\"round\"/></svg>", "Abraham": "<svg viewBox=\"0 0 48 48\"><g fill=\"#f3cf6a\"><path d=\"M9 6l1 2.4 2.5.4-1.8 1.7.4 2.5L9 11.8 6.9 13l.4-2.5L5.5 8.8 8 8.4z\"/><path d=\"M24 3l.9 2 2.2.3-1.6 1.5.4 2.2-1.9-1-1.9 1 .4-2.2-1.6-1.5 2.2-.3z\"/><path d=\"M39 7l1 2.4 2.5.4-1.8 1.7.4 2.5-2.1-1.2-2.1 1.2.4-2.5-1.8-1.7 2.5-.4z\"/><circle cx=\"16\" cy=\"14\" r=\"1\"/><circle cx=\"32\" cy=\"13\" r=\"1\"/><circle cx=\"44\" cy=\"18\" r=\"1\"/><circle cx=\"4\" cy=\"18\" r=\"1\"/></g><path d=\"M5 40L24 17l19 23z\" fill=\"#a0723a\" stroke=\"#f3cf6a\" stroke-width=\"2\" stroke-linejoin=\"round\"/><path d=\"M24 17v23M24 40l-6-11M24 40l6-11\" stroke=\"#f3cf6a\" stroke-width=\"1.6\" fill=\"none\"/><path d=\"M19 40l5-10 5 10z\" fill=\"#2a1a08\"/><path d=\"M3 42h42\" stroke=\"#f3cf6a\" stroke-width=\"2\" stroke-linecap=\"round\"/></svg>", "Moïse": "<svg viewBox=\"0 0 48 48\"><path d=\"M6 41V15a8 8 0 0 1 16 0v26z\" fill=\"#c8b89a\" stroke=\"#f3cf6a\" stroke-width=\"2\"/><path d=\"M26 41V15a8 8 0 0 1 16 0v26z\" fill=\"#c8b89a\" stroke=\"#f3cf6a\" stroke-width=\"2\"/><g stroke=\"#5a4a32\" stroke-width=\"2\" stroke-linecap=\"round\"><path d=\"M10 17h8M10 23h8M10 29h8M10 35h8M30 17h8M30 23h8M30 29h8M30 35h8\"/></g></svg>", "David": "<svg viewBox=\"0 0 48 48\"><path d=\"M13 42c-4-10-6-22-2-34M35 42c4-10 6-22 2-34\" stroke=\"#c88a3a\" stroke-width=\"3.5\" fill=\"none\" stroke-linecap=\"round\"/><path d=\"M8 9c8-3 24-3 32 0\" stroke=\"#f3cf6a\" stroke-width=\"3\" fill=\"none\" stroke-linecap=\"round\"/><path d=\"M11 40h26\" stroke=\"#f3cf6a\" stroke-width=\"3\" stroke-linecap=\"round\"/><g stroke=\"#f3e2b0\" stroke-width=\"1.2\"><path d=\"M17 8.5V40M21 8V40M25 8V40M29 8V40M33 8.5V40\"/></g><circle cx=\"11\" cy=\"8\" r=\"2.4\" fill=\"#f3cf6a\"/><circle cx=\"37\" cy=\"8\" r=\"2.4\" fill=\"#f3cf6a\"/></svg>"};
+  let h = '<div class="m-tbar"><div class="m-tb"><div class="m-rb m-gift' + (dot ? ' on' : '') + '" data-m="gift" role="button" aria-label="Cadeau du jour">🎁' + dot + '</div><div class="m-rb" data-m="vers" role="button" aria-label="Versets">📜</div><div class="m-rb" data-m="rel" role="button" aria-label="Reliques">✝️</div></div>';
+  h += '<div class="m-tb"><div class="m-rb" data-m="set" role="button" aria-label="Réglages">⚙️</div><div class="m-rb" data-m="snd" role="button" aria-label="Son">' + (AUD.cfg.mute ? '🔇' : '🔊') + '</div></div></div>';
+  h += '<div class="m-hero"><div class="m-bg"></div><div class="m-rays"></div><div class="m-motes"></div><div class="m-fade"></div></div>';
+  h += '<div class="m-main"><div class="m-cont" data-m="play" role="button"><b><span class="m-play">▶\uFE0E</span> ' + (has ? 'Continuer' : 'Jouer') + '</b><small>' + mSub() + '</small></div>';
+  h += '<div class="m-sec"><span>CHAPITRES</span></div><div class="m-row"><div class="m-card on" data-m="chap" role="button"><div class="m-ill" style="background-image:url(menu/th-jesus.jpg)"><span class="m-tag">I</span></div><div class="m-tx"><b>Jésus</b><small>La vie du Christ · ' + x + '/12</small><div class="m-pb"><i style="width:' + Math.max(0, x / 12 * 100).toFixed(1) + '%"></i></div></div></div>';
+  h += '<div class="m-card lk" data-m="lk2" role="button"><div class="m-ill" style="background-image:url(menu/th-apo.jpg)"><span class="m-tag">II</span><span class="m-lkb">' + LK + '</span></div><div class="m-tx"><b>Apôtres</b><small>Termine le chapitre de Jésus</small></div></div></div>';
+  h += '<div class="m-sec m-sec2"><span>ANCIEN TESTAMENT</span></div><div class="m-row4">' + ['Noé', 'Abraham', 'Moïse', 'David'].map(n => '<div class="m-card m-otc" data-m="lkot" role="button"><div class="m-ill m-ot">' + OT[n] + '<span class="m-lks">' + LK + '</span></div><div class="m-tx"><b>' + n + '</b></div></div>').join('') + '</div></div>';
+  h += '<div class="m-bot"><div data-m="saves" role="button">💾 Sauvegardes</div>' + (sa ? '' : '<div data-m="install" role="button">📲 Installer</div>') + (DONATE_URL ? '<div class="alt" data-m="donate" role="button">❤️ Don</div>' : '') + '</div><div id="mtoast" class="m-toast"></div>';
   return h;
 }
 function mPath() {
@@ -4976,6 +4987,7 @@ function menuOpen() {
 #menu .m-bot div.alt{background:#e4d09a;color:#3d2a0c;border-color:#8a6a2a;box-shadow:0 3px 0 #8a6a2a}
 #menu .m-toast{position:absolute;left:24px;right:24px;top:50%;transform:translateY(-50%) scale(.9);opacity:0;pointer-events:none;z-index:9;text-align:center;padding:12px 14px;border-radius:16px;background:linear-gradient(#2a1a3c,#14102a);border:3px solid #ffd24a;color:#fff7e0;font:800 .95rem/1.3 'Alegreya Sans',sans-serif;box-shadow:0 6px 20px #000c;transition:.2s}
 #menu .m-toast.on{opacity:1;transform:translateY(-50%) scale(1)}
+#menu.nm{height:100%;height:100dvh;padding:env(safe-area-inset-top,0px) env(safe-area-inset-right,0px) env(safe-area-inset-bottom,0px) env(safe-area-inset-left,0px);box-sizing:border-box}#menu.nm .mzw{margin-top:0}@media (max-width:600px){#menu.nm:before{display:none}}#menu .mz.mh{display:flex;flex-direction:column}#menu .mh .m-tbar{flex:none;height:60px;display:flex;justify-content:space-between;align-items:center;padding:0 12px;position:relative;z-index:3}#menu .mh .m-tb{position:static;display:flex;gap:10px}#menu .mh .m-rb{width:42px;height:42px;font-size:1.3rem;flex:none}#menu .mh .m-gift{box-shadow:0 3px 0 #6a4010,0 0 0 2px #ffd24a55}#menu .mh .m-gift.on{box-shadow:0 3px 0 #6a4010,0 0 0 3px #ffd24a77,0 0 10px 1px #ffd24a}#menu .mh .m-dot{top:-3px;right:-3px;width:14px;height:14px}#menu .mh .m-hero{flex:1 1 0;min-height:150px;max-height:400px;position:relative;margin:-60px 0 -34px;z-index:0}#menu .mh .m-bg{top:56px;bottom:0;height:auto;background:url(menu/art.jpg) center 0/112% auto no-repeat}#menu .mh .m-fade{background:linear-gradient(180deg,#10142a 0,#10142a 56px,#10142a00 96px,#10142a00 calc(100% - 70px),#10142acc calc(100% - 22px),#10142a 100%)}#menu .mh .m-rays{top:150px;overflow:hidden}#menu .mh .m-main{position:relative;left:auto;right:auto;top:auto;flex:none;padding:0 14px;z-index:1}#menu .mh .m-cont{padding:10px 0 9px}#menu .mh .m-cont b{display:flex;align-items:center;justify-content:center;gap:8px}#menu .mh .m-play{font:400 1.25rem/1 'Alegreya Sans',sans-serif;transform:translateY(-1px)}#menu .mh .m-sec{margin:16px 0 9px;justify-content:center;font-size:.74rem}#menu .mh .m-sec span{flex:none;padding:0 2px}#menu .mh .m-sec:before,#menu .mh .m-sec:after{flex:1 1 0;height:1.5px}#menu .mh .m-sec:before{background:linear-gradient(90deg,#0000,#d8b060)}#menu .mh .m-sec:after{background:linear-gradient(90deg,#d8b060,#0000)}#menu .mh .m-sec2{margin-top:16px}#menu .mh .m-row{align-items:stretch}#menu .mh .m-row>.m-card{display:flex;flex-direction:column}#menu .mh .m-row .m-tx{flex:1;display:flex;flex-direction:column;justify-content:flex-start;padding:6px 8px 8px}#menu .mh .m-row .m-tx small{font-size:.7rem;margin-top:1px}#menu .mh .m-pb{height:7px;margin-top:auto;background:#6a4a1a2e;box-shadow:inset 0 0 0 1px #8a6a3a55}#menu .mh .m-row .m-tx b{margin-bottom:1px}#menu .mh .m-row .m-tx small+.m-pb{margin-top:6px}#menu .mh .m-card.lk .m-ill:after{content:none}#menu .mh .m-lkb{position:absolute;left:50%;top:50%;width:44px;height:44px;margin:-22px 0 0 -22px;border-radius:50%;background:radial-gradient(circle at 50% 35%,#5a3c18,#24170a);border:2.5px solid #e8c060;box-shadow:0 3px 0 #000a;display:grid;place-items:center}#menu .mh .m-card.lk .m-ill{position:relative;filter:none}#menu .mh .m-card.lk .m-ill{background-color:#2a2418}#menu .mh .m-card.lk .m-ill::before{content:'';position:absolute;inset:0;background:inherit;filter:grayscale(.55) brightness(.6) blur(1.4px)}#menu .mh .m-lki{width:24px;height:24px;display:block}#menu .mh .m-tag{z-index:2}#menu .mh .m-row4 .m-card{border-radius:14px}#menu .mh .m-ot{height:58px;background:radial-gradient(circle at 50% 40%,#5a4c3c,#2e261e);display:grid;place-items:center}#menu .mh .m-ot svg:not(.m-lki){width:40px;height:40px;opacity:.82;filter:saturate(.75) drop-shadow(0 2px 0 #0008)}#menu .mh .m-lks{position:absolute;right:3px;bottom:3px;width:20px;height:20px;border-radius:50%;background:#24170a;border:1.5px solid #e8c060;display:grid;place-items:center}#menu .mh .m-lks .m-lki{width:13px;height:13px}#menu .mh .m-otc .m-tx{padding:5px 2px 6px}#menu .mh .m-otc b{font-size:.72rem;text-align:center;color:#4a3418}#menu .mh .m-bot{position:relative;left:auto;right:auto;bottom:auto;flex:none;padding:16px 14px 14px;margin-top:auto}#menu .mh .m-bot div{padding:10px 0}
 #menu .m-top{position:absolute;left:0;right:0;top:0;height:88px;background:linear-gradient(#1a1430,#10142a);border-bottom:3px solid #b8872a;box-shadow:0 4px 0 #5a3c10;z-index:3;text-align:center;padding-top:12px}
 #menu .m-top h2{margin:0;font:800 1.35rem Cinzel,serif;color:#ffe27a;text-shadow:0 0 14px #ffb02088,0 2px 0 #000}#menu .m-top p{margin:2px 0 0;font:800 .7rem Cinzel,serif;letter-spacing:.14em;color:#d8c08a}
 #menu .m-pbar{width:170px;height:7px;margin:5px auto 0;border-radius:4px;background:#0008;overflow:hidden;border:1px solid #b8872a}#menu .m-pbar i{display:block;height:100%;background:linear-gradient(90deg,#ffb92e,#ffe27a)}
@@ -5005,7 +5017,7 @@ function menuClose() { window.MENU_PZ = 0; const m = document.getElementById('me
 const SVG_SHARE = '<svg width="16" height="18" viewBox="0 0 14 16" style="vertical-align:-3px"><path d="M7 1v9M3.5 4.5L7 1l3.5 3.5M2 7v8h10V7" stroke="#2a4a98" stroke-width="1.6" fill="none"/></svg>';
 function menuDraw() {
   const m = document.getElementById('menu'); if (!m) return; const has = (S.conv || []).some(v => v > 0) || S.f > 0 || S.lvl > 0, sa = isStandalone(); let h = '<div class="mc">';
-  if (MENU.scr === 'home' || MENU.scr === 'chap') { m.className = 'nm'; m.innerHTML = '<div class="mzw"><div class="mz">' + (MENU.scr === 'chap' ? mPath() : mHome()) + '</div></div>'; mFit(); return; }
+  if (MENU.scr === 'home' || MENU.scr === 'chap') { m.className = 'nm'; m.innerHTML = '<div class="mzw"><div class="mz' + (MENU.scr === 'chap' ? '' : ' mh') + '">' + (MENU.scr === 'chap' ? mPath() : mHome()) + '</div></div>'; mFit(); return; }
   m.className = '';
   if (MENU.scr === 'new') {
     h += '<h2>Nouvelle partie ?</h2><div class="box">Ta progression actuelle sera effacée (fidèles, églises, améliorations…). Pense à l’<b>exporter</b> d’abord si tu veux la garder.</div><div class="row"><button class="mb alt" data-m="home">Annuler</button><button class="mb" data-m="newok" style="background:linear-gradient(#e8554a,#a02020)">Tout effacer</button></div>';
