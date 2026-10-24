@@ -3269,7 +3269,7 @@ function healSick(s) {
 }
 function openBigChest(c) {
   const w = chestRw(c); S.cx[GOLZ][3] = 1; giveRes(GOLZ, 60, c.x, c.z); setChestOpen(c, true); burst(c.x, 2, c.z, 0xffe27a, 80, 10, 12); ringFx(c.x, c.z, 0xffe27a, 6); floatT(fmt(ATK()), c.x + 1.2, 2.6, c.z, 'r');
-  spawnCoins(c.x, c.z, w.f, 24); floatT('Trésor du Calvaire : +' + fmt(w.f) + ' F', c.x, 5, c.z, 'c'); note('Trésor du Calvaire !', '+' + fmt(w.f) + ' F, 60 myrrhe et 3 reliques.');
+  spawnCoins(c.x, c.z, w.f, 24); floatT('Trésor du Calvaire : +' + fmt(w.f) + ' F', c.x, 5, c.z, 'c'); note('Trésor du Calvaire !', '+' + fmt(w.f) + ' F, 60 ' + RES[RZ(GOLZ)].n.toLowerCase() + ' et 3 reliques.');
   for (let i = 0; i < 3; i++) setTimeout(() => giveRelic(Math.min(3, w.lv + 1), c.x + (i - 1) * 1.2, c.z), i * 900);
   save();
 }
