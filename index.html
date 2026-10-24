@@ -139,6 +139,33 @@ html body #mpl{position:fixed!important;left:max(12px,env(safe-area-inset-left,0
 .modal .bon{display:inline-block;margin:10px 0 4px;padding:6px 12px;border-radius:999px;background:#2a7a3a;color:#fff;font:800 .9rem 'Alegreya Sans',sans-serif;border:2px solid #6fe39a}
 .modal .mut{font:700 .78rem 'Alegreya Sans',sans-serif;color:#6a5030}
 #rg.vson>:not(#rgseg):not(#vsl){display:none!important}#rg:not(.vson)>#vsl{display:none}#vsl{padding-bottom:calc(18px + env(safe-area-inset-bottom,0px))}#vsl .vrow[data-z]{cursor:pointer}.vscroll,.wlbl{pointer-events:none}
+
+/* coffres, cadeau du jour, recherche */
+#sheet.dgm #stabs{display:none!important}.en.chl .nm{display:block}
+.dgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:6px 0 10px}
+.dt{position:relative;border-radius:14px;padding:7px 4px 6px;text-align:center;background:linear-gradient(#f9f1da,#ecdeb4);border:2px solid #b8985a;box-shadow:0 2px 0 #b8985a88;min-height:92px}
+.dt .dn{font:800 .7rem 'Cinzel',serif;color:#8a5a10;letter-spacing:.05em}
+.dt .dv{display:flex;flex-direction:column;align-items:center;gap:2px;margin-top:4px;font:800 .8rem 'Alegreya Sans',sans-serif;color:#33200a}
+.dt .dv svg{width:30px;height:30px}
+.dt.done{opacity:.55}.dt.done:after{content:'✔';position:absolute;inset:0;display:grid;place-items:center;font:800 2.2rem sans-serif;color:#2a7a3a;text-shadow:0 0 6px #fff}
+.dt.today{background:linear-gradient(#fff3c0,#ffd870);border-color:#e0a52a;box-shadow:0 0 0 3px #ffd24a88,0 0 18px #ffd24a;animation:none}
+.dt.lk{filter:grayscale(.6);opacity:.7}
+.dt.d7{grid-column:1/-1;min-height:96px;background:linear-gradient(#3a2a5a,#241a40);border-color:#d8b060}.dt.d7 .dn{color:#ffe27a}.dt.d7 .dv{color:#fff7e0;flex-direction:row;justify-content:center;gap:14px}
+.dt.d7 .dv>span{display:flex;flex-direction:column;align-items:center}
+.streak{display:flex;justify-content:center;gap:8px;align-items:center;margin:2px 0 6px;font:800 .95rem 'Alegreya Sans',sans-serif;color:#5a3a0c}
+.streak b{font:800 1.3rem 'Cinzel',serif;color:#a8401a}
+.cbar2{display:flex;gap:6px;overflow-x:auto;margin:2px 0 10px;scrollbar-width:none}
+.cbar2 button{flex:1 0 auto;display:flex;flex-direction:column;align-items:center;gap:1px;padding:6px 8px;border-radius:12px;border:1.5px solid #b8872a;background:#e4d09a;color:#5a3a0c;font:800 .64rem 'Cinzel',serif}
+.cbar2 button i{font-style:normal;font-size:1.25rem}.cbar2 button.on{background:linear-gradient(#4a78c8,#2a4a98);color:#fff;border-color:#d8b060;box-shadow:0 2px 0 #1a2a60}
+.cbar2 button em{font-style:normal;font:700 .62rem 'Alegreya Sans',sans-serif;opacity:.85}
+.rrow{display:flex;align-items:center;gap:9px;padding:7px 9px;border-radius:12px;background:linear-gradient(#f9f1da,#ecdeb4);border:1.5px solid #b8985a;margin-bottom:6px;box-shadow:0 2px 0 #b8985a88}
+.rrow .ri2{width:40px;height:40px;flex:none;display:grid;place-items:center;border-radius:10px;background:#2a2340;border:2px solid #d8b060;font-size:1.35rem}
+.rrow .rt{flex:1;min-width:0;text-align:left}.rrow .rt small span{display:inline!important}.rrow .rt b{display:block;font:800 .9rem 'Cinzel',serif;color:#33200a}.rrow .rt span{display:block;font:700 .76rem 'Alegreya Sans',sans-serif;color:#6a5030}
+.rrow .rt small{font:700 .7rem 'Alegreya Sans',sans-serif}
+.rrow .bt{flex:none;min-width:78px;padding:7px 6px;border-radius:12px;text-align:center;font:800 .76rem 'Alegreya Sans',sans-serif;background:linear-gradient(#4a78c8,#2a4a98);color:#fff;border:2px solid #d8b060;box-shadow:0 3px 0 #1a2a60}
+.rrow .bt.dn{background:#2a7a3a;border-color:#6fe39a;box-shadow:0 3px 0 #164a20}.rrow .bt.lk{background:#c8b88a;color:#6a5030;box-shadow:none;border-color:#b8985a}
+.rrow.lk{opacity:.6}
+.rrow .bt{cursor:pointer}.rrow .bt:disabled:not(.dn):not(.lk){opacity:.55}.rrow .bt small{display:block;font-size:.66rem;opacity:.9}#dg .buy small{display:block}
 </style><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#10142a"><link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png"><link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png"><meta property="og:type" content="website"><meta property="og:title" content="Cénacle"><meta property="og:description" content="Jeu d'action en 3D : annonce la Bonne Nouvelle de Jérusalem au monde entier."><meta property="og:url" content="https://ticoq971.github.io/cenacle/"><meta property="og:image" content="https://ticoq971.github.io/cenacle/icons/og-image.jpg"><meta property="og:image:width" content="1024"><meta property="og:image:height" content="1024"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="Cénacle"><meta name="twitter:image" content="https://ticoq971.github.io/cenacle/icons/og-image.jpg"><link rel="apple-touch-icon" href="icons/apple-touch-icon.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="Cénacle"></head><body>
 <style>#ld{position:fixed;inset:0;z-index:2147483000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2.2vh;padding:calc(env(safe-area-inset-top,0px) + 16px) 22px calc(env(safe-area-inset-bottom,0px) + 22px);box-sizing:border-box;min-height:100vh;min-height:100dvh;overflow:hidden;background:radial-gradient(ellipse at 50% 38%,#6a4a26 0%,#3e2a14 45%,#1e1309 100%);color:#f3e6c0;font-family:'Alegreya Sans',Georgia,serif;text-align:center;transition:opacity .9s ease;-webkit-user-select:none;user-select:none}
 #ld.out{opacity:0;pointer-events:none}
@@ -548,7 +575,7 @@ button:focus-visible{outline:3px solid #fff;outline-offset:2px}
     <div id="sbody">
             <div class="pn" id="ug" hidden><div class="band">Dès le <b>niveau 10</b> (Portée : 8), chaque amélioration demande aussi la ressource de sa zone, une fois cette zone atteinte.</div><div class="pn" id="ups"></div><h3 class="sec">Apôtres</h3><div class="pn" id="apl"></div><div id="hg"></div></div>
       <div class="pn" id="cg" hidden><h3>Églises et évêques</h3><div class="card fold" data-fk="cg"><button class="fh" aria-expanded="true">Comment ça marche ?<i>▸</i></button><div class="fb"><div class="bst"><i>1</i><div>Bâtis une église, puis <b>nomme un évêque</b> (en fidèles F). Chaque achat porte son bénéficiaire : <b>👤 Toi</b> (héros), <b>✝ Évêque</b>, <b>⛪ Église</b>.</div></div><div class="bst"><i>2</i><div><b>✝ L'évêque</b> <b>marche dans la ville et convertit les habitants</b>. Chaque converti te rapporte des <b>fidèles (F)</b> et des <b>Points d'Église (PE)</b>. Plus il convertit, plus il gagne en <b>Puissance</b> (vitesse de conversion) et en <b>Vie</b> (résistance). Si sa vie tombe à 0, il se repose à l'église puis repart.</div></div><div class="bst"><i>3</i><div><b>👤 Pour toi :</b> tant que tu es dans la ville, tu profites d'un <b>Bonus de ville</b> : un peu plus de Puissance, de Vie et de régénération, d'autant plus grand que l'évêque est fort. Les PE servent à améliorer l'église et à former l'évêque. Tu en gagnes aussi à chaque personne que tu convertis (1 par ennemi normal, 3 par garde d'élite, 10 par boss, 2 à 3 par malade guéri ou captif libéré, un peu plus dans les zones avancées), même sans église.</div></div><div class="bst"><i>4</i><div><b>La messe</b> (bouton « Célébrer la messe », dans l’église ou dans sa fiche) coûte des PE et dure <b>2 min 30</b> : l’évêque de cette église convertit <b>2 fois plus vite</b> (donc environ 2 fois plus de fidèles par minute) et chaque conversion rapporte <b>1,5 fois plus de PE</b>. Pendant la messe, tu te soignes aussi près de l’église. Un compte à rebours s’affiche, et l’église brille d’une lueur dorée.</div></div></div></div><div class="line"><span>Points d'Église</span><b id="cgt"></b></div><div class="line"><span>Revenu des évêques</span><span id="cgr" style="text-align:right"></span></div><div class="pn" id="cgl"></div></div>
-      <div class="pn" id="rsg" hidden></div>
+      <div class="pn" id="rsg" hidden></div><div class="pn" id="dg" hidden></div>
       <div class="pn" id="rg" hidden><div class="vseg" id="rgseg"><button data-v="0" class="on">Reliques</button><button data-v="1">Versets ✦</button></div><div id="vsl"></div><div class="card" id="wpl"></div><h3>Reliques</h3><div id="relhelp"></div><div id="relgrid"></div><div class="card" id="relsum"></div><div id="relbars"></div><div id="relorg"></div><button class="buy" id="seekb" style="width:100%"></button><div id="relhow" style="margin-top:8px"></div></div>
     </div></div></div>
   <div id="cine"><div id="cinet"></div></div>
@@ -1155,7 +1182,7 @@ const TC = ['#b0b7d4', '#6fcf97', '#5aa8ff', '#c77dff', '#f0bd4a', '#ef6a4d', '#
 const UPG = [['Héros : Puissance', '+17 % de puissance par niveau (de plus en plus), bond ×1,2 aux niveaux 5, 10, 15, 20 (×1,4 au 25)', '⚔'], ['Héros : Vie', '+17 % de points de vie par niveau (de plus en plus), bond ×1,2 aux niveaux 5, 10, 15, 20 (×1,4 au 25)', '♥'], ['Héros : Régénération', 'Tu récupères plus vite quand personne ne te frappe (mêmes paliers)', '✚'], ['Héros : Portée', 'Ton aura de prédication s\'agrandit (+5 % par niveau, paliers aux niveaux 5 et 10)', '◎']];
 const UB = [20, 20, 30, 40];
 const Z8 = v => Array.from({ length: 12 }, () => JSON.parse(JSON.stringify(v)));
-let S = { ver: 4, cr: Z8(0), gl: 0, sp: 0, res: [0, 0, 0, 0, 0, 0], rs: {}, rq: null, ms: Z8([0, 0]), bs: Z8([0, 0]), wk: 0, ap: Z8(0), al: Z8(0), fd: 0, pe: 0, cl: Z8([0, 0]), bl: Z8([0, 0]), wp: [0, 0, 0, 0, 0, 0], f: 0, lvl: 0, conv: Z8(0), boss: Z8(0), bA: 0, bH: 0, up: [0, 0, 0, 0], rel: [], relBuys: 0, ch: Z8([0, 0]), cx: Z8([0, 0, 0]), vs: Z8(0), tut: 0, t: Date.now() };
+let S = { ver: 4, cr: Z8(0), gl: 0, sp: 0, res: [0, 0, 0, 0, 0, 0], rs: {}, rq: null, ms: Z8([0, 0]), bs: Z8([0, 0]), wk: 0, ap: Z8(0), al: Z8(0), fd: 0, pe: 0, cl: Z8([0, 0]), bl: Z8([0, 0]), wp: [0, 0, 0, 0, 0, 0], f: 0, lvl: 0, conv: Z8(0), boss: Z8(0), bA: 0, bH: 0, up: [0, 0, 0, 0], rel: [], relBuys: 0, ch: Z8([0, 0]), cx: Z8([0, 0, 0]), vs: Z8(0), dg: { d: '', n: 0 }, tut: 0, t: Date.now() };
 
 /* ---------- Versets : sermons de Jésus (textes AELF, mot pour mot) ---------- */
 const VS = [{"r": "Mt 11, 28", "ti": "Venez à moi", "t": "Venez à moi, vous tous qui peinez sous le poids du fardeau, et moi, je vous procurerai le repos.", "b": ["reg", 0.1], "bl": "+10 % Régén.", "bn": "+10 % de régénération"}, {"r": "Mt 7, 7", "ti": "Frappez, on vous ouvrira", "t": "Demandez, on vous donnera ; cherchez, vous trouverez ; frappez, on vous ouvrira.", "b": ["chest", 1], "bl": "Coffres +1 ress.", "bn": "Coffres : +1 ressource"}, {"r": "Jn 2, 19", "ti": "Détruisez ce sanctuaire", "t": "Détruisez ce sanctuaire, et en trois jours je le relèverai.", "b": ["atk", 0.08], "bl": "+8 % Puissance", "bn": "+8 % de puissance"}, {"r": "Jn 14, 6", "ti": "Le Chemin, la Vérité, la Vie", "t": "Moi, je suis le Chemin, la Vérité et la Vie ; personne ne va vers le Père sans passer par moi.", "b": ["spd", 0.08], "bl": "+8 % Vitesse", "bn": "+8 % de vitesse"}, {"r": "Jn 15, 12", "ti": "Aimez-vous les uns les autres", "t": "Mon commandement, le voici : Aimez-vous les uns les autres comme je vous ai aimés.", "b": ["f", 0.1], "bl": "+10 % Fidèles", "bn": "+10 % Fidèles gagnés"}, {"r": "Mt 5, 8", "ti": "Heureux les cœurs purs", "t": "Heureux les cœurs purs, car ils verront Dieu.", "b": ["hp", 0.1], "bl": "+10 % Vie", "bn": "+10 % de vie"}, {"r": "Mt 16, 18", "ti": "Tu es Pierre", "t": "Et moi, je te le déclare : Tu es Pierre, et sur cette pierre je bâtirai mon Église ; et la puissance de la Mort ne l’emportera pas sur elle.", "b": ["pe", 0.15], "bl": "+15 % PE", "bn": "+15 % de points d’Église"}, {"r": "Jn 8, 12", "ti": "La lumière du monde", "t": "Moi, je suis la lumière du monde. Celui qui me suit ne marchera pas dans les ténèbres, il aura la lumière de la vie.", "b": ["rng", 0.08], "bl": "+8 % Portée", "bn": "+8 % de portée"}, {"r": "Jn 10, 30", "ti": "Le Père et moi, nous sommes UN", "t": "Le Père et moi, nous sommes UN.", "b": ["atk", 0.1], "bl": "+10 % Puissance", "bn": "+10 % de puissance"}, {"r": "Jn 16, 33", "ti": "Vainqueur du monde", "t": "Je vous ai parlé ainsi, afin qu’en moi vous ayez la paix. Dans le monde, vous avez à souffrir, mais courage ! Moi, je suis vainqueur du monde.", "b": ["hp", 0.12], "bl": "+12 % Vie", "bn": "+12 % de vie"}, {"r": "Jn 17, 21", "ti": "Que tous soient un", "t": "Que tous soient un, comme toi, Père, tu es en moi, et moi en toi. Qu’ils soient un en nous, eux aussi, pour que le monde croie que tu m’as envoyé.", "b": ["bish", 0.15], "bl": "Évêques +15 %", "bn": "Évêques : +15 % de cadence"}, {"r": "Lc 23, 34", "ti": "Père, pardonne-leur", "t": "Père, pardonne-leur : ils ne savent pas ce qu’ils font.", "b": ["reg", 0.15], "bl": "+15 % Régén.", "bn": "+15 % de régénération"}];
@@ -1795,9 +1822,9 @@ const RESIC = ['myrrh', 'oil', 'marble', 'purple', 'glass', 'light'];
 function chestRw(c) {
   if (c.big) return { relic: false, big: true, lv: 1, f: 20 * 10 * K(c.zn) * FM() }; /* Trésor du Calvaire : 20 × le coffre normal */
   const r = c.rw || (c.rw = { rn: Math.random(), t: Math.floor(Math.random() * 3), tb: Math.random() < .25 ? 1 : 0 }), K0 = K(c.zn), lv = Math.min(3, Math.floor(ZT(c.zn) / 2) + r.tb);
-  const relic = r.rn < .4 || S.rel.length < 2; return { relic, lv, f: 10 * K0 * FM() };
+  const relic = r.rn < .25 || S.rel.length < 2; return { relic, lv, f: 10 * K0 * FM() };
 }
-function chestHTML(c) { const w = chestRw(c); if (c.big) return '<div class="nm" style="color:#ffd860">TRÉSOR DU CALVAIRE</div><div class="cbar"><i></i></div><div class="crw"><span class="cri">' + ICO[RESIC[RZ(c.zn)]] + '<b>60</b></span><span class="cri">' + ICO.relic + '<b>3</b></span><span class="cri">' + ICO.coin + '<b>' + fmt(w.f) + '</b></span></div>'; return '<div class="cbar"><i></i></div><div class="crw"><span class="cri">' + ICO[RESIC[RZ(c.zn)]] + '<b>3</b></span>' + (w.relic ? '<span class="cri">' + ICO.relic + '<b>1</b></span>' : '<span class="cri">' + ICO.coin + '<b>' + fmt(w.f) + '</b></span>') + '</div>'; }
+function chestHTML(c) { const w = chestRw(c); if (c.big) return '<div class="nm" style="color:#ffd860">TRÉSOR DU CALVAIRE</div><div class="cbar"><i></i></div><div class="crw"><span class="cri">' + ICO[RESIC[RZ(c.zn)]] + '<b>60</b></span><span class="cri">' + ICO.relic + '<b>3</b></span><span class="cri">' + ICO.coin + '<b>' + fmt(w.f) + '</b></span></div>'; const ti = CHT(c.zn); return '<div class="nm" style="color:' + CHTC[ti] + ';font-size:.78rem;text-shadow:0 1px 0 #000,0 0 3px #000">' + CHTN[ti] + '</div>' + (chSealed(c) ? '<div class="nm" style="color:#ffc0a8;font-size:.7rem;text-shadow:0 1px 0 #000,0 0 3px #000">🔒 Scellé : convertis le boss</div>' : '') + '<div class="cbar"><i></i></div><div class="crw"><span class="cri">' + ICO[RESIC[RZ(c.zn)]] + '<b>' + (CHRES[c.zn] + vsB('chest')) + '</b></span>' + (w.relic ? '<span class="cri">' + ICO.relic + '<b>1</b></span>' : '<span class="cri">' + ICO.coin + '<b>' + fmt(w.f) + '</b></span>') + '</div>'; }
 /* ---------- navigation : grille d'obstacles (0,5 m), collisions glissantes, champ de flot, validation de connectivité ---------- */
 /* décors bas franchissables : hauteur (m) sous laquelle ils ne bloquent ni le héros ni les ennemis (visuel conservé) */
 const LOWDECOR = { pot: 9, fence: 9, hay: 9, barrel: 9, crate: 9, cart: 9, bush: 9, fern: 9, flowers: 9, meadow: 9, grass: 9, reeds: 9, banner: 9, well: 1.35, fountain: 1.35 };
@@ -3275,7 +3302,7 @@ function openBigChest(c) {
 }
 function openChest(c) {
   if (c.big) { openBigChest(c); return; }
-  const w = chestRw(c); if (c.tmp) { (S.tcx = S.tcx || [0, 0, 0])[c.tk] = 1; } else S.cx[c.zn][c.k] = 1; giveRes(c.zn, 3 + vsB('chest'), c.x, c.z); setChestOpen(c, true); burst(c.x, 2, c.z, 0xffe27a, 40, 8, 10); floatT(fmt(ATK()), c.x + 1.2, 2.6, c.z, 'r');
+  const w = chestRw(c); if (c.tmp) { (S.tcx = S.tcx || [0, 0, 0])[c.tk] = 1; } else S.cx[c.zn][c.k] = 1; giveRes(c.zn, CHRES[c.zn] + vsB('chest'), c.x, c.z); setChestOpen(c, true); burst(c.x, 2, c.z, 0xffe27a, 40, 8, 10); floatT(fmt(ATK()), c.x + 1.2, 2.6, c.z, 'r');
   if (w.relic) giveRelic(w.lv, c.x, c.z); else { const f = w.f; spawnCoins(c.x, c.z, f, 8); floatT('Trésor : +' + fmt(f) + ' F', c.x, 4, c.z, 'c'); }
   save();
 }
@@ -3398,10 +3425,11 @@ function castFire() {
 }
 const costHTML = it => '<span style="color:' + (S.f >= resCost(it) ? 'var(--ok)' : '#ff6a60') + '">' + fmt(resCost(it)) + ' ' + COIN + '</span>' + it.r.map(([z, n]) => '<span style="color:' + (S.res[z] >= n ? RES[z].c : '#ff6a60') + '"> · ' + n + ' ' + RES[z].n + '</span>').join('');
 function drawResearch() {
-  const box = $('rsg'), sig = S.lvl + '|' + Object.keys(S.rs).join() + '|' + (S.rq ? S.rq[0] : '');
+  const box = $('rsg'), sig = RCAT + '|' + S.lvl + '|' + Object.keys(S.rs).join() + '|' + (S.rq ? S.rq[0] : '');
   if (box.dataset.sig !== sig) {
-    box.dataset.sig = sig; let h = '<h3>Recherche</h3><div class="card" id="rqc"></div><div class="rinv" id="rinv"></div><div id="ruse"></div>', cat = '';
-    RS.forEach(it => { if (it.g !== cat) { cat = it.g; h += '<h3>' + cat + '</h3>'; } h += '<div class="up" style="' + (resLocked(it) ? 'opacity:.55' : '') + '"><div class="ico">' + it.i + '</div><div><h4>' + it.n + '</h4><p>' + it.d + '</p><p class="cur" id="rc_' + it.id + '"></p></div><button class="buy" data-r="' + it.id + '" id="rb_' + it.id + '"></button></div>'; });
+    box.dataset.sig = sig; const CT = RCATS[RCAT]; let h = '<div class="cbar2">' + RCATS.map((c, i) => '<button data-cat="' + i + '" class="' + (i === RCAT ? 'on' : '') + '"><i>' + c[0] + '</i>' + c[1] + '<em>' + c[2].filter(id => has(id)).length + '/' + c[2].length + '</em></button>').join('') + '</div>';
+    CT[2].forEach(id => { const it = RS.find(q => q.id === id); if (!it) return; h += '<div class="rrow" id="rr_' + id + '" title="' + it.d.replace(/"/g, '') + '"><div class="ri2">' + it.i + '</div><div class="rt"><b>' + it.n + '</b><span>' + RSD[id] + '</span><small id="rc_' + id + '"></small></div><button class="bt" data-r="' + id + '" id="rb_' + id + '"></button></div>'; });
+    h += '<div class="card" id="rqc"></div><div class="rinv" id="rinv"></div><div id="ruse"></div>';
     if (has('voies')) h += '<h3>Voyage rapide</h3><div class="rinv">' + ZONES.map((z, i) => i <= S.lvl ? '<button class="buy" style="flex:1;min-width:110px" data-tr="' + i + '">' + z.n + '</button>' : '').join('') + '</div>';
     box.innerHTML = h;
   }
@@ -3409,14 +3437,14 @@ function drawResearch() {
   if ($('rinv').dataset.h !== inv) { $('rinv').dataset.h = inv; $('rinv').innerHTML = inv; } drawResUse();
   const cur = S.rq ? RS.find(q => q.id === S.rq[0]) : null, rq = cur ? '<h4><span>En cours : ' + cur.n + '</span><span style="color:var(--gold)">' + Math.max(0, Math.ceil((S.rq[1] - Date.now()) / 1000)) + ' s</span></h4><div class="bar"><i style="width:' + Math.max(0, Math.min(100, 100 - (S.rq[1] - Date.now()) / (cur.t * 10))) + '%"></i></div>' : '<p>Aucune recherche en cours. Une seule à la fois.</p>';
   if ($('rqc').dataset.h !== rq) { $('rqc').dataset.h = rq; $('rqc').innerHTML = rq; }
-  RS.forEach(it => {
-    const c = $('rc_' + it.id), b = $('rb_' + it.id), done = has(it.id), run = S.rq && S.rq[0] === it.id, lk = resLocked(it);
-    const ch = done ? 'Acquis' : costHTML(it) + ' · ' + it.t + ' s'; if (c.dataset.h !== ch) { c.dataset.h = ch; c.innerHTML = ch; }
-    const bt = done ? '✓<small>Acquis</small>' : run ? Math.max(0, Math.ceil((S.rq[1] - Date.now()) / 1000)) + ' s<small>En cours</small>' : lk ? '🔒<small>' + (S.lvl < it.q ? 'Zone ' + (it.q + 1) : 'Prérequis') + '</small>' : 'Étudier<small>' + it.t + ' s</small>';
-    if (b.dataset.h !== bt) { b.dataset.h = bt; b.innerHTML = bt; } b.disabled = done || run || lk || !canRes(it);
+  RCATS[RCAT][2].forEach(id => {
+    const it = RS.find(q => q.id === id), c = $('rc_' + id), b = $('rb_' + id), rr = $('rr_' + id); if (!it || !c || !b) return; const done = has(id), run = S.rq && S.rq[0] === id, lk = resLocked(it);
+    const ch = done ? '' : costHTML(it) + ' · ' + it.t + ' s'; if (c.dataset.h !== ch) { c.dataset.h = ch; c.innerHTML = ch; c.hidden = !ch; }
+    const bt = done ? '✔ Acquis' : run ? Math.max(0, Math.ceil((S.rq[1] - Date.now()) / 1000)) + ' s<small>En cours</small>' : lk ? '🔒<small>' + (S.lvl < it.q ? 'Zone ' + (it.q + 1) : 'Prérequis') + '</small>' : 'Étudier';
+    if (b.dataset.h !== bt) { b.dataset.h = bt; b.innerHTML = bt; } b.className = 'bt' + (done ? ' dn' : lk ? ' lk' : ''); b.disabled = done || run || lk || !canRes(it); rr.classList.toggle('lk', lk && !done);
   });
 }
-$('rsg').addEventListener('click', ev => { const b = ev.target.closest('button'); if (!b) return; if (b.dataset.r) { const it = RS.find(q => q.id === b.dataset.r); if (it) startRes(it); } else if (b.dataset.tr !== undefined) { const z = +b.dataset.tr, [x, zz] = zoneStart(z); W.x = x; W.z = zz; camera.position.set(x, CAMH, zz + CAMZ); $('sheet').classList.remove('open'); } });
+$('rsg').addEventListener('click', ev => { const b = ev.target.closest('button'); if (!b) return; if (b.dataset.cat !== undefined) { RCAT = +b.dataset.cat; drawResearch(); return; } if (b.dataset.r) { const it = RS.find(q => q.id === b.dataset.r); if (it) startRes(it); } else if (b.dataset.tr !== undefined) { const z = +b.dataset.tr, [x, zz] = zoneStart(z); W.x = x; W.z = zz; camera.position.set(x, CAMH, zz + CAMZ); $('sheet').classList.remove('open'); } });
 
 /* montures */
 let mountG = null, mountId = '', MH = 0;
@@ -3696,7 +3724,7 @@ const NAMES = { 7: 'Collecteur d\'impôts', 8: 'Légionnaire romain', 9: 'Loup',
 function taxKill(e) { const g = (e.loot || 0) > 0 ? Math.floor(e.loot * 1.5) : Math.round(6 * K(e.zn) * FM()); spawnCoins(e.x, e.z, g, 4); floatT((e.loot ? 'Butin récupéré : +' : 'Collecteur vaincu : +') + fmt(g) + ' F', e.x, 4.8, e.z, 'y'); }
 function arenaKill(e) { const f = (e.kind >= 12 ? 25 : 3) * K(e.zn) * FM(); spawnCoins(e.x, e.z, f, e.kind >= 12 ? 6 : 3); }
 function onIsland(x, z) { return WATERS.some(w => w.t === 'o' && Math.hypot(w.x - x, w.z - z) < w.ro); }
-function protSpots(Zo) { const L = []; Zo.sick.forEach(q => { if (!q.done && !(q.prog > 0)) L.push([q, q.type ? 2 : 1]); }); Zo.chests.forEach(c => { if (!c.open && !onIsland(c.x, c.z)) L.push([c, 1]); }); return L; }
+function protSpots(Zo) { const L = []; Zo.sick.forEach(q => { if (!q.done && !(q.prog > 0)) L.push([q, q.type ? 2 : 1]); }); Zo.chests.forEach(c => { if (!c.open && !onIsland(c.x, c.z)) { const g = c.big ? [1, 0] : CHG[CHT(c.zn)]; L.push([c, g[0], g[1]]); } }); return L; }
 function ensureCalvary() {
   const hl = PX[GOLZ].hill, ch = Zs[GOLZ].chests.find(c => c.big); if (!hl || !ch || ch.open || S.cx[GOLZ][3]) return; const cal = S.cal = S.cal || [], spots = [];
   hl.tiers.forEach((tp, ti) => { for (let k = 0; k < 3; k++) { const an = k * 2.1 + ti; spots.push({ id: ti * 3 + k, x: tp[0] + Math.cos(an) * 2.2, z: tp[1] + Math.sin(an) * 2.2, kind: k === 2 ? 14 : k, el: k === 2 ? 1 : 0 }); } });
@@ -3705,7 +3733,7 @@ function ensureCalvary() {
   spots.forEach(sp => { if (cal[sp.id] || enemies.some(e => e.cal === sp.id && e.done <= 0) || dist(sp.x, sp.z) < 9 || (PX[GOLZ].pray && Math.hypot(sp.x - PX[GOLZ].pray.x, sp.z - PX[GOLZ].pray.z) < PX[GOLZ].pray.r + 5)) return; const e = spawnFoe(GOLZ, false, sp.kind, sp.x, sp.z, undefined, sp.el); e.cal = sp.id; e.pr = ch; if (sp.boss) { e.hp = e.max = e.max * 2.6; e.dmg *= 2; e.m.scale.multiplyScalar(1.35); e.sc = e.m.scale.x; if (e.el) e.el.firstChild.textContent = 'Gardien du Calvaire'; e.name = 'Gardien du Calvaire'; } });
 }
 function ensureProt(zn) {
-  if (zn === GOLZ && PX[GOLZ].hill) ensureCalvary(); protSpots(Zs[zn]).forEach(([o, n]) => { const have = enemies.filter(e => e.pr === o && !e.done).length; for (let i = have; i < n; i++) { const a = i * 3.14 + rnd(0, 1), x = o.x + Math.cos(a) * 3.8, z = o.z + Math.sin(a) * 3.8; if (inWater(x, z)) continue; const e = spawnFoe(zn, false, 14, x, z); e.pr = o; } }); }
+  if (zn === GOLZ && PX[GOLZ].hill) ensureCalvary(); protSpots(Zs[zn]).forEach(([o, n, el]) => { const have = enemies.filter(e => e.pr === o && !e.done).length; for (let i = have; i < n; i++) { const a = i * 6.283 / n + rnd(0, .6), x = o.x + Math.cos(a) * 3.8, z = o.z + Math.sin(a) * 3.8; if (inWater(x, z)) continue; const e = spawnFoe(zn, false, 14, x, z, undefined, i < (el || 0) ? 1 : 0); e.pr = o; } }); }
 const guarded = o => enemies.some(e => e.pr === o && !e.done);
 function horns(m, y, s2) { [-1, 1].forEach(sd => { const h = new THREE.Mesh(G.cone4, M('#1c0c0c')); h.scale.set(.14 * s2, .6 * s2, .14 * s2); h.position.set(sd * .32 * s2, y, 0); h.rotation.z = -sd * .5; m.userData.body.add(h); }); }
 function wings(m, y, s2, col) { [-1, 1].forEach(sd => { const w = new THREE.Mesh(G.box, M(col)); w.scale.set(1.8 * s2, 1.5 * s2, .08); w.position.set(sd * 1.2 * s2, y, -.7); w.rotation.z = sd * .5; w.rotation.y = sd * .3; m.userData.body.add(w); }); }
@@ -4130,7 +4158,7 @@ function update(dt) {
   if (Zo.wp) { const w = Zo.wp, wi = WPI(zn); w.g.visible = S.wp[wi] === 1; if (w.g.visible) { w.gem.rotation.y = T * 2; w.gem.position.y = 2.6 + Math.sin(T * 3) * .35; if (alive && dist(w.x, w.z) < 3.4) { S.wp[wi] = 2; w.g.visible = false; burst(w.x, 3, w.z, 0xd08cff, 70, 10, 12); note('Arme spirituelle obtenue !', WP[wi][0] + ' : ' + WP[wi][1] + '.'); save(); } } }
   updNodes(dt, alive, Zo, zn);
   /* trésors */
-  if (alive) Zo.chests.forEach(c => { if (!c.open && dist(c.x, c.z) < 3.8 && !guarded(c)) openChest(c); });
+  if (alive) Zo.chests.forEach(c => { if (!c.open && dist(c.x, c.z) < 3.8 && !guarded(c)) { if (chSealed(c)) { if (T - (W.sealMsg || -9) > 5) { W.sealMsg = T; note(CHTN[3] + ' scellé', 'Convertis ' + ZONES[c.zn].boss + ' pour l\'ouvrir.'); } } else openChest(c); } });
   /* églises : emplacement proche, zone de soin */
   W.plot = null; W.inCh = null; W.nob = null; let nearChurch = false, nearLvl = 0, nearMass = false;
   Zo.plots.forEach(p => { const d = dist(p.x, p.z); if (p.real) { const ins = alive && Math.abs(W.x - p.x) < 3.2 && W.z > p.z - 3.8 && W.z < p.z + 4.4; setInside(p, ins); if (ins) W.inCh = p; if (d < 11) { nearChurch = true; nearLvl = Math.max(nearLvl, S.cl[p.zn][p.p]); if (massOn(p.zn, p.p)) nearMass = true; if (!S.bs[p.zn][p.p]) W.nob = p; } if (p.in && p.int && p.int.userData.fl) p.int.userData.fl.forEach((f, q) => { f.scale.y = ((massOn(p.zn, p.p) ? .3 : .18) + Math.sin(T * 9 + q) * .03) * .17; }); } else if (d < 9 && !W.plot) W.plot = p; });
@@ -4466,7 +4494,7 @@ function drawApostles() {
     if (b1.dataset.h !== t1) { b1.dataset.h = t1; b1.innerHTML = t1; } if (b2.dataset.h !== t2) { b2.dataset.h = t2; b2.innerHTML = t2; } b1.disabled = S.f < c || !!(pr && S.res[pr[0]] < pr[1]); b2.disabled = S.f < ch; });
 }
 $('apl').addEventListener('click', ev => { const b = ev.target.closest('button[data-a]'), bh = ev.target.closest('button[data-ah]'); if (b) { const z = +b.dataset.a, c = apCost(z, S.al[z]), pr = apPRes(S.al[z]); if (S.f < c || (pr && S.res[pr[0]] < pr[1])) return; if (pr) S.res[pr[0]] -= pr[1]; const m0 = apHpMax(z); S.f -= c; S.al[z]++; const d = disc.find(q => q.zn === z); if (d && d.hp !== undefined) d.hp += apHpMax(z) - m0; save(); } else if (bh) { const z = +bh.dataset.ah, h = ahL(z), c = apHCost(z, h); if (S.f < c) return; const m0 = apHpMax(z); S.f -= c; S.ah = S.ah || Array(NZ).fill(0); S.ah[z] = h + 1; const d = disc.find(q => q.zn === z); if (d && d.hp !== undefined) d.hp += apHpMax(z) - m0; save(); } });
-function openSheet(t) { if (t === 'hg') t = 'ug'; if (t === 'ug') { const B = bdgSt(); Object.keys(B.n).forEach(k => { if (k.indexOf('hg:') === 0) delete B.n[k]; }); } sheetTab = t; _bdgT = -9; _hbT = -9; $('sheet').classList.add('open'); if (t === 'rg') { S.rel.forEach(r => { delete r.nw; }); drawRel(); drawVs(); } if (t === 'ug') drawHeroPanel(); }
+function openSheet(t) { if (t === 'hg') t = 'ug'; if (t === 'ug') { const B = bdgSt(); Object.keys(B.n).forEach(k => { if (k.indexOf('hg:') === 0) delete B.n[k]; }); } sheetTab = t; _bdgT = -9; _hbT = -9; $('sheet').classList.add('open'); if (t === 'rg') { S.rel.forEach(r => { delete r.nw; }); drawRel(); drawVs(); } if (t === 'ug') drawHeroPanel(); $('sheet').classList.toggle('dgm', t === 'dg'); if (t === 'dg') { drawDg(); $('sht').textContent = 'Cadeau du jour'; $('shs').textContent = 'Niveau ' + (S.lvl + 1) + ' · ' + znS(S.lvl); ['ug', 'rg', 'cg', 'rsg', 'dg'].forEach(id => $(id).hidden = id !== 'dg'); } }
 document.querySelectorAll('.sb:not(.mapbtn)').forEach(b => b.addEventListener('click', () => openSheet(b.dataset.s)));
 $('mapb').addEventListener('click', () => mapOpen());
 $('stabs').addEventListener('click', ev => { const b = ev.target.closest('button'); if (b) openSheet(b.dataset.s); });
@@ -4553,7 +4581,41 @@ function drawVs() {
   if (el.dataset.h !== h) { el.dataset.h = h; el.innerHTML = h; }
 }
 function vsTab(v) { VTAB = v ? 1 : 0; $('rg').classList.toggle('vson', !!VTAB); document.querySelectorAll('#rgseg button').forEach(b => b.classList.toggle('on', +b.dataset.v === VTAB)); _hbT = -9; _hbL = 0; if (VTAB) drawVs(); }
-setTimeout(() => { const sg = $('rgseg'); if (sg) sg.addEventListener('click', e => { const b = e.target.closest('button'); if (b) vsTab(+b.dataset.v); }); const vl = $('vsl'); if (vl) vl.addEventListener('click', e => { const r = e.target.closest('.vrow[data-z]'); if (r) vsPop(+r.dataset.z, '', 1); }); }, 0);
+setTimeout(() => { const dg = $('dg'); if (dg) dg.addEventListener('click', e => { if (e.target.closest('#dgb')) dClaim(); }); const sg = $('rgseg'); if (sg) sg.addEventListener('click', e => { const b = e.target.closest('button'); if (b) vsTab(+b.dataset.v); }); const vl = $('vsl'); if (vl) vl.addEventListener('click', e => { const r = e.target.closest('.vrow[data-z]'); if (r) vsPop(+r.dataset.z, '', 1); }); }, 0);
+
+/* ---------- Coffres par niveau : paliers (ressource du niveau, quantité et accès croissants) ---------- */
+const CHT = z => z < 3 ? 0 : z < 6 ? 1 : z < 9 ? 2 : 3;
+const CHTN = ['Coffre de bronze', 'Coffre d’argent', 'Coffre d’or', 'Coffre de gloire'], CHTC = ['#f0b47a', '#eef4ff', '#ffd860', '#d8b4ff'];
+const CHRES = [4, 5, 6, 8, 10, 12, 15, 18, 22, 26, 30, 36];
+const CHG = [[1, 0], [2, 0], [3, 1], [4, 2]];
+const chSealed = c => !c.big && CHT(c.zn) === 3 && !S.boss[c.zn];
+/* ---------- Cadeau du jour : cycle de 7 jours, un jour manqué remet la série à zéro ---------- */
+var DG_SHOWN = '', RCAT = 0;
+const dKey = d => { d = d || new Date(); return d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate(); };
+function dState() { const g = S.dg || { d: '', n: 0 }, today = dKey(), y = new Date(); y.setDate(y.getDate() - 1); const claimed = g.d === today, streak = claimed || g.d === dKey(y) ? g.n : 0; return { claimed, day: claimed ? ((g.n - 1) % 7) + 1 : (streak % 7) + 1, shown: claimed ? g.n : streak + 1, streak, today }; }
+function dRew() { const C = 10 * K(S.lvl) * FM(), rz = RZ(S.lvl); return [{ f: 2 * C }, { r: 4 }, { f: 4 * C }, { bf: 1 }, { r: 8 }, { f: 8 * C }, { rel: 1, r: 12, f: 15 * C }].map(o => Object.assign(o, { rz })); }
+function dTxt(o) { return o.bf ? 'Ferveur 3 min' : o.rel ? 'Relique · ' + o.r + ' ' + RES[o.rz].n + ' · ' + fmt(o.f) + ' F' : o.r ? o.r + ' ' + RES[o.rz].n : fmt(o.f) + ' F'; }
+function drawDg() {
+  const el = $('dg'); if (!el) return; const st = dState(), R = dRew(), I = k => ICO[k].replace('<svg', '<svg width="30" height="30"'), RI = I(RESIC[R[0].rz]), FI = I('coin');
+  const ic = o => o.bf ? '<span style="font-size:1.6rem;line-height:30px">✦</span>' : o.r ? RI : FI;
+  let g = '<div class="streak">Série <b>' + st.shown + '</b> ' + (st.shown > 1 ? 'jours' : 'jour') + '</div><div class="dgrid">';
+  const cls = i => i < st.day - 1 || (st.claimed && i === st.day - 1) ? 'done' : i === st.day - 1 ? 'today' : 'lk';
+  for (let i = 0; i < 6; i++) g += '<div class="dt ' + cls(i) + '"><div class="dn">JOUR ' + (i + 1) + '</div><div class="dv">' + ic(R[i]) + '<span>' + dTxt(R[i]) + '</span></div></div>';
+  const o7 = R[6]; g += '<div class="dt d7 ' + cls(6) + '"><div class="dn">JOUR 7 · GRAND TRÉSOR</div><div class="dv"><span>' + I('relic') + 'Relique</span><span>' + RI + o7.r + ' ' + RES[o7.rz].n + '</span><span>' + FI + fmt(o7.f) + ' F</span></div></div></div>';
+  g += st.claimed ? '<button class="buy" id="dgb" disabled style="width:100%;min-height:58px;font-size:1.2rem">Reviens demain<small>Jour ' + (st.day % 7 + 1) + ' demain</small></button>' : '<button class="buy" id="dgb" style="width:100%;min-height:58px;font-size:1.25rem">Récupérer<small>Jour ' + st.day + ' · ' + dTxt(R[st.day - 1]) + '</small></button>';
+  g += '<p class="mut" style="text-align:center;margin:8px 0 0;font-size:.8rem">Un jour manqué : retour au jour 1</p>';
+  if (el.dataset.h !== g) { el.dataset.h = g; el.innerHTML = g; }
+}
+function dClaim() {
+  const st = dState(); if (st.claimed) return; const o = dRew()[st.day - 1];
+  if (o.f) { S.f += o.f; floatT('+' + fmt(o.f) + ' F', W.x, 4.4, W.z, 'c'); } if (o.r) { S.res[o.rz] += o.r; floatT('+' + o.r + ' ' + RES[o.rz].n, W.x, 5, W.z, '', RES[o.rz].c); } if (o.bf) W.bf.atk = Math.max(W.bf.atk, 180);
+  if (o.rel) giveRelic(Math.min(3, Math.floor(ZT(S.lvl) / 2) + 1), W.x, W.z);
+  S.dg = { d: st.today, n: st.streak + 1 }; save(); note('Cadeau du jour', 'Jour ' + st.day + ' : ' + dTxt(o) + '.'); drawDg();
+}
+setInterval(() => { try { if (document.getElementById('menu') || window.MENU_PZ || !S.tut || W.cine || W.spirit || W.arena) return; const st = dState(); if (st.claimed || DG_SHOWN === st.today || $('sheet').classList.contains('open')) return; DG_SHOWN = st.today; openSheet('dg'); } catch (e) { } }, 3000);
+/* ---------- Recherche : 3 catégories ---------- */
+const RCATS = [['🐴', 'Déplacement', ['ane', 'cheval', 'char', 'voies', 'wk']], ['⚔️', 'Combat', ['souffle', 'feu', 'lumiere']], ['⛪', 'Église', ['pain', 'gueri', 'cate', 'ecoles']]];
+const RSD = { ane: '+25 % vitesse', cheval: '+50 % vitesse', char: '+80 % vitesse', voies: 'Voyage rapide entre zones', wk: 'Traverse fleuves et mers', souffle: '+15 % portée', feu: 'Feu sur les ennemis proches · 25 s', lumiere: '+12 % Puissance · +10 % critiques', pain: '+20 % fidèles', gueri: 'Soins des églises ×1,6', cate: 'Apôtres : corruption −40 %', ecoles: 'Évêques : conversions ×1,67' };
 
 function paint() {
   const zn = W.zone, Z = ZONES[zn];
@@ -4578,12 +4640,12 @@ function paint() {
   if (performance.now() - _hbL > 500 || _hbT === -9) { _hbL = performance.now(); _hbT = 0; const op = $('sheet').classList.contains('open'); document.querySelectorAll('#side .hb2[data-s]').forEach(b => b.classList.toggle('on', op && b.dataset.s === sheetTab));
     const setB = (id, txt, green) => { const e = $(id); if (!e) return; const h = !txt; if (e.hidden !== h) e.hidden = h; if (e.textContent !== (txt || '')) e.textContent = txt || ''; e.classList.toggle('n', !!green); };
     { let ok = UPG.some((u, i) => upOk(i)); for (let z = 0; z < NZ && !ok; z++) if (S.ap[z] === 1) { const pr = apPRes(S.al[z]); ok = (S.f >= apCost(z, S.al[z]) && (!pr || S.res[pr[0]] >= pr[1])) || S.f >= apHCost(z, ahL(z)); } const ub = $('upb'); if (ub) ub.classList.toggle('glow', ok && !ub.classList.contains('on')); } const nr = S.rel.filter(r => r.nw).length; setB('bd_rg', nr ? String(nr) : '', true); const ca = churchActs(); setB('bd_cg', ca ? String(ca) : '');
-    if (op) { const TT = { ug: ['Améliorer', 'Héros de la Parole'], rsg: ['Recherche', S.rq ? 'En cours : ' + (RS.find(q => q.id === S.rq[0]) || { n: '' }).n : 'Transports · Pouvoirs · Savoirs'], cg: ['Églises', 'Évêques · ' + fmt(window._bTot || 0) + ' F/min'], rg: ['Reliques', VTAB ? 'Versets ' + nVs() + ' / 12' : S.rel.length + ' / 12'] }[sheetTab] || ['', ''];
+    if (op) { const TT = { ug: ['Améliorer', 'Héros de la Parole'], rsg: ['Recherche', S.rq ? 'En cours : ' + (RS.find(q => q.id === S.rq[0]) || { n: '' }).n : '3 catégories'], cg: ['Églises', 'Évêques · ' + fmt(window._bTot || 0) + ' F/min'], dg: ['Cadeau du jour', 'Niveau ' + (S.lvl + 1) + ' · ' + znS(S.lvl)], rg: ['Reliques', VTAB ? 'Versets ' + nVs() + ' / 12' : S.rel.length + ' / 12'] }[sheetTab] || ['', ''];
       if ($('sht').textContent !== TT[0]) $('sht').textContent = TT[0]; if ($('shs').textContent !== TT[1]) $('shs').textContent = TT[1]; } }
   if (!S.tut && !$('sheet').classList.contains('open')) $('tut').style.display = 'block';
   if (!$('sheet').classList.contains('open')) return;
   document.querySelectorAll('#stabs button').forEach(b => b.classList.toggle('on', b.dataset.s === sheetTab));
-  ['ug', 'rg', 'cg', 'rsg'].forEach(id => $(id).hidden = id !== sheetTab); if (sheetTab === 'cg') drawChurches(); if (sheetTab === 'rsg') drawResearch(); if (sheetTab === 'rg' && VTAB) drawVs();
+  ['ug', 'rg', 'cg', 'rsg', 'dg'].forEach(id => $(id).hidden = id !== sheetTab); $('sheet').classList.toggle('dgm', sheetTab === 'dg'); if (sheetTab === 'dg') drawDg(); if (sheetTab === 'cg') drawChurches(); if (sheetTab === 'rsg') drawResearch(); if (sheetTab === 'rg' && VTAB) drawVs();
   if (sheetTab === 'ug') { drawApostles(); }
   if (sheetTab === 'ug') { $('upf').hidden = !has('feu'); UPG.forEach((u, i) => { const c = upCost(i), mx = i === 3 && S.up[3] >= 10, b = document.querySelector('button[data-u="' + i + '"]'); $('ul' + i).textContent = mx ? 'NIVEAU MAX' : 'NIVEAU ' + S.up[i];
     const fv = [() => ATK(), () => HPM(), () => REGEN(), () => RNG()], ff = [v => fmt(v), v => fmt(v), v => fmt(v) + '/s', v => v.toFixed(1).replace('.', ',') + ' m'], now = ff[i](fv[i]());
