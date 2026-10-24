@@ -3294,7 +3294,7 @@ function convertEnemy(e) {
   if (e.shield) { e.hp = Math.max(1, e.hp); return; }
   if (e.cal !== undefined) (S.cal = S.cal || [])[e.cal] = 1;
   if (e.kind !== 7 && !(e.kind >= 9 && e.kind <= 13)) window._rwPE = churchPts(e.boss ? $t('boss') : (e.tg || e.pr || e.kind === 14) ? 'elite' : 'normal', e.zn);
-  respRec(e); e.done = 1.6; e.chase = false; if (e.aura) e.aura.visible = false; const u = e.m.userData; tintU(u, 1); u.sash.material.color.set('#6fe39a'); u.halo.visible = true; u.armL.rotation.x = u.armR.rotation.x = -2.6;
+  respRec(e); e.done = 1.6; e.chase = false; if (e.aura) e.aura.visible = false; const u = e.m.userData; tintU(u, 1); u.sash.material.color.set('#6fe39a'); u.halo.visible = true; u.armL.rotation.x = u.armR.rotation.x = -2.6; if (window.CVA) CVA.start(e);
   if (e.kind === 7) taxKill(e); else if (e.kind >= 9 && e.kind <= 13) arenaKill(e); else { window._rm = e.rewM || 1; reward(e.boss ? 3 : e.kind, e.zn, e.x, e.z, (e.tg && !e.boss ? 2.5 : e.stat ? 2 : 1) * rewMul(e) * rewD(e), e.boss ? 8 : (rewMul(e) > 1 ? 4 : 3) + (Math.random() < .5 ? 1 : 0)); window._rm = 1; dropRes(e); } burst(e.x, 2, e.z, e.boss ? 0xffe27a : 0x9dffb8, e.boss ? 80 : 22, e.boss ? 12 : 6, 9); ringFx(e.x, e.z, e.boss ? 0xffe27a : 0x9dffb8, e.boss ? 7 : 3.2); puff(e.x, 1.6, e.z, e.boss ? 8 : 4, e.boss ? 3 : 1.8);
   if (e.devil) devilDown(e); else if (e.rev) { floatT(e.name + $t(' est vaincu !'), e.x, 6, e.z, 'c'); giveRelic(4, e.x, e.z); } else if (e.boss) { S.boss[e.zn] = 1; mpBossSend(e.zn); if (W.tmp) tmpVeil(); if (WPI(e.zn) >= 0 && S.wp[WPI(e.zn)] === 0) { S.wp[WPI(e.zn)] = 1; note($t('Arme spirituelle !'), WP[WPI(e.zn)][0] + $t(' est tombée : ramasse-la.')); } giveRelic(Math.min(4, Math.round(ZT(e.zn)) + 1), e.x, e.z); if (!lvlCheck(e.zn)) { const mm = e.zn === S.lvl && e.zn < NZ - 1 ? lvlMiss(e.zn) : []; note($t('Boss converti !'), mm.length ? $t('Pour ouvrir la barrière, il manque : ') + mm.join(', ') + '.' : e.name + $t(' a rejoint l\'Église.')); } }
   else { if (e.kind === 6) { S.ap[e.ap] = 1; syncDisc(); const d = disc.find(q => q.zn === e.ap); if (d) { d.x = e.x; d.z = e.z; d.cor = 0; } floatT(AP[e.ap].n + $t(' revient !'), e.x, 6, e.z, 'c'); note(AP[e.ap].n + $t(' te rejoint'), $t('Il a retrouvé la foi. Ses niveaux sont conservés.')); } if (e.kind < 7 && Math.random() < .07) giveRelic(Math.min(3, Math.floor(ZT(e.zn) / 2)), e.x, e.z); }
@@ -4179,7 +4179,7 @@ function update(dt) {
     e.ph += dt; if (e.flash > 0) e.flash -= dt; if (e.coin) e.coin.scale.setScalar(1 + .12 * Math.sin(T * 4)); if (e.pop > 0) { e.pop -= dt; e.m.scale.setScalar(e.sc * (1 - .85 * Math.max(0, e.pop) / .7)); }
     const u = e.m.userData;
     if (e.bt && e.done <= 0) { e.chase = false; e.m.rotation.y = Math.atan2(e.bt.bx - e.x, e.bt.bz - e.z); animH(e.m, T, false, Math.sin(T * 9 + e.ph) > 0, e.ph); e.m.position.set(e.x, gy(e.x, e.z) + (e.up || 0), e.z); continue; }
-    if (e.done > 0) { e.done -= dt; u.body.position.y = Math.abs(Math.sin(e.done * 9)) * .6; e.m.scale.setScalar(e.sc * (.3 + .7 * Math.max(0, e.done / 1.6))); if (e.done <= 0) { e.rm = 1; burst(e.x, 2, e.z, 0xffffff, 14, 5, 8); } e.m.position.set(e.x, gy(e.x, e.z) + (e.up || 0), e.z); continue; }
+    if (e.done > 0) { e.done -= dt; if (e.cva) CVA.tick(e, u, dt); else { u.body.position.y = Math.abs(Math.sin(e.done * 9)) * .6; e.m.scale.setScalar(e.sc * (.3 + .7 * Math.max(0, e.done / 1.6))); } if (e.done <= 0) { e.rm = 1; burst(e.x, 2, e.z, 0xffffff, 14, 5, 8); } e.m.position.set(e.x, gy(e.x, e.z) + (e.up || 0), e.z); continue; }
     if (e.kind === 7 && e.flee > 0) { e.flee -= dt; const fdx = e.x - W.x, fdz = e.z - W.z, fl = Math.hypot(fdx, fdz) || 1; { const q = nvSlide(e.x, e.z, fdx / fl * 7.4 * dt, fdz / fl * 7.4 * dt, .4, true); e.x = q[0]; e.z = q[1]; } e.x = Math.max(cx - 38.8, Math.min(cx + 38.8, e.x)); e.z = Math.max(cz - 38.8, Math.min(cz + 38.8, e.z)); if (inWater(e.x, e.z) || wallBlock(e.x, e.z, .9)) e.flee = 0; e.m.rotation.y = Math.atan2(fdx, fdz); animH(e.m, T, true, false, e.ph); e.m.position.set(e.x, gy(e.x, e.z), e.z); if (e.flee <= 0) e.rm = 1; continue; }
     const d = dist(e.x, e.z), safe = (nearChurch && !e.boss) || !!(W.tmp && (W.tmp.truce || e.dis)) || e.giveUp > T || (PRAYER.safe && !!W.prayer && !e.boss); if (u.hulls) { const vv = d < 7; if (u.hv !== vv) { u.hv = vv; u.hulls.forEach(h => h.visible = vv); if (u.mdl) u.sh.visible = !vv; u.casters.forEach(h => h.castShadow = vv); } } { const far = !e.boss && proxyFar(e, d); const sh = (!far && d < 110) || !!e.boss; const gl = !e.boss && !(e.flash > 0) && !e.done; e.m.visible = sh && !gLod(e, d, sh && gl); if (far && d < 110 && !(e.done > 0)) proxyPush(e.x, e.z, e.m.rotation.y, '#8a3a2a'); }
     let ax = W.x, az = W.z, ad = d; e.at = null; if (!W.arena && e.kind !== 6 && e.kind !== 7) for (const q of disc) { if (q.dn > 0) continue; const qd = Math.hypot(q.x - e.x, q.z - e.z); if (qd < ad - .5) { ad = qd; ax = q.x; az = q.z; e.at = q; } }
@@ -5071,6 +5071,95 @@ function sndDraw(box, mk) {
   const r = mk('div', '', 'mpr sndr'), cb = mk('input'); cb.type = 'checkbox'; cb.checked = !!AUD.cfg.mute; cb.id = 'sndmu'; cb.addEventListener('change', () => { AUD.cfg.mute = cb.checked ? 1 : 0; audInit(); audApply(); audSave(); }); const l = mk('label', $t('Couper tout le son')); l.htmlFor = 'sndmu'; r.appendChild(cb); r.appendChild(l); w.appendChild(r);
   w.appendChild(mk('div', $t('iPhone : le bouton silencieux coupe aussi le son.'), 'mut')); box.appendChild(w); if (window.langRow) langRow(box);
 }
+</script>
+<script>
+/* ---------- conversion : la colombe descend, un halo de lumière transforme le converti, puis il s'élève et disparaît ----------
+   Purement visuel : la logique reste celle de convertEnemy (e.done = 1,6 s : plus d'attaque, de déplacement, de ciblage ni de collision,
+   puis retrait de la carte et réapparition plus tard via respRec / RESP). Repli sur l'ancienne animation en mode économie (FAST),
+   pour les animaux, démons et Satan, ou si 6 conversions sont déjà en cours. Aucun fichier externe : colombe et lumière en Three.js. */
+(function () {
+  const D = 1.6, MAXF = 6, POOL = []; let G = null;
+  const cl = (v, a, b) => v < a ? a : v > b ? b : v, ss = (a, b, x) => { const k = cl((x - a) / (b - a), 0, 1); return k * k * (3 - 2 * k); }, lp = (a, b, k) => a + (b - a) * k;
+  function cvT(fn, w, h) { const c = document.createElement('canvas'); c.width = w; c.height = h; fn(c.getContext('2d'), w, h); return new THREE.CanvasTexture(c); }
+  function init() {
+    if (G) return G; G = {};
+    /* colonne : bas lumineux, haut transparent, quelques stries verticales */
+    G.colT = cvT((x, w, h) => { const g = x.createLinearGradient(0, 0, 0, h); g.addColorStop(0, 'rgba(255,236,170,0)'); g.addColorStop(.45, 'rgba(255,226,140,.45)'); g.addColorStop(1, 'rgba(255,244,200,1)'); x.fillStyle = g; x.fillRect(0, 0, w, h); x.globalCompositeOperation = 'destination-in'; const s = x.createLinearGradient(0, 0, w, 0); for (let i = 0; i <= 8; i++) s.addColorStop(i / 8, i % 2 ? 'rgba(0,0,0,.55)' : 'rgba(0,0,0,1)'); x.fillStyle = s; x.fillRect(0, 0, w, h); }, 64, 64);
+    G.radT = cvT((x, w) => { const g = x.createRadialGradient(w / 2, w / 2, 0, w / 2, w / 2, w / 2); g.addColorStop(0, 'rgba(255,255,245,1)'); g.addColorStop(.3, 'rgba(255,236,170,.75)'); g.addColorStop(.65, 'rgba(255,210,110,.22)'); g.addColorStop(1, 'rgba(255,200,90,0)'); x.fillStyle = g; x.fillRect(0, 0, w, w); }, 64, 64);
+    G.cyl = new THREE.CylinderGeometry(1, 1, 1, 20, 1, true); G.cyl.translate(0, .5, 0); G.disc = new THREE.CircleGeometry(1, 24); G.disc.rotateX(-Math.PI / 2);
+    /* colombe (unité ≈ 2 de long, avant = +z) */
+    G.body = new THREE.SphereGeometry(1, 10, 8); G.body.scale(.36, .34, .82);
+    G.head = new THREE.SphereGeometry(.25, 8, 6); G.head.translate(0, .3, .74);
+    G.beak = new THREE.ConeGeometry(.07, .22, 5); G.beak.rotateX(Math.PI / 2); G.beak.translate(0, .26, 1.04);
+    const tl = new THREE.Shape(); tl.moveTo(-.1, 0); tl.lineTo(-.34, -.72); tl.quadraticCurveTo(0, -.84, .34, -.72); tl.lineTo(.1, 0); tl.lineTo(-.1, 0);
+    G.tail = new THREE.ShapeGeometry(tl); G.tail.rotateX(Math.PI / 2); G.tail.translate(0, .06, -.62);
+    /* aile : épaule en (0,0), envergure vers +x, plumes en bout */
+    const wg = new THREE.Shape(); wg.moveTo(0, .28); wg.quadraticCurveTo(.7, .5, 1.25, .3); wg.quadraticCurveTo(1.6, .16, 1.78, -.04); wg.lineTo(1.5, -.12); wg.lineTo(1.62, -.26); wg.lineTo(1.3, -.3); wg.lineTo(1.38, -.46); wg.lineTo(1.0, -.44); wg.lineTo(1.0, -.58); wg.lineTo(.62, -.5); wg.quadraticCurveTo(.25, -.42, 0, -.3); wg.lineTo(0, .28);
+    G.wing = new THREE.ShapeGeometry(wg, 6); G.wing.rotateX(Math.PI / 2);
+    G.wM = new THREE.MeshLambertMaterial({ color: 0xf4f1ea, emissive: 0x6a6458, side: THREE.DoubleSide, transparent: true }); G.bM = new THREE.MeshBasicMaterial({ color: 0xe0a640, transparent: true }); G.eM = new THREE.MeshBasicMaterial({ color: 0x2a2018 });
+    G.eye = new THREE.SphereGeometry(.045, 5, 4);
+    return G;
+  }
+  function mkFx() {
+    const g = new THREE.Group(), add = m => { m.renderOrder = 3; g.add(m); return m; };
+    const am = (op) => new THREE.MeshBasicMaterial({ map: G.colT, transparent: true, opacity: op, depthWrite: false, blending: THREE.AdditiveBlending, side: THREE.DoubleSide, color: 0xffe6a0 });
+    const col = add(new THREE.Mesh(G.cyl, am(.5))), col2 = add(new THREE.Mesh(G.cyl, am(.8)));
+    const disc = add(new THREE.Mesh(G.disc, new THREE.MeshBasicMaterial({ map: G.radT, transparent: true, opacity: .8, depthWrite: false, blending: THREE.AdditiveBlending, color: 0xffe08a }))); disc.position.y = .12;
+    const flash = add(new THREE.Sprite(new THREE.SpriteMaterial({ map: G.radT, transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending, color: 0xfff2c8 })));
+    const dv = new THREE.Group(); g.add(dv); const wm = G.wM;
+    [G.body, G.head, G.tail].forEach(q => dv.add(new THREE.Mesh(q, wm))); dv.add(new THREE.Mesh(G.beak, G.bM));
+    [-1, 1].forEach(sx => { const e = new THREE.Mesh(G.eye, G.eM); e.position.set(.17 * sx, .36, .86); dv.add(e); });
+    const wl = new THREE.Group(), wr = new THREE.Group(); wl.position.set(-.22, .14, .12); wr.position.set(.22, .14, .12); const mr = new THREE.Mesh(G.wing, wm), ml = new THREE.Mesh(G.wing, wm); ml.scale.x = -1; wr.add(mr); wl.add(ml); dv.add(wl, wr);
+    const glow = new THREE.Sprite(new THREE.SpriteMaterial({ map: G.radT, transparent: true, opacity: .85, depthWrite: false, blending: THREE.AdditiveBlending, color: 0xffe9a8 })); glow.scale.setScalar(5); glow.position.set(0, -.3, -.2); glow.renderOrder = 2; dv.add(glow);
+    dv.traverse(o => { if (o.isMesh) o.renderOrder = 4; });
+    return { g, col, col2, disc, flash, dv, wl, wr, glow, owner: null };
+  }
+  const busy = f => { const e = f.owner; return !!(e && e.cva === f && !e.rm && e.done > 0 && enemies.indexOf(e) >= 0); };
+  function start(e) {
+    try {
+      if (FAST || !e || !e.m || e.devil || (e.kind >= 9 && e.kind <= 13)) return false; init();
+      let f = POOL.find(q => !busy(q)); if (!f) { if (POOL.length >= MAXF) return false; f = mkFx(); POOL.push(f); }
+      const u = e.m.userData, s = e.m.scale.x || 1, b = new THREE.Box3().setFromObject(u.body || e.m), y0 = e.m.position.y;
+      let h = b.max.y - y0; if (!(h > .5 && h < 30)) h = (u.top ? u.top * s : (e.boss ? 7 : 3.3) * CS);
+      f.owner = e; e.cva = f; f.h = h; f.k = cl(h / 3.2, .8, 2.6); f.w = Math.max(.9, Math.max(b.max.x - b.min.x, b.max.z - b.min.z) * .55);
+      f.b0 = u.body ? u.body.scale.x : 1; f.hs0 = u.halo ? u.halo.scale.x : 1; f.sh0 = u.sh ? u.sh.scale.x : 1; f.fl = 0; f.sp = 0; f.side = Math.random() < .5 ? -1 : 1;
+      if (u.mdl && u.cm) u.cm.color.setRGB(1, 1, 1); if (u.halo) u.halo.visible = false; if (u.armL) u.armL.rotation.x = u.armR.rotation.x = 0;
+      e.m.add(f.g); f.g.visible = true; tick(e, u, 0); return true;
+    } catch (er) { e.cva = null; return false; }
+  }
+  function tick(e, u, dt) {
+    const f = e.cva; if (!f) return; const t = cl(D - e.done, 0, D), s = e.m.scale.x || 1, h = f.h, k = f.k;
+    f.g.scale.setScalar(1 / s); f.g.rotation.y = -e.m.rotation.y; f.g.position.y = 0;
+    /* 1) colonne et disque de lumière : apparition 0-0,35 s, rétrécissement 1,2-1,6 s */
+    const a = ss(0, .35, t) * (1 - ss(1.25, 1.6, t)), r = f.w * (.45 + .55 * ss(0, .4, t)) * (1 - .55 * ss(1.15, 1.6, t)), H = h * 2.2 + 6 * k;
+    f.col.scale.set(r, H, r); f.col.material.opacity = .3 * a; f.col.rotation.y = t * 1.8;
+    f.col2.scale.set(r * .45, H * 1.05, r * .45); f.col2.material.opacity = .5 * a * (.7 + .3 * ss(.55, .8, t));
+    f.disc.scale.setScalar(r * 1.9); f.disc.material.opacity = .85 * a;
+    /* 2) colombe : descend 0-0,55 s, se pose au-dessus de la tête jusqu'à 1,15 s, puis remonte et s'en va */
+    const dv = f.dv, dn = ss(0, .55, t), out = Math.max(0, t - 1.15), yH = h + .55 * k;
+    let y = lp(yH + 6.5 * k, yH, 1 - Math.pow(1 - cl(t / .55, 0, 1), 3)), x = 0, z = lp(-.6 * k, 0, dn);
+    if (t > .55 && t <= 1.15) y += Math.sin((t - .55) * 9) * .06 * k;
+    if (out > 0) { y += out * out * 26 * k + out * 2 * k; x = f.side * out * out * 9 * k; z = out * out * 6 * k; }
+    dv.position.set(x, y, z); dv.scale.setScalar(.75 * k * ss(0, .1, t) * (1 - ss(1.42, 1.6, t)));
+    dv.rotation.set(t < .55 ? lp(.55, .05, dn) : out > 0 ? -.75 * ss(1.15, 1.3, t) : .05, out > 0 ? f.side * .6 * ss(1.15, 1.35, t) : 0, 0);
+    const fl = t < .5 ? Math.sin(t * 15) * .55 * (1 - dn) + .12 : out > 0 ? Math.sin(out * 26) * .85 : .22 + Math.sin(t * 7) * .12;
+    f.wr.rotation.z = fl; f.wl.rotation.z = -fl; f.glow.material.opacity = .5 * (1 - ss(1.4, 1.6, t));
+    /* 3) onction (0,55 s) : éclair, auréole, anneau d'or */
+    const fa = Math.max(0, 1 - Math.abs(t - .62) / .22); f.flash.position.set(0, h * .62, 0); f.flash.scale.setScalar((h * 1.3 + 1) * (.6 + .6 * fa)); f.flash.material.opacity = .9 * fa + .25 * ss(.8, 1.1, t) * (1 - ss(1.3, 1.55, t));
+    if (!f.fl && t >= .55) { f.fl = 1; burst(e.x, e.m.position.y + h, e.z, 0xfff0b0, 30, 4 * k, 6); ringFx(e.x, e.z, 0xffe27a, 3.6 * k); }
+    if (u.halo) { u.halo.visible = t >= .55; if (u.halo.visible) u.halo.scale.setScalar(f.hs0 * (ss(.55, .72, t) * (1 + .35 * (1 - ss(.72, .95, t))))); }
+    /* 4) transformation : le converti blanchit puis se dore, lève les bras et s'élève dans la lumière */
+    const tr = ss(.5, 1.0, t); if (u.mdl && u.cm) u.cm.color.setRGB(lp(1, 1.95, tr), lp(1, 1.82, tr), lp(1, 1.42, tr));
+    if (u.armL) u.armL.rotation.x = u.armR.rotation.x = lp(0, -2.6, ss(.55, .9, t));
+    if (t > .6 && t < 1.4 && (f.sp -= dt || 0) <= 0) { f.sp = .09; burst(e.x + (Math.random() - .5) * f.w * 1.4, e.m.position.y + Math.random() * h * .8, e.z + (Math.random() - .5) * f.w * 1.4, 0xffe9a0, 5, .8, 4.5); }
+    /* 5) départ : il monte, tourne et se fond dans la lumière ; l'étiquette s'efface */
+    const ex = ss(1.15, 1.55, t);
+    if (u.body) { u.body.position.y = (.25 * ss(.6, 1.15, t) * k + 2.2 * ex * ex * k) / s; u.body.scale.set(f.b0 * (1 - .96 * ex), f.b0 * (1 - .9 * ex) * (1 + .25 * ex), f.b0 * (1 - .96 * ex)); u.body.rotation.y = 7 * ex * ex; }
+    if (u.sh) u.sh.scale.setScalar(f.sh0 * (1 - ex)); if (e.el) e.el.style.opacity = String(1 - ss(1.05, 1.35, t));
+    if (dt && e.done <= 0) { f.g.visible = false; if (u.body) u.body.scale.setScalar(.001); }
+  }
+  window.CVA = { start, tick, D, pool: POOL };
+})();
 </script>
 
 <script>
