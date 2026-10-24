@@ -196,7 +196,7 @@ html body #mpl{position:fixed!important;left:max(12px,env(safe-area-inset-left,0
 <title>Cénacle</title>
 
 <meta name="claude:viewport-fit-sides" content="cover">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Cinzel:wght@600;800&family=Alegreya+Sans:wght@400;500;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Cinzel:wght@600;800&family=Alegreya+Sans:wght@400;500;700;800&display=swap">
 <!-- three.js r128 : copie locale (vendor/), sinon CDN -->
 <script>window.LD&&LD(15,'Chargement du moteur 3D…')</script>
 <script src="vendor/three.min.js"></script>
@@ -500,6 +500,7 @@ button:focus-visible{outline:3px solid #fff;outline-offset:2px}
 .rlbl{position:absolute;z-index:30;width:min(86vw,320px);pointer-events:none;background:linear-gradient(#2a1a3c,#14102a);border:3px solid #ffd24a;border-radius:14px;color:#fff;font:700 .95rem/1.25 var(--body);padding:8px 10px;text-align:center;text-shadow:0 1px 0 #000;box-shadow:0 4px 16px #000a;transform:translate(-50%,-100%)}.rlbl b{display:block;font:400 1.15rem var(--display);color:#ffd860;-webkit-text-stroke:.8px #000;paint-order:stroke fill;letter-spacing:.01em}.rlbl small{display:block;font-weight:800;color:#e8e0ff;margin-top:2px}.rlbl.fly{width:44px;padding:0;height:44px;overflow:hidden;font-size:0;border-radius:50%;transform:translate(-50%,-50%);transition:left .6s ease-in,top .6s ease-in,opacity .6s ease-in;opacity:.2}
 .sb.pulse{animation:sbp .8s ease-out 2}@keyframes sbp{50%{transform:scale(1.25);filter:brightness(1.4)}}
 #rtip{position:fixed;left:10px;right:118px;bottom:calc(env(safe-area-inset-bottom,0px) + 190px);z-index:40;background:linear-gradient(#2a1a3c,#14102a);border:3px solid #ffd24a;border-radius:14px;color:#fff;font:700 1rem/1.3 var(--body);padding:10px 12px;text-align:center;box-shadow:0 4px 18px #000b;cursor:pointer}#rtip b{color:#ffd860}
+body.shopen #rtip{top:calc(env(safe-area-inset-top,0px) + 6px);bottom:auto;left:10px;right:10px;font-size:.82rem;padding:7px 10px;z-index:60}
 #relgrid .rel{min-height:0!important;aspect-ratio:1/1.12!important;padding-top:0!important;justify-content:center!important;overflow:hidden;container-type:inline-size}
 #relgrid .rel svg{width:52%!important;height:auto!important;margin-top:14%}
 #relgrid .rel u{left:2px!important;right:2px!important;top:2px!important;text-align:center;white-space:nowrap;font-size:max(12px,.72rem)!important;padding:1px 0!important;border-width:1.5px!important;overflow:hidden}
@@ -4642,6 +4643,7 @@ function paint() {
     { let ok = UPG.some((u, i) => upOk(i)); for (let z = 0; z < NZ && !ok; z++) if (S.ap[z] === 1) { const pr = apPRes(S.al[z]); ok = (S.f >= apCost(z, S.al[z]) && (!pr || S.res[pr[0]] >= pr[1])) || S.f >= apHCost(z, ahL(z)); } const ub = $('upb'); if (ub) ub.classList.toggle('glow', ok && !ub.classList.contains('on')); } const nr = S.rel.filter(r => r.nw).length; setB('bd_rg', nr ? String(nr) : '', true); const ca = churchActs(); setB('bd_cg', ca ? String(ca) : '');
     if (op) { const TT = { ug: ['Améliorer', 'Héros de la Parole'], rsg: ['Recherche', S.rq ? 'En cours : ' + (RS.find(q => q.id === S.rq[0]) || { n: '' }).n : '3 catégories'], cg: ['Églises', 'Évêques · ' + fmt(window._bTot || 0) + ' F/min'], dg: ['Cadeau du jour', 'Niveau ' + (S.lvl + 1) + ' · ' + znS(S.lvl)], rg: ['Reliques', VTAB ? 'Versets ' + nVs() + ' / 12' : S.rel.length + ' / 12'] }[sheetTab] || ['', ''];
       if ($('sht').textContent !== TT[0]) $('sht').textContent = TT[0]; if ($('shs').textContent !== TT[1]) $('shs').textContent = TT[1]; } }
+  document.body.classList.toggle('shopen', $('sheet').classList.contains('open'));
   if (!S.tut && !$('sheet').classList.contains('open')) $('tut').style.display = 'block';
   if (!$('sheet').classList.contains('open')) return;
   document.querySelectorAll('#stabs button').forEach(b => b.classList.toggle('on', b.dataset.s === sheetTab));
@@ -4881,6 +4883,52 @@ document.addEventListener('visibilitychange', () => { if (!AUD.ctx) return; if (
 /* ---------- menu principal ---------- */
 let _bip = null; addEventListener('beforeinstallprompt', e => { e.preventDefault(); _bip = e; try { menuDraw(); } catch (x) { } });
 const isStandalone = () => { try { return navigator.standalone || matchMedia('(display-mode: standalone), (display-mode: fullscreen)').matches; } catch (e) { return false; } };
+/* ---------- Nouveau menu principal (maquettes menu-principal / menu-chapitre-jesus) ---------- */
+const MNZ = ['Porte de Jaffa', 'Quartiers', 'Temple', 'Antioche', 'Éphèse', 'Corinthe', 'Rome', 'Alexandrie', 'Nicée', 'Constantinople', 'Hippone', 'Golgotha', 'Satan'];
+const MPOS = [[95, 712], [245, 664], [302, 616], [178, 568], [82, 520], [200, 472], [312, 424], [240, 376], [92, 328], [140, 280], [282, 232], [312, 184], [196, 136]];
+function mDone() { return Math.min(12, S.lvl + (S.gl ? 1 : 0)); }
+function mState(i) { if (i < 12) { if (i < S.lvl || (i === 11 && S.gl)) return 'done'; if (i === S.lvl) return 'cur'; return 'lk'; } return S.sp ? 'done' : S.gl ? 'cur' : 'lk'; }
+function mCurIdx() { return S.gl && S.lvl >= 11 ? 12 : Math.min(S.lvl, 11); }
+function mSub() { if (S.sp) return 'Jésus · Satan est vaincu'; const i = mCurIdx(); return 'Jésus · Niv. ' + (i + 1) + ' · ' + MNZ[i]; }
+function mFit() { const w = document.querySelector('#menu .mzw'); if (!w) return; const k = Math.min(innerWidth / 390, (innerHeight - (w.dataset.st ? 0 : 0)) / 844); w.style.setProperty('--k', k); w.style.width = 390 * k + 'px'; w.style.height = 844 * k + 'px'; }
+addEventListener('resize', mFit);
+function mToast(t) { const e = document.getElementById('mtoast'); if (!e) return; e.textContent = t; e.classList.add('on'); clearTimeout(mToast.t); mToast.t = setTimeout(() => e.classList.remove('on'), 2600); }
+function mChips(i) {
+  const c = []; if (i === 12) { c.push('⚔️ Boss final'); c.push('✝ Fragments ' + nCross() + ' / 6'); return c; }
+  if (AP[i]) c.push('👥 ' + (S.ap[i] ? AP[i].n : 'Apôtre à libérer'));
+  RS.filter(it => it.q === i).slice(0, 2).forEach(it => c.push(it.i + ' ' + it.n));
+  try { const w = WPI(i); if (w >= 0 && WP[w]) c.push('🛡 ' + WP[w][0]); } catch (e) { }
+  c.push('📜 ' + VS[i].r + (S.vs[i] ? ' ✔' : '')); if (i <= S.lvl) { const n = zLeftN(i); if (n) c.push('✦ ' + n + ' à récupérer'); }
+  return c;
+}
+function mHome() {
+  const has = (S.conv || []).some(v => v > 0) || S.f > 0 || S.lvl > 0, sa = isStandalone(), x = mDone(), dot = !dState().claimed ? '<span class="m-dot"></span>' : '';
+  let h = '<div class="m-bg"></div><div class="m-rays"></div><div class="m-fade"></div><div class="m-motes"></div>';
+  h += '<div class="m-tb l"><div class="m-rb m-gift" data-m="gift" role="button" aria-label="Cadeau du jour">🎁' + dot + '</div><div class="m-rb" data-m="vers" role="button" aria-label="Versets">📜</div><div class="m-rb" data-m="rel" role="button" aria-label="Reliques">✝️</div></div>';
+  h += '<div class="m-tb r"><div class="m-rb" data-m="set" role="button" aria-label="Réglages">⚙️</div><div class="m-rb" data-m="snd" role="button" aria-label="Son">' + (AUD.cfg.mute ? '🔇' : '🔊') + '</div></div>';
+  h += '<div class="m-main"><div class="m-cont" data-m="play" role="button"><b>▶ ' + (has ? 'Continuer' : 'Jouer') + '</b><small>' + mSub() + '</small></div>';
+  h += '<div class="m-sec">CHAPITRES</div><div class="m-row"><div class="m-card on" data-m="chap" role="button"><div class="m-ill" style="background-image:url(menu/th-jesus.jpg)"><span class="m-tag">I</span></div><div class="m-tx"><b>Jésus</b><small>La vie du Christ · ' + x + '/12</small><div class="m-pb"><i style="width:' + (x / 12 * 100).toFixed(1) + '%"></i></div></div></div>';
+  h += '<div class="m-card lk" data-m="lk2" role="button"><div class="m-ill" style="background-image:url(menu/th-apo.jpg)"><span class="m-tag">II</span></div><div class="m-tx"><b>Apôtres</b><small>Termine le chapitre de Jésus</small></div></div></div>';
+  h += '<div class="m-sec" style="margin-top:10px;font-size:.66rem">ANCIEN TESTAMENT</div><div class="m-row4">' + [['🚢', 'Noé', '#5a9ac8,#2a5a88'], ['⭐', 'Abraham', '#e8b860,#a86a28'], ['🌊', 'Moïse', '#4ab0c8,#2a6a8a'], ['🪨', 'David', '#c8a060,#7a5a2a']].map(o => '<div class="m-card lk" data-m="lkot" role="button"><div class="m-ill m-ot" style="background:linear-gradient(' + o[2] + ')">' + o[0] + '</div><div class="m-tx"><b>' + o[1] + '</b></div></div>').join('') + '</div></div>';
+  h += '<div class="m-bot"><div data-m="saves" role="button">💾 Sauvegardes</div>' + (sa ? '' : '<div data-m="install" role="button">📲 Installer</div>') + (DONATE_URL ? '<div class="alt" data-m="donate" role="button">❤ Don</div>' : '') + '</div><div id="mtoast" class="m-toast"></div>';
+  return h;
+}
+function mPath() {
+  const x = mDone(), P = MPOS; if (MENU.sel === undefined || mState(MENU.sel) === 'lk') MENU.sel = mCurIdx();
+  let d = 'M' + P[0][0] + ',' + P[0][1]; for (let i = 0; i < P.length - 1; i++) { const p0 = P[Math.max(0, i - 1)], p1 = P[i], p2 = P[i + 1], p3 = P[Math.min(P.length - 1, i + 2)]; d += ' C' + (p1[0] + (p2[0] - p0[0]) / 6).toFixed(1) + ',' + (p1[1] + (p2[1] - p0[1]) / 6).toFixed(1) + ' ' + (p2[0] - (p3[0] - p1[0]) / 6).toFixed(1) + ',' + (p2[1] - (p3[1] - p1[1]) / 6).toFixed(1) + ' ' + p2[0] + ',' + p2[1]; }
+  let h = '<div class="m-top"><div class="m-bk" data-m="home" role="button" aria-label="Retour">←</div><h2>Chapitre I · Jésus</h2><p>LA VIE DU CHRIST · ' + x + ' / 12</p><div class="m-pbar"><i style="width:' + (x / 12 * 100).toFixed(1) + '%"></i></div></div>';
+  h += '<div class="m-map"></div><div class="m-lake"></div><svg class="m-svg" width="390" height="844"><path d="' + d + '" fill="none" stroke="#7a4a1a" stroke-width="5" stroke-dasharray="2 10" stroke-linecap="round" opacity=".75"/></svg>';
+  P.forEach((p, i) => { const st = mState(i), ic = st === 'done' ? '✔' : st === 'cur' ? String(i + 1) : i === 12 ? '⚔️' : i === 11 ? '✝' : '🔒', side = p[0] < 200 ? 'r' : 'l';
+    h += '<div class="m-n ' + st + (i === 12 ? ' boss' : '') + (i === MENU.sel ? ' sel' : '') + '" data-m="nsel" data-z="' + i + '" role="button" style="left:' + p[0] + 'px;top:' + p[1] + 'px"><span class="m-c">' + ic + '</span><span class="m-lb ' + side + '"><em>' + (i + 1) + '</em>' + MNZ[i] + '</span></div>'; });
+  const s = MENU.sel; h += '<div class="m-sel"><div class="m-t"><b>' + (s + 1) + ' · ' + MNZ[s] + '</b><div class="m-chips">' + mChips(s).map(c => '<span>' + c + '</span>').join('') + '</div></div><div class="m-go" data-m="go" role="button">Jouer</div></div><div id="mtoast" class="m-toast"></div>';
+  return h;
+}
+function mGo(i) {
+  if (W.spirit || W.tmp || W.arena || W.epr || W.via) { mToast('Termine d’abord le combat en cours.'); return; }
+  if (mState(i) === 'lk') { mToast('Niveau verrouillé : termine d’abord le niveau ' + (mCurIdx() + 1) + '.'); return; }
+  menuClose(); if (i === 12) { if (!S.sp) { enterSpirit(); return; } i = 11; }
+  const [x, zz] = zoneStart(i); W.x = x; W.z = zz; try { camera.position.set(x, CAMH, zz + CAMZ); } catch (e) { }
+}
 const MENU = { scr: 'home' };
 function menuOpen() {
   if (document.getElementById('menu')) return; const m = document.createElement('div'); m.id = 'menu'; document.body.appendChild(m);
@@ -4893,24 +4941,74 @@ function menuOpen() {
 #menu button.mb.alt{background:#e4d09a;color:#3d2a0c;border-color:#8a6a2a;box-shadow:0 3px 0 #8a6a2a}
 #menu .row{display:flex;gap:8px}#menu .row button{flex:1}#menu .box{background:#fff8;border-radius:12px;padding:10px;margin:8px 0;text-align:left;font-size:.92rem;line-height:1.35}
 #menu .stp{display:flex;gap:8px;align-items:center;margin:6px 0}#menu .stp b{flex:none;width:24px;height:24px;border-radius:50%;background:#b8872a;color:#fff;display:flex;align-items:center;justify-content:center;font-size:.8rem}
-#menu h2{font:800 1.3rem var(--title,serif);color:#7a4a00;margin:4px 0 8px}#menu .note{font-size:.78rem;opacity:.7;margin-top:6px}`; document.head.appendChild(st);
+#menu h2{font:800 1.3rem var(--title,serif);color:#7a4a00;margin:4px 0 8px}#menu .note{font-size:.78rem;opacity:.7;margin-top:6px}
+#menu.nm{padding:0;display:flex;align-items:center;justify-content:center;background:#10142a;overflow:hidden}
+#menu.nm:before{content:'';position:absolute;inset:-30px;background:url(menu/art.jpg) center/cover;filter:blur(18px) brightness(.35) saturate(1.1)}
+#menu .mzw{position:relative;flex:none;margin-top:env(safe-area-inset-top,0px)}
+#menu .mz{position:absolute;left:0;top:0;width:390px;height:844px;transform:scale(var(--k,1));transform-origin:0 0;overflow:hidden;background:#10142a;font-family:'Alegreya Sans',sans-serif;color:#3a2410;text-align:left;box-shadow:0 0 40px #000c}
+#menu .mz *{box-sizing:border-box}#menu .mz [role=button]{cursor:pointer;-webkit-tap-highlight-color:transparent}
+#menu .m-bg{position:absolute;left:0;right:0;top:58px;height:380px;background:url(menu/art.jpg) center 6%/112% auto no-repeat;filter:saturate(1.1)}
+#menu .m-fade{position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,#10142a 0,#10142a 50px,#0000 92px,#0000 330px,#2a1c0acc 410px,#1a1430 470px,#10142a 540px)}
+#menu .m-rays{position:absolute;left:50%;top:150px;width:900px;height:900px;transform:translate(-50%,-50%);pointer-events:none;background:repeating-conic-gradient(from 0deg,#ffe9a018 0 4deg,#0000 4deg 12deg);-webkit-mask:radial-gradient(circle,#000 0,#0000 60%);mask:radial-gradient(circle,#000 0,#0000 60%);mix-blend-mode:screen}
+#menu .m-motes{position:absolute;inset:0;pointer-events:none;background:radial-gradient(2px 2px at 60px 250px,#fff6c0,#0000),radial-gradient(2px 2px at 320px 200px,#fff6c0,#0000),radial-gradient(3px 3px at 210px 330px,#ffe27a,#0000),radial-gradient(2px 2px at 110px 380px,#ffe27a,#0000),radial-gradient(2px 2px at 290px 410px,#fff6c0,#0000)}
+#menu .m-tb{position:absolute;top:8px;display:flex;gap:10px;z-index:2}#menu .m-tb.l{left:12px}#menu .m-tb.r{right:12px}
+#menu .m-rb{position:relative;width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:radial-gradient(circle at 50% 35%,#5a3c18,#2a1a08);border:2.5px solid #e8c060;box-shadow:0 3px 0 #000a,inset 0 0 0 2px #0006;font-size:1.25rem;line-height:1}
+#menu .m-dot{position:absolute;top:-2px;right:-2px;width:15px;height:15px;border-radius:50%;background:#e8362f;border:2px solid #fff;box-shadow:0 0 8px #e8362f}
+#menu .m-gift{background:radial-gradient(circle at 50% 35%,#ffe9a0,#d8a030);box-shadow:0 0 0 3px #ffd24a66,0 0 16px #ffd24a,0 3px 0 #6a4010}
+#menu .m-main{position:absolute;left:14px;right:14px;top:400px;z-index:1}
+#menu .m-cont{display:block;width:100%;border-radius:18px;border:2.5px solid #ffe9a0;background:linear-gradient(#8ff0b4,#2f9a5a);color:#06240f;text-align:center;padding:10px 0 8px;box-shadow:0 5px 0 #1b5a36,0 0 24px #8ff0b466}
+#menu .m-cont b{display:block;font:400 1.55rem 'Lilita One',sans-serif}#menu .m-cont small{font:800 .8rem 'Alegreya Sans',sans-serif;color:#0d3a1c}
+#menu .m-sec{display:flex;align-items:center;gap:8px;margin:14px 2px 7px;font:800 .74rem Cinzel,serif;letter-spacing:.16em;color:#ffe27a}#menu .m-sec:before,#menu .m-sec:after{content:'';flex:1;height:1.5px;background:linear-gradient(90deg,#0000,#d8b060,#0000)}
+#menu .m-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}#menu .m-row4{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}
+#menu .m-row4 .m-ill{height:54px;font-size:1.6rem}#menu .m-row4 .m-card.lk .m-ill:after{font-size:1rem;align-items:end;justify-items:end;padding:3px}#menu .m-row4 .m-card b{font-size:.72rem;text-align:center}#menu .m-row4 .m-tx{padding:4px 2px 5px}
+#menu .m-card{border-radius:16px;background:linear-gradient(#f8efd6,#ead7a6);border:2.5px solid #b8872a;box-shadow:0 4px 0 #5a3c10;overflow:hidden;position:relative}
+#menu .m-ill{height:100px;background-size:cover;background-position:center;position:relative;border-bottom:2px solid #b8872a}
+#menu .m-tx{padding:5px 7px 7px}#menu .m-card b{display:block;font:800 .86rem Cinzel,serif;color:#33200a}#menu .m-card small{display:block;font:700 .66rem 'Alegreya Sans',sans-serif;color:#6a5030;line-height:1.1}
+#menu .m-card.on{border-color:#ffd24a;box-shadow:0 0 0 3px #ffd24a88,0 0 18px #ffd24a,0 4px 0 #5a3c10}
+#menu .m-pb{height:6px;border-radius:4px;background:#5a3c1033;margin-top:4px;overflow:hidden}#menu .m-pb i{display:block;height:100%;background:linear-gradient(90deg,#ffb92e,#ffe27a)}
+#menu .m-card.lk .m-ill{filter:grayscale(.85) brightness(.75)}#menu .m-card.lk .m-ill:after{content:'🔒';position:absolute;inset:0;display:grid;place-items:center;font-size:1.8rem;background:#1a143055}
+#menu .m-tag{position:absolute;top:6px;left:6px;padding:1px 7px;border-radius:999px;font:800 .58rem Cinzel,serif;background:#ffd24a;color:#3a2410;border:1.5px solid #5a3c10;z-index:1}
+#menu .m-ot{display:grid;place-items:center;font-size:2.4rem}
+#menu .m-bot{position:absolute;left:14px;right:14px;bottom:16px;display:flex;gap:8px;z-index:1}
+#menu .m-bot div{flex:1;text-align:center;border-radius:13px;padding:9px 0;font:800 .8rem 'Alegreya Sans',sans-serif;border:2px solid #d8b060;background:linear-gradient(#4a78c8,#2a4a98);color:#fff;box-shadow:0 3px 0 #1a2f66}
+#menu .m-bot div.alt{background:#e4d09a;color:#3d2a0c;border-color:#8a6a2a;box-shadow:0 3px 0 #8a6a2a}
+#menu .m-toast{position:absolute;left:24px;right:24px;top:50%;transform:translateY(-50%) scale(.9);opacity:0;pointer-events:none;z-index:9;text-align:center;padding:12px 14px;border-radius:16px;background:linear-gradient(#2a1a3c,#14102a);border:3px solid #ffd24a;color:#fff7e0;font:800 .95rem/1.3 'Alegreya Sans',sans-serif;box-shadow:0 6px 20px #000c;transition:.2s}
+#menu .m-toast.on{opacity:1;transform:translateY(-50%) scale(1)}
+#menu .m-top{position:absolute;left:0;right:0;top:0;height:88px;background:linear-gradient(#1a1430,#10142a);border-bottom:3px solid #b8872a;box-shadow:0 4px 0 #5a3c10;z-index:3;text-align:center;padding-top:12px}
+#menu .m-top h2{margin:0;font:800 1.35rem Cinzel,serif;color:#ffe27a;text-shadow:0 0 14px #ffb02088,0 2px 0 #000}#menu .m-top p{margin:2px 0 0;font:800 .7rem Cinzel,serif;letter-spacing:.14em;color:#d8c08a}
+#menu .m-pbar{width:170px;height:7px;margin:5px auto 0;border-radius:4px;background:#0008;overflow:hidden;border:1px solid #b8872a}#menu .m-pbar i{display:block;height:100%;background:linear-gradient(90deg,#ffb92e,#ffe27a)}
+#menu .m-bk{position:absolute;left:12px;top:22px;width:40px;height:40px;border-radius:12px;background:linear-gradient(#4a78c8,#2a4a98);border:2px solid #d8b060;color:#fff;display:grid;place-items:center;font-size:1.1rem;box-shadow:0 3px 0 #1a2f66}
+#menu .m-map{position:absolute;left:8px;right:8px;top:96px;height:640px;border-radius:20px;border:3px solid #b8872a;box-shadow:0 5px 0 #5a3c10,inset 0 0 40px #8a5a1055;overflow:hidden;background:radial-gradient(ellipse at 30% 75%,#e9d6a0,#d8bd80 70%,#c8a868)}
+#menu .m-map:before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(35deg,#0000 0 22px,#ffffff10 22px 24px)}
+#menu .m-svg{position:absolute;left:0;top:0;z-index:1;pointer-events:none}
+#menu .m-lake{position:absolute;left:222px;top:536px;width:110px;height:50px;border-radius:50%;background:radial-gradient(ellipse,#8ec4d8,#6aa8c0);border:2px solid #4a8aa0;box-shadow:inset 0 0 10px #fff8;z-index:1}
+#menu .m-n{position:absolute;transform:translate(-50%,-50%);z-index:2}
+#menu .m-c{display:grid;place-items:center;width:42px;height:42px;border-radius:50%;font:400 1.15rem 'Lilita One',sans-serif;border:3px solid #5a3c10;box-shadow:0 3px 0 #5a3c10;line-height:1}
+#menu .m-n.done .m-c{background:radial-gradient(circle at 40% 35%,#fff3b0,#e0a52a);color:#2a7a3a;font-size:1.3rem}
+#menu .m-n.cur .m-c{width:58px;height:58px;font-size:1.6rem;background:radial-gradient(circle at 40% 35%,#8ff0b4,#2f9a5a);color:#06240f;border-color:#fff3c0;box-shadow:0 0 0 5px #ffd24a88,0 0 26px #ffd24a,0 4px 0 #1b5a36}
+#menu .m-n.lk .m-c{background:#8a8070;color:#3a3028;border-color:#5a5048;font-size:1rem;filter:saturate(.4)}
+#menu .m-n.boss .m-c{background:radial-gradient(circle at 40% 35%,#7a4aa8,#2a1640);border-color:#d8b060;filter:none;font-size:1.25rem}
+#menu .m-n.sel:not(.cur) .m-c{box-shadow:0 0 0 4px #4a78c8aa,0 3px 0 #5a3c10}
+#menu .m-lb{position:absolute;top:50%;transform:translateY(-50%);white-space:nowrap;padding:3px 9px 3px 4px;border-radius:999px;font:800 .78rem 'Alegreya Sans',sans-serif;background:#f6ecd0ee;border:1.5px solid #b8872a;box-shadow:0 2px 0 #5a3c1088;display:flex;align-items:center;gap:5px;color:#33200a}
+#menu .m-lb em{font:400 .72rem 'Lilita One',sans-serif;font-style:normal;background:#5a3c10;color:#ffe27a;border-radius:999px;min-width:18px;height:18px;display:grid;place-items:center;padding:0 4px}
+#menu .m-lb.r{left:calc(100% + 6px)}#menu .m-lb.l{right:calc(100% + 6px)}
+#menu .m-n.lk .m-lb{opacity:.75}#menu .m-n.cur .m-lb{font-size:.9rem;background:#fff6d0;border-color:#e0a52a}
+#menu .m-sel{position:absolute;left:10px;right:10px;bottom:14px;z-index:4;border-radius:18px;background:linear-gradient(#f8efd6,#ead7a6);border:3px solid #b8872a;box-shadow:0 5px 0 #5a3c10,0 10px 24px #000a;padding:9px 11px 10px;display:flex;gap:10px;align-items:center;color:#33200a}
+#menu .m-sel .m-t b{display:block;font:800 1rem Cinzel,serif}#menu .m-chips{display:flex;flex-wrap:wrap;gap:4px;margin-top:4px}#menu .m-chips span{font:800 .66rem 'Alegreya Sans',sans-serif;padding:2px 7px;border-radius:999px;border:1.5px solid #b8872a;background:#fff6}
+#menu .m-go{margin-left:auto;flex:none;padding:12px 16px;border-radius:14px;background:linear-gradient(#8ff0b4,#2f9a5a);border:2px solid #d8b060;color:#06240f;font:400 1.2rem 'Lilita One',sans-serif;box-shadow:0 4px 0 #1b5a36}
+`; document.head.appendChild(st);
   m.addEventListener('click', menuClick); ['keydown', 'keyup'].forEach(ev => m.addEventListener(ev, e => e.stopPropagation())); MENU.scr = 'home'; menuDraw();
 }
 function menuClose() { window.MENU_PZ = 0; const m = document.getElementById('menu'); if (m) m.remove(); try { audInit(); } catch (e) { } }
 const SVG_SHARE = '<svg width="16" height="18" viewBox="0 0 14 16" style="vertical-align:-3px"><path d="M7 1v9M3.5 4.5L7 1l3.5 3.5M2 7v8h10V7" stroke="#2a4a98" stroke-width="1.6" fill="none"/></svg>';
 function menuDraw() {
   const m = document.getElementById('menu'); if (!m) return; const has = (S.conv || []).some(v => v > 0) || S.f > 0 || S.lvl > 0, sa = isStandalone(); let h = '<div class="mc">';
-  if (MENU.scr === 'home') {
-    h += '<img class="lg" src="icons/icon-192.png" alt=""><h1>Cénacle</h1><p class="sub">De Jérusalem au monde entier</p>';
-    h += '<button class="mb pri" data-m="play">▶ ' + (has ? 'Continuer' : 'Jouer') + '</button>';
-    if (has) h += '<button class="mb alt" data-m="new">Nouvelle partie</button>';
-    h += '<button class="mb" data-m="saves">💾 Sauvegardes</button>';
-    if (!sa) h += '<button class="mb" data-m="install">📲 Installer l’appli</button>';
-    if (DONATE_URL) h += '<button class="mb alt" data-m="donate">❤ Faire un don</button>';
-  } else if (MENU.scr === 'new') {
+  if (MENU.scr === 'home' || MENU.scr === 'chap') { m.className = 'nm'; m.innerHTML = '<div class="mzw"><div class="mz">' + (MENU.scr === 'chap' ? mPath() : mHome()) + '</div></div>'; mFit(); return; }
+  m.className = '';
+  if (MENU.scr === 'new') {
     h += '<h2>Nouvelle partie ?</h2><div class="box">Ta progression actuelle sera effacée (fidèles, églises, améliorations…). Pense à l’<b>exporter</b> d’abord si tu veux la garder.</div><div class="row"><button class="mb alt" data-m="home">Annuler</button><button class="mb" data-m="newok" style="background:linear-gradient(#e8554a,#a02020)">Tout effacer</button></div>';
   } else if (MENU.scr === 'saves') {
-    const d = S.t ? new Date(S.t) : null; h += '<h2>Sauvegardes</h2><div class="box"><b>Partie actuelle</b><br>Niveau ' + (S.lvl + 1) + ' · ' + mpEsc(ZONES[Math.min(S.lvl, NZ - 1)].n) + '<br>' + fmt(S.f) + ' F · ' + fmt(S.pe || 0) + ' PE<br>' + (d ? 'Enregistrée le ' + d.toLocaleDateString('fr-FR') + ' à ' + d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }) : '') + '</div>';
+    const d = S.t ? new Date(S.t) : null; if (has) h += '<button class="mb alt" data-m="new" style="margin-top:0">Nouvelle partie</button>'; h += '<h2>Sauvegardes</h2><div class="box"><b>Partie actuelle</b><br>Niveau ' + (S.lvl + 1) + ' · ' + mpEsc(ZONES[Math.min(S.lvl, NZ - 1)].n) + '<br>' + fmt(S.f) + ' F · ' + fmt(S.pe || 0) + ' PE<br>' + (d ? 'Enregistrée le ' + d.toLocaleDateString('fr-FR') + ' à ' + d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }) : '') + '</div>';
     h += '<div class="box" style="font-size:.84rem">La partie est enregistrée dans ce navigateur. Pour la transférer (PC ↔ iPhone), exporte le code ou le fichier ici, puis importe-le sur l’autre appareil.</div>';
     h += '<div class="row"><button class="mb" data-m="exp">📋 Copier le code</button><button class="mb" data-m="dl">⬇ Fichier .txt</button></div><div class="row"><button class="mb" data-m="imp">📥 Coller un code</button><button class="mb" data-m="ul">📂 Ouvrir un fichier</button></div><input type="file" id="mfile" accept=".txt,text/plain" hidden><button class="mb alt" data-m="home">← Retour</button>';
   } else if (MENU.scr === 'install') {
@@ -4925,8 +5023,17 @@ function menuDraw() {
   const f = document.getElementById('mfile'); if (f) f.addEventListener('change', () => { const file = f.files && f.files[0]; if (!file) return; file.text().then(tx => saveImport(tx.trim())); });
 }
 function menuClick(ev) {
-  const b = ev.target.closest('button[data-m]'); if (!b) return; const a = b.dataset.m;
-  if (a === 'play') menuClose(); else if (['home', 'new', 'saves', 'install', 'donate'].includes(a)) { MENU.scr = a; menuDraw(); }
+  const b = ev.target.closest('[data-m]'); if (!b) return; const a = b.dataset.m;
+  if (a === 'play') menuClose();
+  else if (a === 'chap') { MENU.scr = 'chap'; MENU.sel = undefined; menuDraw(); }
+  else if (a === 'nsel') { const i = +b.dataset.z; if (mState(i) === 'lk') mToast('Niveau verrouillé : termine d’abord le niveau ' + (mCurIdx() + 1) + '.'); else { MENU.sel = i; menuDraw(); } }
+  else if (a === 'go') mGo(MENU.sel);
+  else if (a === 'lk2') mToast('Chapitre II · Apôtres : termine d’abord le chapitre de Jésus. Il arrive avec la prochaine grande mise à jour.');
+  else if (a === 'lkot') mToast('Ancien Testament : ces chapitres arriveront après celui des Apôtres.');
+  else if (a === 'gift') { menuClose(); try { DG_SHOWN = dKey(); openSheet('dg'); } catch (e) { } }
+  else if (a === 'vers' || a === 'rel') { menuClose(); openSheet('rg'); vsTab(a === 'vers' ? 1 : 0); }
+  else if (a === 'set') { menuClose(); setTimeout(() => { const s = $('setb'); if (s && !MP.open) s.click(); }, 50); }
+  else if (a === 'snd') { const s = $('sndb'); if (s) s.click(); menuDraw(); } else if (['home', 'new', 'saves', 'install', 'donate'].includes(a)) { MENU.scr = a; menuDraw(); }
   else if (a === 'newok') { try { sessionStorage.setItem('cenacle_skipmenu', '1'); } catch (e) { } menuClose(); doReset(); }
   else if (a === 'exp') saveExport();
   else if (a === 'imp') saveImport();
