@@ -183,6 +183,7 @@ html body #mpl{position:fixed!important;left:max(12px,env(safe-area-inset-left,0
 #ld .ldv b{font:600 clamp(.78rem,3.2vw,.92rem) Cinzel,Georgia,serif;letter-spacing:.08em;color:#ffd24a}
 #ld .ldb{position:relative;width:min(340px,78vw);height:14px;border-radius:9px;background:#1a1008;border:2px solid #d8b060;box-shadow:0 2px 0 #000a,inset 0 2px 4px #000c;overflow:hidden}
 #ld .ldb i{position:absolute;left:0;top:0;bottom:0;width:100%;transform-origin:0 50%;transform:scaleX(.05);background:linear-gradient(#fff0b0,#e8b030 60%,#b07818);transition:transform .5s ease}
+#ld .ldb i.boot{animation:ldboot 26s cubic-bezier(.25,.6,.35,1) forwards}@keyframes ldboot{from{transform:scaleX(.08)}to{transform:scaleX(.94)}}
 #ld .ldb em{position:absolute;top:0;bottom:0;left:0;width:40%;background:linear-gradient(90deg,transparent,#fff8 50%,transparent);animation:ldshim 1.3s linear infinite;will-change:transform}
 #ld .ldt{position:relative;min-height:1.2em;font:500 .85rem 'Alegreya Sans',Georgia,serif;color:#d8c28c;letter-spacing:.04em}
 #ld .ldsrc{position:absolute;bottom:calc(env(safe-area-inset-bottom,0px) + 16px);left:0;right:0;font-size:.68rem;color:#b89c6488}
@@ -192,7 +193,7 @@ html body #mpl{position:fixed!important;left:max(12px,env(safe-area-inset-left,0
 @keyframes ldv{0%{opacity:0}1.46%{opacity:1}6.87%{opacity:1}8.33%{opacity:0}100%{opacity:0}}
 @media (prefers-reduced-motion:reduce){#ld .ldr,#ld .ldg{animation:none}}</style>
 <div id="ld" role="status" aria-live="polite"><div class="ldr"></div><div class="ldg"></div><div class="ldc"></div><h1>Cénacle</h1><p class="lds">De Jérusalem au monde entier</p><div class="ldvs"><div class="ldv" style="animation-delay:0s"><p>Car Dieu a tellement aimé le monde qu’il a donné son Fils unique, afin que quiconque croit en lui ne se perde pas, mais obtienne la vie éternelle.</p><b>Jn 3, 16</b></div><div class="ldv" style="animation-delay:4s"><p>Celui qui n’aime pas n’a pas connu Dieu, car Dieu est amour.</p><b>1 Jn 4, 8</b></div><div class="ldv" style="animation-delay:8s"><p>Et nous, nous avons reconnu l’amour que Dieu a pour nous, et nous y avons cru. Dieu est amour : qui demeure dans l’amour demeure en Dieu, et Dieu demeure en lui.</p><b>1 Jn 4, 16</b></div><div class="ldv" style="animation-delay:12s"><p>Quant à nous, nous aimons parce que Dieu lui-même nous a aimés le premier.</p><b>1 Jn 4, 19</b></div><div class="ldv" style="animation-delay:16s"><p>Or, la preuve que Dieu nous aime, c’est que le Christ est mort pour nous, alors que nous étions encore pécheurs.</p><b>Rm 5, 8</b></div><div class="ldv" style="animation-delay:20s"><p>J’en ai la certitude : ni la mort ni la vie, ni les anges ni les Principautés célestes, ni le présent ni l’avenir, ni les Puissances, ni les hauteurs, ni les abîmes, ni aucune autre créature, rien ne pourra nous séparer de l’amour de Dieu qui est dans le Christ Jésus notre Seigneur.</p><b>Rm 8, 38-39</b></div><div class="ldv" style="animation-delay:24s"><p>Depuis les lointains, le Seigneur m’est apparu : Je t’aime d’un amour éternel, aussi je te garde ma fidélité.</p><b>Jr 31, 3</b></div><div class="ldv" style="animation-delay:28s"><p>Rendez grâce au Seigneur : il est bon, éternel est son amour !</p><b>Ps 135 (136), 1</b></div><div class="ldv" style="animation-delay:32s"><p>Même si les montagnes s’écartaient, si les collines s’ébranlaient, ma fidélité ne s’écarterait pas de toi, mon alliance de paix ne serait pas ébranlée, – dit le Seigneur, qui te montre sa tendresse.</p><b>Is 54, 10</b></div><div class="ldv" style="animation-delay:36s"><p>Le Seigneur ton Dieu est en toi, c’est lui, le héros qui apporte le salut. Il aura en toi sa joie et son allégresse, il te renouvellera par son amour ; il exultera pour toi et se réjouira, …</p><b>So 3, 17</b></div><div class="ldv" style="animation-delay:40s"><p>L’amour prend patience ; l’amour rend service ; l’amour ne jalouse pas ; il ne se vante pas, ne se gonfle pas d’orgueil ; …</p><b>1 Co 13, 4</b></div><div class="ldv" style="animation-delay:44s"><p>Grâce à l’amour du Seigneur, nous ne sommes pas anéantis ; ses tendresses ne s’épuisent pas ; elles se renouvellent chaque matin, – oui, ta fidélité surabonde.</p><b>Lm 3, 22-23</b></div></div><div class="ldb"><i id="ldi"></i><em></em></div><div class="ldt" id="ldt">Chargement…</div><div class="ldsrc">Bible · traduction officielle liturgique (AELF)</div></div>
-<script src="i18n.js"></script><script>(function(){var t0=Date.now(),done=0;window.LD=function(p,txt){try{var i=document.getElementById('ldi');if(i)i.style.transform='scaleX('+Math.max(.05,Math.min(1,p/100))+')';if(txt){var e=document.getElementById('ldt');if(e)e.textContent=window.$t?$t(txt):txt;}}catch(e){}};window.LDdone=function(){if(done)return;done=1;LD(100,'Prêt');var d=document.getElementById('ld');if(!d)return;setTimeout(function(){d.classList.add('out');setTimeout(function(){if(d.parentNode)d.parentNode.removeChild(d);},1000);},Math.max(250,1800-(Date.now()-t0)));};window.addEventListener('load',function(){setTimeout(function(){window.LDdone();},4000);});LD(8,'Chargement de la page…');})();</script>
+<script src="i18n.js"></script><script>(function(){var t0=Date.now(),done=0;window.LD=function(p,txt){try{var i=document.getElementById('ldi');if(i)i.style.transform='scaleX('+Math.max(.05,Math.min(1,p/100))+')';if(txt){var e=document.getElementById('ldt');if(e)e.textContent=window.$t?$t(txt):txt;}}catch(e){}};window.LDdone=function(){if(done)return;done=1;var bb=document.getElementById('ldi');if(bb)bb.classList.remove('boot');LD(100,'Prêt');var d=document.getElementById('ld');if(!d)return;setTimeout(function(){d.classList.add('out');setTimeout(function(){if(d.parentNode)d.parentNode.removeChild(d);},1000);},Math.max(250,1800-(Date.now()-t0)));};window.addEventListener('load',function(){setTimeout(function(){window.LDdone();},4000);});LD(8,'Chargement de la page…');})();</script>
 <title>Cénacle</title>
 
 <meta name="claude:viewport-fit-sides" content="cover">
@@ -585,7 +586,7 @@ body.fbh #setb,body.fbh #sndb{display:none!important}
   <div id="nogl"><div><h2 style="font:400 1.6rem var(--display)">3D indisponible</h2><p>Votre navigateur ne peut pas afficher la scène en 3D.</p></div></div>
 </div>
 <script>window.$tD&&$tD(document.body)</script><script>window.LD&&LD(60,'Construction des villes…')</script>
-<script>
+<script type="text/plain" data-boot>
 /* lien de don : laisser vide tant qu'il n'y en a pas (le bouton « Faire un don » reste caché) */
 const DONATE_URL = 'https://buy.stripe.com/5kQcN5enAbIyftf3im8bS00';
 const KEY = 'cenacle_v2'; const _hw = new THREE.Vector3(); const CS = .8, CAMH = 24, CAMZ = 22, CAML = 26;
@@ -622,29 +623,55 @@ function solMeshes(o, L) { o.traverse(q => { if (q.isMesh && !q.isInstancedMesh 
 const solTris = m => { const g = m.geometry; return Math.floor((g.index ? g.index.count : g.attributes.position.count) / 3); };
 /* objets ajoutés après le chargement (églises, Golgotha) : solides posés */
 function solObj(o) { if (!o) return; if (!SOL.ok) { SOL.objs.push(o); return; } for (const m of solMeshes(o, [])) { m.updateMatrixWorld(true); const e = m.matrixWorld.elements, n = solTris(m); for (let t = 0; t < n; t++) { solWorld(m, t, e); solTri(_t9[0], _t9[1], _t9[2], _t9[3], _t9[4], _t9[5], _t9[6], _t9[7], _t9[8], 0); } } }
+/* noyau de calcul de la grille : exécuté dans un Web Worker (rien ne bloque l'écran de chargement ni le menu) ; repli sur la page si le Worker est impossible */
+function solCompute(J) {
+  const x0 = J.x0, z0 = J.z0, W = J.W, H = J.H, Wo = J.Wo, Ho = J.Ho;
+  const h = new Float32Array(W * H).fill(-99), ot = new Float32Array(Wo * Ho).fill(-99), ob = new Float32Array(Wo * Ho).fill(99), oc = new Uint16Array(Wo * Ho), tg = new Float32Array(Wo * Ho).fill(-99);
+  const iA = (x, z) => { const i = Math.floor((x - x0) / .5), j = Math.floor((z - z0) / .5); return (i < 0 || j < 0 || i >= W || j >= H) ? -1 : j * W + i; };
+  const iO = (x, z) => { const i = Math.floor(x - x0), j = Math.floor(z - z0); return (i < 0 || j < 0 || i >= Wo || j >= Ho) ? -1 : j * Wo + i; };
+  function tri(ax, ay, az, bx, by, bz, cx, cy, cz, mode, mn) {
+    const l = Math.max(Math.hypot(bx - ax, bz - az), Math.hypot(cx - ax, cz - az), Math.hypot(cx - bx, cz - bz)), n = Math.min(120, Math.ceil(l / .35)); let tot = 0, sup = 0;
+    for (let i = 0; i <= n; i++) for (let j = 0; j <= n - i; j++) {
+      const u = n ? i / n : 0, v = n ? j / n : 0, x = ax + (bx - ax) * u + (cx - ax) * v, z = az + (bz - az) * u + (cz - az) * v, y = ay + (by - ay) * u + (cy - ay) * v;
+      if (mode === 0) { const k = iA(x, z); if (k >= 0 && y > h[k]) h[k] = y; }
+      else if (mode === 1) { tot++; const k = iA(x, z); if (k >= 0 && h[k] >= mn - .35) sup++; }
+      else if (mode === 3) { const k = iO(x, z); if (k >= 0) { const bn = Math.floor((y - tg[k]) / .5); if (bn >= 0 && bn < 16) oc[k] |= 1 << bn; } }
+      else if (mode === 4) { const k = iO(x, z); if (k >= 0 && y > tg[k]) tg[k] = y; }
+      else { const k = iO(x, z); if (k >= 0) { if (y > ot[k]) ot[k] = y; if (y < ob[k]) ob[k] = y; } }
+    }
+    return mode === 1 ? (sup >= tot * .5 || (l >= 4 && sup > 0)) : false;
+  }
+  const t9 = new Float64Array(9);
+  function world(g, t) { const P = g.pos, ix = g.idx, e = g.mat; for (let q = 0; q < 3; q++) { const k = (ix ? ix[t * 3 + q] : t * 3 + q) * 3, x = P[k], y = P[k + 1], z = P[k + 2]; t9[q * 3] = e[0] * x + e[4] * y + e[8] * z + e[12]; t9[q * 3 + 1] = e[1] * x + e[5] * y + e[9] * z + e[13]; t9[q * 3 + 2] = e[2] * x + e[6] * y + e[10] * z + e[14]; } }
+  const nT = g => Math.floor((g.idx ? g.idx.length : g.pos.length / 3) / 3);
+  for (const g of J.dir) { const n = nT(g); for (let t = 0; t < n; t++) { world(g, t); tri(t9[0], t9[1], t9[2], t9[3], t9[4], t9[5], t9[6], t9[7], t9[8], 0); if (g.terrain) tri(t9[0], t9[1], t9[2], t9[3], t9[4], t9[5], t9[6], t9[7], t9[8], 4); } }
+  let tot = 0; J.dec.forEach(g => { tot += nT(g); });
+  const tm = new Uint16Array(tot), ti = new Int32Array(tot), tz = new Float32Array(tot), cnt = new Int32Array(1203), bk = y => Math.max(0, Math.min(1200, Math.floor((y + 5) * 4))); let q = 0;
+  for (let a = 0; a < J.dec.length; a++) { const g = J.dec[a], n = nT(g); for (let t = 0; t < n; t++, q++) { world(g, t); const mn = Math.min(t9[1], t9[4], t9[7]); tm[q] = a; ti[q] = t; tz[q] = mn; cnt[bk(mn) + 1]++; } }
+  for (let i = 1; i < cnt.length; i++) cnt[i] += cnt[i - 1];
+  const ord = new Int32Array(tot); for (let i = 0; i < tot; i++) ord[cnt[bk(tz[i])]++] = i;
+  const ovh = J.dec.map(g => new Float32Array(g.idx ? 0 : g.pos.length / 3)); let nOv = 0;
+  for (let r = 0; r < tot; r++) {
+    const i = ord[r], a = tm[i], t = ti[i]; world(J.dec[a], t);
+    if (tri(t9[0], t9[1], t9[2], t9[3], t9[4], t9[5], t9[6], t9[7], t9[8], 1, tz[i])) { tri(t9[0], t9[1], t9[2], t9[3], t9[4], t9[5], t9[6], t9[7], t9[8], 0); tri(t9[0], t9[1], t9[2], t9[3], t9[4], t9[5], t9[6], t9[7], t9[8], 3); }
+    else { tri(t9[0], t9[1], t9[2], t9[3], t9[4], t9[5], t9[6], t9[7], t9[8], 2); nOv++; const at = ovh[a]; if (at.length) at[t * 3] = at[t * 3 + 1] = at[t * 3 + 2] = 1; }
+  }
+  return { h, ot, ob, oc, tg, ovh, nTri: tot, nOvh: nOv };
+}
 async function solBuild() {
   if (SOL.busy || SOL.ok) return; SOL.busy = true;
   try {
-    SOL.x0 = NV.x0; SOL.z0 = NV.z0; SOL.W = NV.W + 4; SOL.H = NV.H + 4; SOL.Wo = Math.ceil(NV.W * NV.cs) + 2; SOL.Ho = Math.ceil(NV.H * NV.cs) + 2; const tB = performance.now();
-    SOL.h = new Float32Array(SOL.W * SOL.H).fill(-99); SOL.ot = new Float32Array(SOL.Wo * SOL.Ho).fill(-99); SOL.ob = new Float32Array(SOL.Wo * SOL.Ho).fill(99); SOL.oc = new Uint16Array(SOL.Wo * SOL.Ho); SOL.tg = new Float32Array(SOL.Wo * SOL.Ho).fill(-99);
-    let t0 = performance.now(); const pause = async () => { if (performance.now() - t0 > 10) { await new Promise(r => setTimeout(r, 0)); t0 = performance.now(); } };
-    /* a) relief, rochers de bordure, églises : posés d'office */
-    const dir0 = []; if (terrain) solMeshes(terrain, dir0); BORD.forEach(o => solMeshes(o, dir0)); SOL.objs.forEach(o => solMeshes(o, dir0)); SOL.objs.length = 0;
-    for (const m of dir0) { m.updateMatrixWorld(true); const e = m.matrixWorld.elements, n = solTris(m); for (let t = 0; t < n; t++) { solWorld(m, t, e); solTri(_t9[0], _t9[1], _t9[2], _t9[3], _t9[4], _t9[5], _t9[6], _t9[7], _t9[8], 0); if (m === terrain) solTri(_t9[0], _t9[1], _t9[2], _t9[3], _t9[4], _t9[5], _t9[6], _t9[7], _t9[8], 4); if ((t & 1023) === 1023) await pause(); } }
-    /* b) décor fusionné : classement par altitude croissante ; un triangle est « posé » s'il repose sur du solide déjà inscrit */
-    const dm = []; if (decor) solMeshes(decor, dm); let tot = 0; dm.forEach(m => { m.updateMatrixWorld(true); tot += solTris(m); });
-    const tm = new Uint16Array(tot), ti = new Int32Array(tot), tz = new Float32Array(tot), cnt = new Int32Array(1203); let q = 0;
-    for (let a = 0; a < dm.length; a++) { const m = dm[a], e = m.matrixWorld.elements, n = solTris(m); for (let t = 0; t < n; t++, q++) { solWorld(m, t, e); const mn = Math.min(_t9[1], _t9[4], _t9[7]); tm[q] = a; ti[q] = t; tz[q] = mn; cnt[Math.max(0, Math.min(1200, Math.floor((mn + 5) * 4))) + 1]++; if ((q & 4095) === 4095) await pause(); } }
-    for (let i = 1; i < cnt.length; i++) cnt[i] += cnt[i - 1];
-    const ord = new Int32Array(tot); for (let i = 0; i < tot; i++) { ord[cnt[Math.max(0, Math.min(1200, Math.floor((tz[i] + 5) * 4)))]++] = i; }
-    const ovh = dm.map(m => { const a = m.geometry.attributes.ovh; return a && !m.geometry.index ? a : null; }); let nOv = 0;
-    for (let r = 0; r < tot; r++) {
-      const i = ord[r], a = tm[i], m = dm[a], t = ti[i]; solWorld(m, t, m.matrixWorld.elements);
-      if (solTri(_t9[0], _t9[1], _t9[2], _t9[3], _t9[4], _t9[5], _t9[6], _t9[7], _t9[8], 1, tz[i])) { solTri(_t9[0], _t9[1], _t9[2], _t9[3], _t9[4], _t9[5], _t9[6], _t9[7], _t9[8], 0); solTri(_t9[0], _t9[1], _t9[2], _t9[3], _t9[4], _t9[5], _t9[6], _t9[7], _t9[8], 3); }
-      else { solTri(_t9[0], _t9[1], _t9[2], _t9[3], _t9[4], _t9[5], _t9[6], _t9[7], _t9[8], 2); nOv++; const at = ovh[a]; if (at) { at.array[t * 3] = at.array[t * 3 + 1] = at.array[t * 3 + 2] = 1; at.needsUpdate = true; } }
-      if ((r & 2047) === 2047) await pause();
-    }
-    SOL.nTri = tot; SOL.nOvh = nOv; SOL.ms = Math.round(performance.now() - tB); SOL.ok = true; SOL.objs.splice(0).forEach(o => solObj(o));
+    const tB = performance.now(); SOL.x0 = NV.x0; SOL.z0 = NV.z0; SOL.W = NV.W + 4; SOL.H = NV.H + 4; SOL.Wo = Math.ceil(NV.W * NV.cs) + 2; SOL.Ho = Math.ceil(NV.H * NV.cs) + 2;
+    const grp = (m, terr) => { m.updateMatrixWorld(true); const g = m.geometry; return { pos: g.attributes.position.array.slice(), idx: g.index ? g.index.array.slice() : null, mat: Float32Array.from(m.matrixWorld.elements), terrain: !!terr }; };
+    const dir = [], dec = [], decM = []; if (terrain) solMeshes(terrain, []).forEach(m => dir.push(grp(m, true))); BORD.forEach(o => solMeshes(o, []).forEach(m => dir.push(grp(m)))); SOL.objs.forEach(o => solMeshes(o, []).forEach(m => dir.push(grp(m)))); SOL.objs.length = 0;
+    if (decor) solMeshes(decor, []).forEach(m => { dec.push(grp(m)); decM.push(m); });
+    const J = { x0: SOL.x0, z0: SOL.z0, W: SOL.W, H: SOL.H, Wo: SOL.Wo, Ho: SOL.Ho, dir, dec }; let R = null, w = null;
+    try { w = new Worker(URL.createObjectURL(new Blob([solCompute.toString() + '\nself.onmessage=function(e){var r=solCompute(e.data);var tr=[r.h.buffer,r.ot.buffer,r.ob.buffer,r.oc.buffer,r.tg.buffer];for(var i=0;i<r.ovh.length;i++)tr.push(r.ovh[i].buffer);self.postMessage(r,tr)};'], { type: 'text/javascript' }))); } catch (e) { w = null; }
+    if (w) { const tl = []; dir.concat(dec).forEach(g => { tl.push(g.pos.buffer); if (g.idx) tl.push(g.idx.buffer); }); R = await new Promise((res, rej) => { w.onmessage = e => res(e.data); w.onerror = e => rej(e); w.postMessage(J, tl); }); w.terminate(); }
+    else { await new Promise(r => setTimeout(r, 400)); R = solCompute(J); }
+    SOL.h = R.h; SOL.ot = R.ot; SOL.ob = R.ob; SOL.oc = R.oc; SOL.tg = R.tg;
+    decM.forEach((m, i) => { const at = m.geometry.attributes.ovh; if (at && !m.geometry.index && R.ovh[i].length === at.array.length) { at.array.set(R.ovh[i]); at.needsUpdate = true; } });
+    SOL.nTri = R.nTri; SOL.nOvh = R.nOvh; SOL.ms = Math.round(performance.now() - tB); SOL.ok = true; SOL.objs.splice(0).forEach(o => solObj(o));
   } catch (e) { SOL.ok = false; SOL.err = String(e && e.stack || e); }
   SOL.busy = false;
 }
@@ -5282,7 +5309,7 @@ const SFX = {
 function sfx(n) { if (!AUD.ctx || AUD.ctx.state !== 'running' || AUD.cfg.mute || !SFX[n]) return; const t = performance.now(), gap = { coin: 70, hurt: 250, convert: 60, click: 40 }[n] || 120; if (t - (AUD.last[n] || 0) < gap) return; AUD.last[n] = t; try { SFX[n](); } catch (e) { } }
 ['pointerdown', 'touchend', 'keydown'].forEach(ev => addEventListener(ev, audInit, { passive: true }));
 /* appli installable : service worker (hors ligne) + astuce d'installation sur iPhone */
-if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol) && !window.claude) addEventListener('load', () => {
+if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol) && !window.claude) (document.readyState === 'complete' ? (fn => fn()) : (fn => addEventListener('load', fn)))(() => {
   const SWU = { fr: [$t('Nouvelle version disponible'), $t('Mettre à jour')] }, tx = SWU.fr; let shown = false, reloading = false;
   const offer = w => { if (shown || !w || !navigator.serviceWorker.controller) return; shown = true; const d = document.createElement('div'); d.id = 'swup'; d.setAttribute('role', 'status'); d.innerHTML = '<span>✦ ' + tx[0] + '</span><button type="button">' + tx[1] + '</button>'; d.querySelector('button').addEventListener('click', ev => { ev.stopPropagation(); try { save(); } catch (e) { } navigator.serviceWorker.addEventListener('controllerchange', () => { if (!reloading) { reloading = true; location.reload(); } }); w.postMessage({ type: 'SKIP_WAITING' }); setTimeout(() => { if (!reloading) { reloading = true; location.reload(); } }, 4000); }); document.body.appendChild(d); };
   navigator.serviceWorker.register('sw.js').then(reg => {
@@ -5443,7 +5470,7 @@ function menuClose() { window.MENU_PZ = 0; const m = document.getElementById('me
 const SVG_SHARE = '<svg width="16" height="18" viewBox="0 0 14 16" style="vertical-align:-3px"><path d="M7 1v9M3.5 4.5L7 1l3.5 3.5M2 7v8h10V7" stroke="#2a4a98" stroke-width="1.6" fill="none"/></svg>';
 function menuDraw() {
   const m = document.getElementById('menu'); if (!m) return; const has = (S.conv || []).some(v => v > 0) || S.f > 0 || S.lvl > 0, sa = isStandalone(); let h = '<div class="mc">';
-  if (MENU.scr === 'home' || MENU.scr === 'chap') { m.className = 'nm'; m.innerHTML = '<div class="mzw"><div class="mz' + (MENU.scr === 'chap' ? '' : ' mh') + '">' + (MENU.scr === 'chap' ? mPath() : mHome()) + '</div></div>'; mFit(); return; }
+  if (MENU.scr === 'home' || MENU.scr === 'chap') { m.className = 'nm'; m.innerHTML = '<div class="mzw"><div class="mz' + (MENU.scr === 'chap' ? '' : ' mh') + '">' + (MENU.scr === 'chap' ? mPath() : mHome()) + '</div></div>'; mFit(); if (MENU.scr === 'home' && window.langBar) m.appendChild(langBar()); return; }
   m.className = '';
   if (MENU.scr === 'new') {
     h += $t('<h2>Nouvelle partie ?</h2><div class="box">Ta progression actuelle sera effacée (fidèles, églises, améliorations…). Pense à l’<b>exporter</b> d’abord si tu veux la garder.</div><div class="row"><button class="mb alt" data-m="home">Annuler</button><button class="mb" data-m="newok" style="background:linear-gradient(#e8554a,#a02020)">Tout effacer</button></div>');
@@ -5502,7 +5529,7 @@ function sndDraw(box, mk) {
   w.appendChild(mk('div', $t('iPhone : le bouton silencieux coupe aussi le son.'), 'mut')); box.appendChild(w); if (window.langRow) langRow(box);
 }
 </script>
-<script>
+<script type="text/plain" data-boot>
 /* ---------- conversion : la colombe descend, un halo de lumière transforme le converti, puis il s'élève et disparaît ----------
    Purement visuel : la logique reste celle de convertEnemy (e.done = 1,6 s : plus d'attaque, de déplacement, de ciblage ni de collision,
    puis retrait de la carte et réapparition plus tard via respRec / RESP). Repli sur l'ancienne animation en mode économie (FAST),
@@ -5592,9 +5619,9 @@ function sndDraw(box, mk) {
 })();
 </script>
 
-<script>
+<script type="text/plain" data-boot>
 setTimeout(()=>{ try{ window.dbgCam = new THREE.PerspectiveCamera(50, innerWidth/innerHeight, .5, 700); const o = renderer.render.bind(renderer); window.dbgOn = false; window.dV={p:[0,100,10],l:[0,0,0],f:60}; renderer.render = (s,c)=>{ if(window.dbgOn){ const v=window.dV; dbgCam.fov=v.f; dbgCam.position.set(...v.p); dbgCam.lookAt(...v.l); dbgCam.aspect=innerWidth/innerHeight; dbgCam.updateProjectionMatrix(); return o(s,dbgCam);} return o(s,c); }; window.cam=(p,l,f)=>{window.dbgOn=true;window.dV={p,l,f:f||50}; scene.fog.near=900; scene.fog.far=1200; clouds.forEach(c=>c.visible=false); document.getElementById('over').style.display='none';}; window.zv=(n,dz)=>{const [cx,cz]=zc(n); cam([cx,70,cz+44],[cx,0,cz+(dz||4)],62);}; window.zt=(n)=>{const [cx,cz]=zc(n); cam([cx,128,cz+.1],[cx,0,cz],72);}; }catch(e){console.log('dbg fail',e)} },1500);
-</script><script>window.audit=()=>{ const W_=innerWidth, H_=innerHeight, els=[]; document.querySelectorAll('#hl .row .pill').forEach((e,i)=>{ if(getComputedStyle(e).display!=='none') els.push(['pill'+i+(e.id?'#'+e.id:''),e]); }); [['quest','#quest'],['setb','#setb'],['hero','#hero']].forEach(([n,q])=>{const e=document.querySelector(q); if(e&&getComputedStyle(e).display!=='none') els.push([n,e]);}); document.querySelectorAll('.sb').forEach((e,i)=>els.push(['sb'+i,e])); const R=els.map(([n,e])=>[n,e.getBoundingClientRect()]); const bad=[]; R.forEach(([n,r])=>{ if(r.left<-0.5||r.right>W_+.5||r.top<-.5||r.bottom>H_+.5) bad.push('out:'+n); }); for(let i=0;i<R.length;i++)for(let j=i+1;j<R.length;j++){const a=R[i][1],b=R[j][1]; if(a.left<b.right-.5&&b.left<a.right-.5&&a.top<b.bottom-.5&&b.top<a.bottom-.5) bad.push('overlap:'+R[i][0]+'/'+R[j][0]);} document.querySelectorAll('#hl .row .pill').forEach(p=>{ if(getComputedStyle(p).display==='none')return; const pr=p.getBoundingClientRect(), ir=p.querySelector('i').getBoundingClientRect(); if(ir.left<pr.left-.5||ir.right>pr.right+.5||ir.top<pr.top-.5||ir.bottom>pr.bottom+.5) bad.push('icon-out:'+p.id); const sp=p.querySelector('span').getBoundingClientRect(); if(sp.left<ir.right-1) bad.push('text-over-icon:'+p.id); }); return {w:W_,h:H_,n:R.length,bad,pills:R.filter(x=>x[0].startsWith('pill')).map(x=>x[0]+':'+Math.round(x[1].left)+'-'+Math.round(x[1].right))}; };</script><script>window.entTest = (z, steps, every) => {
+</script><script type="text/plain" data-boot>window.audit=()=>{ const W_=innerWidth, H_=innerHeight, els=[]; document.querySelectorAll('#hl .row .pill').forEach((e,i)=>{ if(getComputedStyle(e).display!=='none') els.push(['pill'+i+(e.id?'#'+e.id:''),e]); }); [['quest','#quest'],['setb','#setb'],['hero','#hero']].forEach(([n,q])=>{const e=document.querySelector(q); if(e&&getComputedStyle(e).display!=='none') els.push([n,e]);}); document.querySelectorAll('.sb').forEach((e,i)=>els.push(['sb'+i,e])); const R=els.map(([n,e])=>[n,e.getBoundingClientRect()]); const bad=[]; R.forEach(([n,r])=>{ if(r.left<-0.5||r.right>W_+.5||r.top<-.5||r.bottom>H_+.5) bad.push('out:'+n); }); for(let i=0;i<R.length;i++)for(let j=i+1;j<R.length;j++){const a=R[i][1],b=R[j][1]; if(a.left<b.right-.5&&b.left<a.right-.5&&a.top<b.bottom-.5&&b.top<a.bottom-.5) bad.push('overlap:'+R[i][0]+'/'+R[j][0]);} document.querySelectorAll('#hl .row .pill').forEach(p=>{ if(getComputedStyle(p).display==='none')return; const pr=p.getBoundingClientRect(), ir=p.querySelector('i').getBoundingClientRect(); if(ir.left<pr.left-.5||ir.right>pr.right+.5||ir.top<pr.top-.5||ir.bottom>pr.bottom+.5) bad.push('icon-out:'+p.id); const sp=p.querySelector('span').getBoundingClientRect(); if(sp.left<ir.right-1) bad.push('text-over-icon:'+p.id); }); return {w:W_,h:H_,n:R.length,bad,pills:R.filter(x=>x[0].startsWith('pill')).map(x=>x[0]+':'+Math.round(x[1].left)+'-'+Math.round(x[1].right))}; };</script><script type="text/plain" data-boot>window.entTest = (z, steps, every) => {
   S.ap.fill(0); apSig = ''; syncDisc(); enterZone(z); clearEnemies(); const [x0, z0] = zoneStart(z); W.x = x0; W.z = z0; W.hp = 1e9; W.dead = 0; const t = TP[z]; const dt = 1 / 30; every = every || 40;
   for (let i = 0; i < 24; i++) { const a = i / 24 * 6.28, r = 10 + (i % 4) * 4; spawnFoe(z, false, [0, 1, 4][i % 3], PX[z].cx + Math.cos(a) * (6 + (i % 4) * 5), PX[z].cz + Math.sin(a) * (6 + (i % 4) * 5), undefined, i % 8 === 0 ? 1 : 0); }
   if (z === 0) { for (let k = 0; k < 5; k++) spawnGuard(z); for (let k = 0; k < 3; k++) spawnTowerArcher(z); }
@@ -5698,7 +5725,7 @@ window.mkMock=()=>{ const L={}, peerL=[], connL=[]; let conn=true; const me={pee
 const room={ emit(t,d){ if(!conn) return Promise.resolve(); (L[t]||[]).forEach(h=>h({topic:t,data:d,peer:me.peer,by:me.by,isMe:true,sameTab:true,kind:'viewer',guest:false})); return Promise.resolve(); }, on(t,h){ (L[t]=L[t]||[]).push(h); return ()=>{L[t]=L[t].filter(x=>x!==h)}; }, presence(p){ const n={...me.presence}; for(const k in p){ if(p[k]===null) delete n[k]; else n[k]=p[k]; } me.presence=Object.freeze(n); return Promise.resolve(); }, peers:snap, onPeers(h){ peerL.push(h); setTimeout(()=>h({peers:snap(),joined:snap(),left:[],updated:[]}),0); return ()=>{}; }, connected:()=>conn, onConnection(h){ connL.push(h); setTimeout(()=>h(conn),0); return ()=>{}; }, join(){ return Promise.reject({code:'not_permitted'}); } };
 const user={ me:async()=>({name:'Marie',color:'#d44444',id:'u_me'}), profiles:async ids=>Object.fromEntries(ids.map(i=>[i,{id:i,name:'Nom '+i}])) };
 return { room, user, other(id,p){ const prev=others.get(id); others.set(id,Object.freeze({peer:id,by:'u_'+id,isMe:false,sameTab:false,kind:'viewer',guest:false,presence:Object.freeze({...(prev?prev.presence:{}),...p}),updatedAt:Date.now()})); notify(); }, leave(id){ others.delete(id); notify(); }, from(id,t,d){ (L[t]||[]).forEach(h=>h({topic:t,data:d,peer:id,by:'u_'+id,isMe:false,sameTab:false,kind:'viewer',guest:false})); }, setConn(c){ conn=c; connL.forEach(h=>h(c)); }, me, L }; };
-</script><script>
+</script><script type="text/plain" data-boot>
 /* ---------- vibrations (étape 4) : impulsion courte par conversion, motif long pour un boss ; limitées pour ne pas bourdonner ----------
    Android / Chrome : navigator.vibrate. iPhone : Safari n'a pas navigator.vibrate ; seul un vrai toucher sur un <label> lié à un
    <input type=checkbox switch> déclenche le retour haptique système (Safari 17.4+ / iOS 18). Depuis iOS 18.4, WebKit exige un geste
@@ -5726,9 +5753,9 @@ return { room, user, other(id,p){ const prev=others.get(id); others.set(id,Objec
     if (!can) w.insertBefore(mk('div', ios ? $t('iPhone : Safari ne laisse vibrer qu’au toucher ; les vibrations du jeu restent rares ou absentes.') : $t('Cet appareil ne permet pas les vibrations.'), 'mut'), mu || null); }; }
 })();
 </script>
-<script src="weapons.js"></script>
-<script src="armes.js"></script>
-<script>
+<script type="text/plain" data-boot data-src="weapons.js"></script>
+<script type="text/plain" data-boot data-src="armes.js"></script>
+<script type="text/plain" data-boot>
 /* ---------- notes de mise à jour : la plus récente en tête ; pour une nouvelle version, ajouter un objet au début de PATCHN ---------- */
 const PATCHN = [
   { v: '24s', d: '2026-10-24', fr: ['Chapitre I reconstruit : 13 lieux en Israël, de Jérusalem au Golgotha, puis le monde spirituel.', 'Armes de foi : 12 armes gagnées sur les boss (Fouet, Bâton du berger… Glaive de l’Esprit), La Parole au départ ; armes spirituelles, jamais contre les personnes.', 'Armure de Dieu en 5 pièces.', 'Lumière de la conversion plus petite et plus douce.', 'Vibrations à chaque conversion (Android) ; réglage « Vibrations ».', 'Ennemis plus forts selon le niveau et la proximité du boss, plus d’archers et de frondeurs, postés le long des chemins.', 'Boss qui attaquent à distance (pierres, javelots, flèches) avec une visée annoncée : esquive-les.', 'Gethsémani devient une oliveraie ; Samarie et Jéricho ont leurs maisons, le puits de Jacob et le sycomore de Zachée.', 'Combat contre Satan rééquilibré pour le Glaive de l’Esprit.', 'Progression 2 fois plus lente : les gains par minute de jeu (F, PE, ressources, Puissance, Vie) sont divisés par deux ; les packs de la boutique ne changent pas.', 'Coop : en rejoignant un ami, tu arrives dans son niveau et tu le suis quand il en change ; ton personnage est hissé au minimum du niveau et l’arme de foi du niveau t’est prêtée, le temps de la partie (ta sauvegarde n’est pas modifiée).', 'Menu principal : Réglages, Cadeau du jour, Versets et Reliques s’ouvrent sans lancer la partie ; en les fermant, tu reviens au menu.'],
@@ -5759,4 +5786,7 @@ function pnOpen() { pnClose(); try { localStorage.setItem(PNK, PATCHN[0].v); } c
 #pnov ul{margin:4px 0 2px 18px;padding:0}#pnov li{font-size:.86rem;margin:3px 0;line-height:1.3}
 #pnov .pnnew{font-size:.7rem;background:#e23b2a;color:#fff;border-radius:8px;padding:1px 7px;vertical-align:middle}
 </style>
-</body></html>
+<script>(function(){var L=Array.prototype.slice.call(document.querySelectorAll('script[data-boot]')),started=0;
+function run(i){if(i>=L.length)return;var o=L[i],e=document.createElement('script');if(o.getAttribute('data-src')){e.src=o.getAttribute('data-src');e.onload=e.onerror=function(){run(i+1)};document.head.appendChild(e);}else{e.textContent=o.textContent;o.textContent='';document.head.appendChild(e);run(i+1);}}
+function go(){if(started)return;started=1;try{var b=document.getElementById('ldi');if(b)b.classList.add('boot');window.LD&&LD(60,'Construction du monde… quelques secondes de patience')}catch(e){}setTimeout(function(){run(0)},30);}
+if(window.requestAnimationFrame)requestAnimationFrame(function(){requestAnimationFrame(go)});setTimeout(go,1500);})();</script></body></html>
