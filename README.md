@@ -35,3 +35,15 @@ La partie est stockée dans le navigateur. Pour la transférer (PC ↔ iPhone) :
 Le démarrage reconstruit 12 villes, le terrain et la navigation (~18-20 s sur PC). Le terrain et le résultat de la validation de navigation sont pré-calculés dans `bake/<version>.bin` (gzip, ~7,5 Mo), où `<version>` est l'empreinte du code de construction du monde (scripts `data-boot` de `index.html`). Si le fichier est absent ou ne correspond pas au code, le jeu recalcule tout comme avant (plus lent, mais identique).
 
 **Après toute modification du code de `index.html`, régénérer le fichier** : `node tools/srvb.js . 49341`, ouvrir `http://localhost:49341/index.html?nolangpick&bake`, attendre la fin du chargement, puis dans la console : `await bakeExport()` (écrit `bake/<version>.bin` et supprime l'ancien). `?nobake` force le calcul complet.
+
+## Démarrage rapide : monde pré-calculé (`bake/`)
+Au démarrage, le jeu construit le monde (plan des 12 zones, relief, validation de navigation…) : plusieurs secondes sur PC, beaucoup plus sur téléphone. Les résultats déterministes sont donc pré-calculés dans **un seul fichier** `bake/<version>.bin` (gzip) : plan du monde (`planInit` : PX, WATERS, BRIDGES, TP, FRP, HILL, GATESW ; FLATS est recalculé), relief (hauteurs, couleurs par triangle, normales recalculées à l'identique) et résultat de la validation de navigation (grilles, profondeur, déplacements de coffres, suppressions). `<version>` est une empreinte du code du jeu (balises `script[data-boot]` en ligne) : toute modification du code invalide le fichier, et le jeu retombe alors sur le calcul complet (plus lent, résultat identique). Ne pas oublier de **regénérer le fichier à chaque changement de `index.html`** (et de supprimer l'ancien : un seul `.bin` dans le dépôt).
+
+Regénérer :
+1. `node tools/srvb.js . 49321` (sert le dossier et accepte `POST /bake/<version>.bin`, en supprimant les anciens `.bin`) ;
+2. ouvrir `http://127.0.0.1:49321/index.html?bake`, attendre la fin du chargement, puis dans la console `await bakeExport()` ;
+3. commit du nouveau `bake/*.bin` + `index.html` (+ `sw.js` : changer `VERSION`).
+`?nobake` force le calcul complet (comparaisons, dépannage).
+
+Vérifier (calcul complet contre relecture) : `tools/verif-bake.js` calcule des empreintes profondes de toutes les variables globales (`window.BAKECP('pre'|'plan'|'built')`, appelées depuis le jeu) ; l'injecter avant le chargement (protocole CDP `Page.addScriptToEvaluateOnNewDocument`, avec `window.__NAMES` = `Runtime.globalLexicalScopeNames`), charger la page avec `?nobake` puis sans, et comparer `window.BAKEHASH`. Seules diffèrent, par construction, des variables non déterministes (`away`, `flames`, couleurs de sommets aléatoires du décor, ignorées) et des brouillons (`_ec`, `_ecr`, `NV.lastBox/lastOwn`).
+`window.BOOTT` (étapes du chargement avec l'heure) et `window.BOOTF` (première image jouable) servent à mesurer le démarrage.
