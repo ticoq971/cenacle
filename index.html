@@ -2210,7 +2210,7 @@ function nvCarve(seen, x, z) {
   if (goal < 0) return 0; const own = new Set(); let n = 0, wet = 0; NV.lastBox = [1e9, -1e9, 1e9, -1e9]; for (let c = goal; c >= 0; c = par[c]) { const j = (c / Wd) | 0, i = c - j * Wd; if (NV.wat[c]) wet++; for (let a = -2; a <= 2; a++) for (let b = -2; b <= 2; b++) { const ni = i + a, nj = j + b; if (ni >= 0 && nj >= 0 && ni < Wd && nj < Hd) { if (NV.raw[nj * Wd + ni]) { n++; if (NV.own[nj * Wd + ni]) own.add(NV.own[nj * Wd + ni]); const qx = NV.x0 + (ni + .5) * NV.cs, qz = NV.z0 + (nj + .5) * NV.cs, B = NV.lastBox; B[0] = Math.min(B[0], qx); B[1] = Math.max(B[1], qx); B[2] = Math.min(B[2], qz); B[3] = Math.max(B[3], qz); } NV.raw[nj * Wd + ni] = 0; } } } NV.lastOwn = [...own]; return wet ? -1 : n + 1;
 }
 function nvKill(id, r) {
-  const p = PROPS[id]; if (!p || p.dead) return; p.dead = 1; p.b.kill(p.s, p.e); (r.killed = r.killed || []).push(p.kind);
+  const p = PROPS[id]; if (!p || p.dead) return; p.dead = 1; if (window.NVLOG) NVLOG.kills.push(id); p.b.kill(p.s, p.e); (r.killed = r.killed || []).push(p.kind);
   const { W: Wd, H: Hd } = NV; const i0 = Math.max(0, nvI(p.x) - 60), i1 = Math.min(Wd - 1, nvI(p.x) + 60), j0 = Math.max(0, nvJ(p.z) - 60), j1 = Math.min(Hd - 1, nvJ(p.z) + 60);
   for (let j = j0; j <= j1; j++) for (let i = i0; i <= i1; i++) if (NV.own[j * Wd + i] === id) { NV.raw[j * Wd + i] = 0; NV.own[j * Wd + i] = 0; }
 }
@@ -2218,13 +2218,34 @@ function nvReloc(seen, x, z) {
   for (let rad = 1; rad <= 16; rad += .5) for (let k = 0; k < 20; k++) { const a = k * .314 + rad, px = x + Math.cos(a) * rad, pz = z + Math.sin(a) * rad; if (zoneAt(px, pz) !== zoneAt(x, z) || inWater(px, pz) || nvBlk(px, pz, 1.6, true)) continue; const i = nvI(px), j = nvJ(pz); if (seen[j * NV.W + i] && nvReach(seen, px, pz) && !nvBlk(px, pz, 0, true)) return [px, pz]; }
   return null;
 }
+/* etape navigation : validation + poches + profondeur, ou relecture du resultat pre-calcule (memes grilles, memes deplacements, memes suppressions) */
+function navStage() {
+  const B = window.BAKE && BAKE.nav, nonv = /nonv/.test(location.search);
+  if (B && !nonv) {
+    NV.raw.set(B.raw); NV.own.set(B.own); NV.pg.set(B.pg); PD = new Float32Array(B.pd); NV.pockets = B.meta.pockets; NV.rep = B.meta.rep; window.NVREP = B.meta.rep;
+    PX.forEach((X, i) => { if (X && B.meta.dmax[i] != null) X.dmax = B.meta.dmax[i]; });
+    B.meta.kills.forEach(id => { const p = PROPS[id]; if (p && !p.dead) { p.dead = 1; p.b.kill(p.s, p.e); } });
+    const Ls = {}; B.meta.moves.forEach(m => { const z = m[0], L = Ls[z] || (Ls[z] = nvObjectives(z)), o = L[m[1]]; if (o && o[3]) { o[3].x = m[2]; o[3].z = m[3]; o[3].g.position.set(m[2], hgt(m[2], m[3]), m[3]); } });
+    return;
+  }
+  if (window.BAKEREC) window.NVLOG = { kills: [], moves: [] };
+  if (!nonv) nvValidate(); nvPockets(); depthInit();
+  if (window.BAKEREC) BAKEREC.nav = { raw: NV.raw.slice(), own: NV.own.slice(), pg: NV.pg.slice(), pd: PD.slice(), meta: { kills: NVLOG.kills, moves: NVLOG.moves, rep: NV.rep || {}, dmax: PX.map(X => X ? (X.dmax === undefined ? null : X.dmax) : null), pockets: NV.pockets } };
+}
+async function bakeExport() {
+  const R = window.BAKEREC, secs = [['tp', R.terrain.position], ['tn', R.terrain.normal], ['tc', R.terrain.color], ['tv', R.terrain.pav], ['nr', R.nav.raw], ['no', R.nav.own], ['ng', R.nav.pg], ['np', R.nav.pd]], tc = a => a instanceof Float32Array ? 'f' : a instanceof Int32Array ? 'i' : 'u';
+  const J = JSON.stringify({ v: window.BUILDV, secs: secs.map(q => [q[0], tc(q[1]), q[1].length]), meta: R.nav.meta }), jb = new TextEncoder().encode(J); let n = (4 + jb.length + 3) & ~3; secs.forEach(q => { n += (q[1].byteLength + 3) & ~3; });
+  const out = new Uint8Array(n); new DataView(out.buffer).setUint32(0, jb.length, true); out.set(jb, 4); let off = (4 + jb.length + 3) & ~3; secs.forEach(q => { out.set(new Uint8Array(q[1].buffer, q[1].byteOffset, q[1].byteLength), off); off += (q[1].byteLength + 3) & ~3; });
+  const gz = await new Response(new Blob([out]).stream().pipeThrough(new CompressionStream('gzip'))).arrayBuffer();
+  const r = await fetch('/bake/' + window.BUILDV + '.bin', { method: 'POST', body: gz }); return { raw: n, gz: gz.byteLength, status: r.status };
+}
 function nvValidate() {
   const rep = {}; for (let z = 0; z < NZ; z++) {
     const L = nvObjectives(z), [cx, cz] = zc(z), r = { total: 0, reach: 0, carved: 0, islands: 0, fail: [] };
     for (let pass = 0; pass < 3; pass++) {
       const seen = nvFlood(nvI(PX[z].start[0]), nvJ(PX[z].start[1])); let bad = 0;
-      L.forEach(o => { if (o.done) return; if (onIsland(o[1], o[2])) { o.done = 'isl'; return; } if (nvReach(seen, o[1], o[2]) && !(o[3] && nvBlk(o[1], o[2], 0, true))) { o.done = 'ok'; return; }
-        if (o[3]) { const q = nvReloc(seen, o[1], o[2]); if (q) { o[3].x = q[0]; o[3].z = q[1]; o[3].g.position.set(q[0], hgt(q[0], q[1]), q[1]); o[1] = q[0]; o[2] = q[1]; o.done = 'ok'; r.moved = (r.moved || 0) + 1; return; } }
+      L.forEach((o, oi) => { if (o.done) return; if (onIsland(o[1], o[2])) { o.done = 'isl'; return; } if (nvReach(seen, o[1], o[2]) && !(o[3] && nvBlk(o[1], o[2], 0, true))) { o.done = 'ok'; return; }
+        if (o[3]) { const q = nvReloc(seen, o[1], o[2]); if (q) { o[3].x = q[0]; o[3].z = q[1]; if (window.NVLOG) NVLOG.moves.push([z, oi, q[0], q[1]]); o[3].g.position.set(q[0], hgt(q[0], q[1]), q[1]); o[1] = q[0]; o[2] = q[1]; o.done = 'ok'; r.moved = (r.moved || 0) + 1; return; } }
         const c = nvCarve(seen, o[1], o[2]); if (c > 0) { NV.lastOwn.forEach(id => nvKill(id, r)); r.carved++; bad++; o.carve = 1; (r.cv = r.cv || []).push([o[0], c, NV.lastBox.map(v => Math.round(v))]); } else { o.done = 'x'; } });
       if (bad) nvDilate(); else break;
     }
@@ -3423,13 +3444,19 @@ function addBoats(b) {
 }
 function buildWorld() {
   initWaters(); nvInit(); NVON = true; NVF = true;
+  /* terrain : relu depuis le fichier pre-calcule (bake/<version>.bin) quand il correspond au code, sinon calcule comme avant */
+  let ng; const TB = window.BAKE && BAKE.terrain;
+  if (TB) { ng = new THREE.BufferGeometry(); ng.setAttribute('position', new THREE.BufferAttribute(TB.position, 3)); ng.setAttribute('normal', new THREE.BufferAttribute(TB.normal, 3)); ng.setAttribute('color', new THREE.BufferAttribute(TB.color, 3)); ng.setAttribute('pav', new THREE.BufferAttribute(TB.pav, 1)); const pa = TB.position, nv = pa.length / 3, uv = new Float32Array(nv * 2); for (let i = 0; i < nv; i++) { uv[i * 2] = pa[i * 3] / 15; uv[i * 2 + 1] = pa[i * 3 + 2] / 15; } ng.setAttribute('uv', new THREE.BufferAttribute(uv, 2)); }
+  else {
   const geo = new THREE.PlaneGeometry(TPW, TPD, TNX, TNZ); geo.rotateX(-Math.PI / 2); geo.translate(TPX0 + TPW / 2, 0, TPZ0 + TPD / 2);
   const p = geo.attributes.position; for (let i = 0; i < p.count; i++) p.setY(i, groundH(p.getX(i), p.getZ(i)));
-  geo.computeVertexNormals(); const ng = geo.toNonIndexed(); const pos = ng.attributes.position, cols = [];
+  geo.computeVertexNormals(); ng = geo.toNonIndexed(); const pos = ng.attributes.position, cols = [];
   for (let i = 0; i < pos.count; i += 3) { const cx = (pos.getX(i) + pos.getX(i + 1) + pos.getX(i + 2)) / 3, cz = (pos.getZ(i) + pos.getZ(i + 1) + pos.getZ(i + 2)) / 3, y = (pos.getY(i) + pos.getY(i + 1) + pos.getY(i + 2)) / 3, c = sampleG(cx, cz); { const ec = edgeColor(cx, cz, y); if (ec) c.lerp(ec.c, ec.k); } { const gc = zc(GOLZ); if (CAL2.on && cx > gc[0] + CAL2.wx + 1 && cz > gc[1] - 40 && hillT(cx, cz) <= 0) c.lerp(new THREE.Color('#b49a6c'), .7); } { const ht = hillT(cx, cz); if (ht > 0) c.lerp(new THREE.Color(ht > .75 ? '#a88c5c' : '#b8a070'), Math.min(.9, .25 + ht)); } { const wd = wdepth(cx, cz); if (wd > 0) { if (wd < .22) c.lerp(new THREE.Color('#7c6a4c'), .75); else if (wd < .34) c.lerp(new THREE.Color('#e9dfc0'), .45); else if (wd < .5) c.lerp(new THREE.Color('#bfe6e2'), .7); else c.lerp(new THREE.Color('#1fa6bd'), Math.min(1, (wd - .3) * 1.6)); } for (const t of TP) { const dd = Math.hypot(Math.max(t.x0 - cx, 0, cx - t.x1), Math.max(t.z0 - cz, 0, cz - t.z1)); if (dd < 3) c.lerp(new THREE.Color(TSTY[t.i].floor), dd <= 0 ? .9 : .5 * (1 - dd / 3.5)); } const gn = Math.sin(cx * .21) * Math.cos(cz * .17) + Math.sin(cx * .07 + cz * .11); c.offsetHSL(.008 * gn, .03 * gn, .025 * gn); } c.offsetHSL(0, 0, y * .035 + (hs(i, 2) - .5) * .06); for (let k = 0; k < 3; k++) cols.push(c.r, c.g, c.b); }
   ng.setAttribute('color', new THREE.Float32BufferAttribute(cols, 3));
   { const pv = new Float32Array(pos.count); for (let i = 0; i < pos.count; i++) pv[i] = pavAt(pos.getX(i), pos.getZ(i)) * (1 - Math.min(1, wdepth(pos.getX(i), pos.getZ(i)) * 2)); ng.setAttribute('pav', new THREE.BufferAttribute(pv, 1)); }
   { const uv = new Float32Array(pos.count * 2); for (let i = 0; i < pos.count; i++) { uv[i * 2] = pos.getX(i) / 15; uv[i * 2 + 1] = pos.getZ(i) / 15; } ng.setAttribute('uv', new THREE.BufferAttribute(uv, 2)); }
+  if (window.BAKEREC) BAKEREC.terrain = { position: ng.attributes.position.array.slice(), normal: ng.attributes.normal.array.slice(), color: ng.attributes.color.array.slice(), pav: ng.attributes.pav.array.slice() };
+  }
   const ttex = stoneTex(), gtex = grassTex();
   const tmat = new THREE.MeshLambertMaterial({ vertexColors: true, map: ttex }); tmat.onBeforeCompile = sh => { sh.uniforms.map2 = { value: gtex }; sh.uniforms.uZG = TERU.uZG; sh.uniforms.uES = TERU.uES; sh.uniforms.uEM = TERU.uEM; sh.vertexShader = 'attribute float pav;\nvarying float vPav;\n' + sh.vertexShader.replace('#include <begin_vertex>', '#include <begin_vertex>\n vPav = pav;'); sh.fragmentShader = 'uniform sampler2D map2; uniform vec3 uZG; uniform float uES; uniform float uEM;\nvarying float vPav;\n' + sh.fragmentShader.replace('#include <map_fragment>', 'vec4 tA = texture2D(map, vUv); vec4 tB = texture2D(map2, vUv * 1.7); if (uEM > .5) { vec3 e1 = texture2D(map, vUv * uES).rgb; float e2 = dot(texture2D(map, vUv * uES * .29 + vec2(.37, .61)).rgb, vec3(.333)); diffuseColor.rgb = mix(diffuseColor.rgb * tB.rgb, diffuseColor.rgb * e1 * (1. + .5 * (e2 - .64)) / uZG, vPav); } else { diffuseColor *= mix(tB, tA, vPav); }'); };
   terrain = new THREE.Mesh(ng, tmat); terrain.receiveShadow = true; scene.add(terrain);
@@ -3462,7 +3489,7 @@ function buildWorld() {
     g.position.set(x, groundH(x, zz), zz); g.visible = S.wp[wi] === 1; scene.add(g); Zs[z].wp = { g, gem, x, z: zz, zn: z, el: mkLabel('') };
   }
   for (let i = 0; i < 9; i++) { const c = new THREE.Mesh(buildFromSpec('p:cloud', SPD.p.cloud, 1, 'p').segs.b.geo, CLOUDM); c.scale.setScalar(.12 + hs(i, 1) * .1); c.position.set(hs(i, 3) * 260 - 30, 55 + hs(i, 4) * 15, hs(i, 5) * 180 - 50); scene.add(c); clouds.push(c); }
-  nvBuild(); calv2Clear(); if (!/nonv/.test(location.search)) nvValidate(); nvPockets(); depthInit(); decor = splitCells(b.mesh(), 40, true); scene.add(decor); solExtras(); calv2Clear(); roadMeshes(); skyInit(); crowdInit(); setTimeout(() => groundFor(OZ(W.zone >= 0 ? W.zone : 0)), 200); bords.forEach(q => { const m = q.mesh(); m.matrixAutoUpdate = false; BORD.push(m); scene.add(m); }); (/camgrid/.test(location.search) && setTimeout(solBuild, 50));
+  nvBuild(); calv2Clear(); navStage(); decor = splitCells(b.mesh(), 40, true); scene.add(decor); solExtras(); calv2Clear(); roadMeshes(); skyInit(); crowdInit(); setTimeout(() => groundFor(OZ(W.zone >= 0 ? W.zone : 0)), 200); bords.forEach(q => { const m = q.mesh(); m.matrixAutoUpdate = false; BORD.push(m); scene.add(m); }); (/camgrid/.test(location.search) && setTimeout(solBuild, 50));
   buildWalls(true); buildTemple(); for (let z = 0; z < NZ; z++) buildPrayer(z);
 }
 
@@ -5778,6 +5805,9 @@ function pnOpen() { pnClose(); try { localStorage.setItem(PNK, PATCHN[0].v); } c
 #pnov .pnnew{font-size:.7rem;background:#e23b2a;color:#fff;border-radius:8px;padding:1px 7px;vertical-align:middle}
 </style>
 <script>(function(){var L=Array.prototype.slice.call(document.querySelectorAll('script[data-boot]')),started=0;
+var hv=2166136261;L.forEach(function(o){if(o.getAttribute('data-src'))return;var t=o.textContent;for(var i=0;i<t.length;i++)hv=Math.imul(hv^t.charCodeAt(i),16777619)});window.BUILDV=(hv>>>0).toString(16);
+if(/[?&]bake(=|&|$)/.test(location.search))window.BAKEREC={};
+else if(!/[?&]nobake/.test(location.search))window.BAKEP=(async function(v){try{var r=await fetch('bake/'+v+'.bin');if(!r.ok)return;var ab=await r.arrayBuffer(),buf=ab;if(new Uint8Array(ab,0,2)[0]===31)buf=await new Response(new Blob([ab]).stream().pipeThrough(new DecompressionStream('gzip'))).arrayBuffer();var dv=new DataView(buf),jl=dv.getUint32(0,true),J=JSON.parse(new TextDecoder().decode(new Uint8Array(buf,4,jl)));if(J.v!==v)return;var off=(4+jl+3)&~3,S={};for(var k=0;k<J.secs.length;k++){var q=J.secs[k],C=q[1]==='f'?Float32Array:q[1]==='i'?Int32Array:Uint8Array;S[q[0]]=new C(buf,off,q[2]);off=(off+q[2]*C.BYTES_PER_ELEMENT+3)&~3}window.BAKE={terrain:{position:S.tp,normal:S.tn,color:S.tc,pav:S.tv},nav:{raw:S.nr,own:S.no,pg:S.ng,pd:S.np,meta:J.meta}}}catch(e){}})(window.BUILDV);
 function run(i){if(i>=L.length)return;var o=L[i],e=document.createElement('script');if(o.getAttribute('data-src')){e.src=o.getAttribute('data-src');e.onload=e.onerror=function(){run(i+1)};document.head.appendChild(e);}else{e.textContent=o.textContent;o.textContent='';document.head.appendChild(e);run(i+1);}}
-function go(){if(started)return;started=1;try{var b=document.getElementById('ldi');if(b)b.classList.add('boot');window.LD&&LD(60,'Construction du monde… quelques secondes de patience')}catch(e){}setTimeout(function(){run(0)},30);}
+function go(){if(started)return;started=1;try{var b=document.getElementById('ldi');if(b)b.classList.add('boot');window.LD&&LD(60,'Construction du monde… quelques secondes de patience')}catch(e){}setTimeout(function(){if(window.BAKEP)Promise.race([window.BAKEP,new Promise(function(r){setTimeout(r,12000)})]).then(function(){run(0)});else run(0)},30);}
 if(window.requestAnimationFrame)requestAnimationFrame(function(){requestAnimationFrame(go)});setTimeout(go,1500);})();</script></body></html>

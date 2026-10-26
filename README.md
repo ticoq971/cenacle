@@ -29,3 +29,9 @@ Sur https://cenacle.pages.dev, la partie est aussi sauvegardée sur le serveur (
 ## Sauvegarde
 La partie est stockée dans le navigateur. Pour la transférer (PC ↔ iPhone) : Réglages → Partie → Exporter la sauvegarde, puis Importer sur l'autre appareil.
 
+
+## Pré-calcul du monde (bake/)
+
+Le démarrage reconstruit 12 villes, le terrain et la navigation (~18-20 s sur PC). Le terrain et le résultat de la validation de navigation sont pré-calculés dans `bake/<version>.bin` (gzip, ~7,5 Mo), où `<version>` est l'empreinte du code de construction du monde (scripts `data-boot` de `index.html`). Si le fichier est absent ou ne correspond pas au code, le jeu recalcule tout comme avant (plus lent, mais identique).
+
+**Après toute modification du code de `index.html`, régénérer le fichier** : `node tools/srvb.js . 49341`, ouvrir `http://localhost:49341/index.html?nolangpick&bake`, attendre la fin du chargement, puis dans la console : `await bakeExport()` (écrit `bake/<version>.bin` et supprime l'ancien). `?nobake` force le calcul complet.
