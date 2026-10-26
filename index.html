@@ -589,6 +589,131 @@ body.fbh #setb,body.fbh #sndb{display:none!important}
 /* lien de don : laisser vide tant qu'il n'y en a pas (le bouton « Faire un don » reste caché) */
 const DONATE_URL = 'https://buy.stripe.com/5kQcN5enAbIyftf3im8bS00';
 const KEY = 'cenacle_v2'; const _hw = new THREE.Vector3(); const CS = .8, CAMH = 24, CAMZ = 22, CAML = 26;
+/* ---------- CAMÉRA : dégagement garanti ----------
+   Grille de 1 m des hauteurs de tout ce qui est SOLIDE ET POSÉ AU SOL (relief, bâtiments, murs, rochers, troncs, églises) : un triangle
+   est « posé » s'il repose sur le sol ou sur un triangle déjà posé ; sinon il est « en surplomb » (couronnes d'arbres, auvents,
+   linteaux d'arches, balcons) et reçoit l'attribut de sommet ovh = 1.
+   Chaque image, la caméra tourne autour du héros (distance constante) vers la verticale (88 degrés au plus) jusqu'à ce que le segment
+   caméra -> tête du héros, élargi d'un cylindre de sécurité, soit libre de tout solide posé au sol : rien de solide ne peut se trouver
+   devant elle. Un surplomb ne peut pas être évité par la caméra : seul le morceau situé sur la ligne de visée est retiré (découpe nette,
+   sans tramage). Si même la vue quasi verticale reste bouchée (CAMF.forced), la découpe s'étend à tout le couloir. */
+const CAMD = Math.hypot(CAMH, CAMZ), CAMT0 = Math.atan2(CAMH, CAMZ), CAMTM = 88 * Math.PI / 180, CAMTS = 1.5 * Math.PI / 180;
+const CAMF = { x: 0, y: 0, z: 0, ok: 0, th: CAMT0, forced: 0, ovh: 0, req: CAMT0 };
+const SOL = { h: null, ot: null, ob: null, oc: null, tg: null, x0: 0, z0: 0, W: 0, H: 0, ok: false, busy: false, objs: [] };
+const SOLC = .5;
+function solIdx(x, z) { const i = Math.floor((x - SOL.x0) / SOLC), j = Math.floor((z - SOL.z0) / SOLC); return (i < 0 || j < 0 || i >= SOL.W || j >= SOL.H) ? -1 : j * SOL.W + i; }
+function solIdxO(x, z) { const i = Math.floor(x - SOL.x0), j = Math.floor(z - SOL.z0); return (i < 0 || j < 0 || i >= SOL.Wo || j >= SOL.Ho) ? -1 : j * SOL.Wo + i; }
+/* mode 0 : inscrit dans la grille des solides posés ; 1 : le triangle repose-t-il sur du solide ? (au moins la moitié de sa surface, ou n'importe quel point pour un grand pan : toit, sol) ; 2 : inscrit comme surplomb */
+function solTri(ax, ay, az, bx, by, bz, cx, cy, cz, mode, mn) {
+  const l = Math.max(Math.hypot(bx - ax, bz - az), Math.hypot(cx - ax, cz - az), Math.hypot(cx - bx, cz - bz)), n = Math.min(120, Math.ceil(l / .35)), h = SOL.h; let tot = 0, sup = 0;
+  for (let i = 0; i <= n; i++) for (let j = 0; j <= n - i; j++) {
+    const u = n ? i / n : 0, v = n ? j / n : 0, x = ax + (bx - ax) * u + (cx - ax) * v, z = az + (bz - az) * u + (cz - az) * v, y = ay + (by - ay) * u + (cy - ay) * v;
+    if (mode === 0) { const k = solIdx(x, z); if (k >= 0 && y > h[k]) h[k] = y; }
+    else if (mode === 1) { tot++; const k = solIdx(x, z); if (k >= 0 && h[k] >= mn - .35) sup++; }
+    else if (mode === 3) { const k = solIdxO(x, z); if (k >= 0) { const b = Math.floor((y - SOL.tg[k]) / .5); if (b >= 0 && b < 16) SOL.oc[k] |= 1 << b; } }
+    else if (mode === 4) { const k = solIdxO(x, z); if (k >= 0 && y > SOL.tg[k]) SOL.tg[k] = y; }
+    else { const k = solIdxO(x, z); if (k >= 0) { if (y > SOL.ot[k]) SOL.ot[k] = y; if (y < SOL.ob[k]) SOL.ob[k] = y; } }
+  }
+  return mode === 1 ? (sup >= tot * .5 || (l >= 4 && sup > 0)) : false;
+}
+const _t9 = new Float64Array(9);
+function solWorld(m, t, e) { const g = m.geometry, P = g.attributes.position.array, ix = g.index; for (let q = 0; q < 3; q++) { const k = (ix ? ix.getX(t * 3 + q) : t * 3 + q) * 3, x = P[k], y = P[k + 1], z = P[k + 2]; _t9[q * 3] = e[0] * x + e[4] * y + e[8] * z + e[12]; _t9[q * 3 + 1] = e[1] * x + e[5] * y + e[9] * z + e[13]; _t9[q * 3 + 2] = e[2] * x + e[6] * y + e[10] * z + e[14]; } }
+function solMeshes(o, L) { o.traverse(q => { if (q.isMesh && !q.isInstancedMesh && !q.isSprite && q.geometry && q.geometry.attributes.position && q.geometry.attributes.position.count >= 3) L.push(q); }); return L; }
+const solTris = m => { const g = m.geometry; return Math.floor((g.index ? g.index.count : g.attributes.position.count) / 3); };
+/* objets ajoutés après le chargement (églises, Golgotha) : solides posés */
+function solObj(o) { if (!o) return; if (!SOL.ok) { SOL.objs.push(o); return; } for (const m of solMeshes(o, [])) { m.updateMatrixWorld(true); const e = m.matrixWorld.elements, n = solTris(m); for (let t = 0; t < n; t++) { solWorld(m, t, e); solTri(_t9[0], _t9[1], _t9[2], _t9[3], _t9[4], _t9[5], _t9[6], _t9[7], _t9[8], 0); } } }
+async function solBuild() {
+  if (SOL.busy || SOL.ok) return; SOL.busy = true;
+  try {
+    SOL.x0 = NV.x0; SOL.z0 = NV.z0; SOL.W = NV.W + 4; SOL.H = NV.H + 4; SOL.Wo = Math.ceil(NV.W * NV.cs) + 2; SOL.Ho = Math.ceil(NV.H * NV.cs) + 2; const tB = performance.now();
+    SOL.h = new Float32Array(SOL.W * SOL.H).fill(-99); SOL.ot = new Float32Array(SOL.Wo * SOL.Ho).fill(-99); SOL.ob = new Float32Array(SOL.Wo * SOL.Ho).fill(99); SOL.oc = new Uint16Array(SOL.Wo * SOL.Ho); SOL.tg = new Float32Array(SOL.Wo * SOL.Ho).fill(-99);
+    let t0 = performance.now(); const pause = async () => { if (performance.now() - t0 > 10) { await new Promise(r => setTimeout(r, 0)); t0 = performance.now(); } };
+    /* a) relief, rochers de bordure, églises : posés d'office */
+    const dir0 = []; if (terrain) solMeshes(terrain, dir0); BORD.forEach(o => solMeshes(o, dir0)); SOL.objs.forEach(o => solMeshes(o, dir0)); SOL.objs.length = 0;
+    for (const m of dir0) { m.updateMatrixWorld(true); const e = m.matrixWorld.elements, n = solTris(m); for (let t = 0; t < n; t++) { solWorld(m, t, e); solTri(_t9[0], _t9[1], _t9[2], _t9[3], _t9[4], _t9[5], _t9[6], _t9[7], _t9[8], 0); if (m === terrain) solTri(_t9[0], _t9[1], _t9[2], _t9[3], _t9[4], _t9[5], _t9[6], _t9[7], _t9[8], 4); if ((t & 1023) === 1023) await pause(); } }
+    /* b) décor fusionné : classement par altitude croissante ; un triangle est « posé » s'il repose sur du solide déjà inscrit */
+    const dm = []; if (decor) solMeshes(decor, dm); let tot = 0; dm.forEach(m => { m.updateMatrixWorld(true); tot += solTris(m); });
+    const tm = new Uint16Array(tot), ti = new Int32Array(tot), tz = new Float32Array(tot), cnt = new Int32Array(1203); let q = 0;
+    for (let a = 0; a < dm.length; a++) { const m = dm[a], e = m.matrixWorld.elements, n = solTris(m); for (let t = 0; t < n; t++, q++) { solWorld(m, t, e); const mn = Math.min(_t9[1], _t9[4], _t9[7]); tm[q] = a; ti[q] = t; tz[q] = mn; cnt[Math.max(0, Math.min(1200, Math.floor((mn + 5) * 4))) + 1]++; if ((q & 4095) === 4095) await pause(); } }
+    for (let i = 1; i < cnt.length; i++) cnt[i] += cnt[i - 1];
+    const ord = new Int32Array(tot); for (let i = 0; i < tot; i++) { ord[cnt[Math.max(0, Math.min(1200, Math.floor((tz[i] + 5) * 4)))]++] = i; }
+    const ovh = dm.map(m => { const a = m.geometry.attributes.ovh; return a && !m.geometry.index ? a : null; }); let nOv = 0;
+    for (let r = 0; r < tot; r++) {
+      const i = ord[r], a = tm[i], m = dm[a], t = ti[i]; solWorld(m, t, m.matrixWorld.elements);
+      if (solTri(_t9[0], _t9[1], _t9[2], _t9[3], _t9[4], _t9[5], _t9[6], _t9[7], _t9[8], 1, tz[i])) { solTri(_t9[0], _t9[1], _t9[2], _t9[3], _t9[4], _t9[5], _t9[6], _t9[7], _t9[8], 0); solTri(_t9[0], _t9[1], _t9[2], _t9[3], _t9[4], _t9[5], _t9[6], _t9[7], _t9[8], 3); }
+      else { solTri(_t9[0], _t9[1], _t9[2], _t9[3], _t9[4], _t9[5], _t9[6], _t9[7], _t9[8], 2); nOv++; const at = ovh[a]; if (at) { at.array[t * 3] = at.array[t * 3 + 1] = at.array[t * 3 + 2] = 1; at.needsUpdate = true; } }
+      if ((r & 2047) === 2047) await pause();
+    }
+    SOL.nTri = tot; SOL.nOvh = nOv; SOL.ms = Math.round(performance.now() - tB); SOL.ok = true; SOL.objs.splice(0).forEach(o => solObj(o));
+  } catch (e) { SOL.ok = false; SOL.err = String(e && e.stack || e); }
+  SOL.busy = false;
+}
+function solTop(x, z) { const k = solIdx(x, z); return k < 0 ? -99 : SOL.h[k]; }
+/* segment caméra -> tête du héros libre de tout solide posé pour l'inclinaison th ? hy = hauteur du sol sous le héros */
+const CAMTS_T = [.03, .06, .09, .12, .16, .2, .25, .3, .36, .43, .5, .58, .66, .74, .83, .92, 1];
+/* le héros se tient-il sous un toit / dans un passage couvert ? (les 9 cases autour de lui sont toutes plus hautes que sa tête) */
+/* passage couvert : la case du héros est libre à hauteur du buste (0,5 à 2 m) mais un solide posé s'étend au-dessus de sa tête (cases voisines comprises) */
+function camUnder(hx, hy, hz) {
+  const k0 = solIdxO(hx, hz); if (k0 < 0) return false; const sb = Math.max(0, Math.round((hy - SOL.tg[k0]) / .5)), LOW = 14 << sb;
+  if (SOL.oc[k0] & LOW) return false;
+  for (const dx of [-.6, 0, .6]) for (const dz of [-.6, 0, .6]) { const k = solIdxO(hx + dx, hz + dz); if (k >= 0) { const v = SOL.oc[k]; if (!(v & LOW) && (v >> (4 + sb)) !== 0) return true; } }
+  return false;
+}
+function camCovered(hx, hy, hz) { let m = 1e9; for (const dx of [-.5, 0, .5]) for (const dz of [-.5, 0, .5]) { const h = solTop(hx + dx, hz + dz); if (h < m) m = h; } return m >= hy + 2.2; }
+function camClear(hx, hy, hz, th) {
+  const H = CAMD * Math.sin(th), Zc = CAMD * Math.cos(th), blk = (x, z, lim) => { const dx = x - hx, dz = z - hz; return dx * dx + dz * dz >= .49 && solTop(x, z) > lim; };
+  for (const t of CAMTS_T) {
+    const pz = hz + Zc * t, ly = hy + .6 + (H - .6) * t, r = .1 + 1.2 * t, lim = ly - .4;
+    if (blk(hx, pz, lim) || blk(hx - r, pz, lim) || blk(hx + r, pz, lim) || blk(hx, pz + r * .6, lim) || blk(hx, pz - r * .6, lim)) return false;
+  }
+  return solTop(hx, hz + Zc) + 1 < hy + H;
+}
+/* un morceau en surplomb se trouve-t-il sur la ligne de visée (il sera alors retiré proprement) ? */
+function camOvh(hx, hy, hz, th) {
+  const H = CAMD * Math.sin(th), Zc = CAMD * Math.cos(th);
+  for (const t of [0, ...CAMTS_T]) {
+    const pz = hz + Zc * t, ly = hy + .6 + (H - .6) * t, r = .6 + 1.6 * t;
+    for (const o of [[0, 0], [-r, 0], [r, 0], [0, r * .6], [0, -r * .6]]) { const k = solIdxO(hx + o[0], pz + o[1]); if (k >= 0 && SOL.ot[k] >= ly - .5 && SOL.ob[k] <= ly + .5) return true; }
+  }
+  return false;
+}
+/* une seule inclinaison qui dégage le héros ET les 4 positions voisines (marge de 1,2 m : il bouge, la caméra le suit avec un léger retard) ;
+   plus raide n'est pas toujours plus dégagé : on prend la première inclinaison qui convient à toutes, sinon la meilleure pour le centre */
+const CAMOFF = [[1.2, 0], [-1.2, 0], [0, 1.2], [0, -1.2]];
+function camSolve(hx, hz, hy) {
+  if (!SOL.ok) return { th: CAMT0, forced: 0, th0: CAMT0, blocked0: 0, ovh: 0 };
+  if (hy === undefined) hy = groundH(hx, hz);
+  let best = -1, bs = -1, thC = -1, th = -1;
+  for (let a = CAMT0; a <= CAMTM + 1e-6; a += CAMTS) {
+    if (!camClear(hx, hy, hz, a)) continue; if (thC < 0) thC = a;
+    let n = 0; for (let k = 0; k < 4; k++) if (camClear(hx + CAMOFF[k][0], hy, hz + CAMOFF[k][1], a)) n++;
+    if (n === 4) { th = a; break; } if (n > bs) { bs = n; best = a; }
+  }
+  const cov = camCovered(hx, hy, hz) || camUnder(hx, hy, hz) ? 1 : 0, forced = (th < 0 && best < 0) || cov ? 1 : 0; if (th < 0) th = best >= 0 ? best : (cov ? CAMT0 : CAMTM);
+  let ovh = camOvh(hx, hy, hz, th); for (let k = 0; k < 4 && !ovh; k++) ovh = camOvh(hx + CAMOFF[k][0], hy, hz + CAMOFF[k][1], th);
+  return { th, forced, th0: thC, blocked0: thC > CAMT0 + 1e-6 || thC < 0 ? 1 : 0, ovh: ovh ? 1 : 0 };
+}
+function camStep(dt) {
+  let th = CAMT0, forced = 0, ovh = 0;
+  if (CAMF.px === undefined || Math.hypot(CAMF.px - W.x, CAMF.pz - W.z) > 8) { CAMF.px = W.x; CAMF.pz = W.z; CAMF.vx = 0; CAMF.vz = 0; }
+  const kv = Math.min(1, dt * 8); CAMF.vx += ((W.x - CAMF.px) / Math.max(dt, .001) - CAMF.vx) * kv; CAMF.vz += ((W.z - CAMF.pz) / Math.max(dt, .001) - CAMF.vz) * kv; CAMF.px = W.x; CAMF.pz = W.z;
+  let thP = CAMT0;
+  if (SOL.ok && !W.arena && !W.tmp && !W.spirit && !W.cine) {
+    try {
+      const r = camSolve(W.x, W.z, hero.position.y); th = r.th; forced = r.forced; ovh = r.ovh; thP = th;
+      /* anticipation : on regarde 0,4 s et 0,8 s plus loin sur la trajectoire pour monter progressivement */
+      if (Math.hypot(CAMF.vx, CAMF.vz) > .6) for (const f of [.4, .8]) { const q = camSolve(W.x + CAMF.vx * f, W.z + CAMF.vz * f, hero.position.y); if (q.th > thP) thP = q.th; if (f < .5 && q.ovh) ovh = 1; }
+    } catch (e) { th = thP = CAMT0; }
+  }
+  CAMF.req = th; CAMF.forced = forced; CAMF.ovh = ovh;
+  /* garantie dure à la position courante ; montée anticipée limitée à 140 degrés/s ; descente lente */
+  let cur = CAMF.th; if (thP > cur) cur = Math.min(thP, cur + 2.45 * dt); else cur += (thP - cur) * Math.min(1, dt * 2.2);
+  CAMF.th = Math.max(cur, th);
+  const k = Math.min(1, dt * 6);
+  if (!CAMF.ok || Math.hypot(CAMF.x - W.x, CAMF.z - W.z) > 8) { CAMF.x = W.x; CAMF.z = W.z; CAMF.y = hero.position.y; CAMF.ok = 1; }
+  CAMF.x += (W.x - CAMF.x) * k; CAMF.z += (W.z - CAMF.z) * k; CAMF.y += (hero.position.y - CAMF.y) * k;
+  camera.position.set(CAMF.x, CAMF.y + CAMD * Math.sin(CAMF.th), CAMF.z + CAMD * Math.cos(CAMF.th));
+}
 const $ = id => document.getElementById(id);
 const rnd = (a, b) => a + Math.random() * (b - a);
 const hs = (n, k) => { const v = Math.sin((n + 1) * 127.1 + k * 311.7) * 43758.5453; return v - Math.floor(v); };
@@ -1418,21 +1543,21 @@ let HULLM;
 const _q = new THREE.Quaternion(), _e = new THREE.Euler(), _v = new THREE.Vector3(), _s = new THREE.Vector3();
 const mat = (px, py, pz, sx, sy, sz, rx, ry, rz) => { _e.set(rx || 0, ry || 0, rz || 0); _q.setFromEuler(_e); return new THREE.Matrix4().compose(_v.set(px, py, pz), _q, _s.set(sx, sy, sz)); };
 /* trou de visibilité : tout fragment du décor situé dans un cône caméra -> héros, plus haut que 1,3 m au-dessus du sol du héros et plus proche de la caméra que lui, est dissous (trame 4×4) ; le sol, les routes et ce qui est derrière le héros restent opaques */
-const XRU = { uHero: { value: new THREE.Vector3() }, uCam: { value: new THREE.Vector3() }, uR: { value: 2.7 }, uOn: { value: 1 } };
+const XRU = { uHero: { value: new THREE.Vector3() }, uCam: { value: new THREE.Vector3() }, uR: { value: 2.7 }, uOn: { value: 0 }, uAll: { value: 0 } };
 function xrayPatch(mat) {
   mat.onBeforeCompile = sh => { Object.assign(sh.uniforms, XRU);
-    sh.vertexShader = 'varying vec3 vXW;\n' + sh.vertexShader.replace('#include <worldpos_vertex>', '#include <worldpos_vertex>\n vXW = (modelMatrix * vec4(transformed, 1.0)).xyz;');
-    sh.fragmentShader = 'uniform vec3 uHero; uniform vec3 uCam; uniform float uR; uniform float uOn; varying vec3 vXW;\n' + sh.fragmentShader.replace('void main() {', 'void main() {\n if (uOn > 0.5) { vec2 hc = uCam.xz - uHero.xz; float L2 = max(dot(hc, hc), 1.0); vec2 ph = vXW.xz - uHero.xz; float t = dot(ph, hc) / L2; if (t > 0.04 && t < 1.3) { float dp = abs(ph.x * hc.y - ph.y * hc.x) / sqrt(L2); float lineY = uHero.y + t * (uCam.y - uHero.y); if (dp < 1.9 + 4.5 * t && vXW.y > lineY - 1.6 - 0.8 * t && vXW.y > uHero.y + 0.25) discard; } if (length(vXW.xz - uCam.xz) < 8.0 && vXW.y > uHero.y + 2.0) discard; }');
+    sh.vertexShader = 'attribute float ovh;\nvarying float vOvh;\nvarying vec3 vXW;\n' + sh.vertexShader.replace('#include <worldpos_vertex>', '#include <worldpos_vertex>\n vXW = (modelMatrix * vec4(transformed, 1.0)).xyz; vOvh = ovh;');
+    sh.fragmentShader = 'uniform vec3 uHero; uniform vec3 uCam; uniform float uR; uniform float uOn; uniform float uAll; varying float vOvh; varying vec3 vXW;\n' + sh.fragmentShader.replace('void main() {', 'void main() {\n if (uOn > 0.5) { vec2 hc = uCam.xz - uHero.xz; float L2 = max(dot(hc, hc), 1.0); vec2 ph = vXW.xz - uHero.xz; float t = dot(ph, hc) / L2; if (t > 0.04 && t < 1.3) { float dp = abs(ph.x * hc.y - ph.y * hc.x) / sqrt(L2); float lineY = uHero.y + t * (uCam.y - uHero.y); if ((vOvh > 0.5 || uAll > 0.5) && dp < (uAll > 1.5 ? 1.9 + 4.5 * t : 1.6 + 3.0 * t) && vXW.y > lineY - (uAll > 1.5 ? 1.6 + 0.8 * t : 0.5) && vXW.y > uHero.y + 0.25) discard; } if (uAll > 0.5 && length(vXW.xz - uCam.xz) < 8.0 && vXW.y > uHero.y + 2.0) discard; }');
   }; mat.customProgramCacheKey = () => 'xray1'; return mat;
 }
 const XRM = xrayPatch(new THREE.MeshLambertMaterial({ vertexColors: true }));
-const XRC = {}; function xrayGroup(g) { if (!g) return; g.traverse(q => { if (!q.isMesh || !q.material || q.material.transparent || q.material === XRM) return; const m0 = q.material; if (!(m0.isMeshLambertMaterial || m0.isMeshStandardMaterial || m0.isMeshPhongMaterial)) return; q.material = XRC[m0.uuid] || (XRC[m0.uuid] = xrayPatch(m0.clone())); }); }
+const XRC = {}; function xrayGroup(g) { if (!g) return; try { solObj(g); } catch (e) { } g.traverse(q => { if (!q.isMesh || !q.material || q.material.transparent || q.material === XRM) return; const m0 = q.material; if (!(m0.isMeshLambertMaterial || m0.isMeshStandardMaterial || m0.isMeshPhongMaterial)) return; q.material = XRC[m0.uuid] || (XRC[m0.uuid] = xrayPatch(m0.clone())); }); }
 /* découpe un maillage fusionné (non indexé) en cellules carrées : chaque cellule est culée séparément (caméra et ombres) */
 function splitCells(mesh, cs, shadow) {
   const g = mesh.geometry, P = g.attributes.position.array, C = g.attributes.color ? g.attributes.color.array : null, N = g.attributes.normal ? g.attributes.normal.array : null, B = {}, grp = new THREE.Group();
   for (let i = 0; i < P.length; i += 9) { const cx = (P[i] + P[i + 3] + P[i + 6]) / 3, cz = (P[i + 2] + P[i + 5] + P[i + 8]) / 3, k = Math.floor(cx / cs) + ',' + Math.floor(cz / cs); (B[k] || (B[k] = [])).push(i); }
   for (const k in B) { const L = B[k], n = L.length * 9, pp = new Float32Array(n), cc = C ? new Float32Array(n) : null, nn = N ? new Float32Array(n) : null; L.forEach((i, j) => { for (let q = 0; q < 9; q++) { pp[j * 9 + q] = P[i + q]; if (cc) cc[j * 9 + q] = C[i + q]; if (nn) nn[j * 9 + q] = N[i + q]; } });
-    const gg = new THREE.BufferGeometry(); gg.setAttribute('position', new THREE.BufferAttribute(pp, 3)); if (cc) gg.setAttribute('color', new THREE.BufferAttribute(cc, 3)); if (nn) gg.setAttribute('normal', new THREE.BufferAttribute(nn, 3)); else gg.computeVertexNormals(); gg.computeBoundingSphere();
+    const gg = new THREE.BufferGeometry(); gg.setAttribute('position', new THREE.BufferAttribute(pp, 3)); gg.setAttribute('ovh', new THREE.BufferAttribute(new Float32Array(L.length * 3), 1)); if (cc) gg.setAttribute('color', new THREE.BufferAttribute(cc, 3)); if (nn) gg.setAttribute('normal', new THREE.BufferAttribute(nn, 3)); else gg.computeVertexNormals(); gg.computeBoundingSphere();
     const m = new THREE.Mesh(gg, mesh.material); m.castShadow = !!shadow; m.receiveShadow = true; m.matrixAutoUpdate = false; grp.add(m); }
   g.dispose(); return grp;
 }
@@ -3319,7 +3444,7 @@ function buildWorld() {
     g.position.set(x, groundH(x, zz), zz); g.visible = S.wp[wi] === 1; scene.add(g); Zs[z].wp = { g, gem, x, z: zz, zn: z, el: mkLabel('') };
   }
   for (let i = 0; i < 9; i++) { const c = new THREE.Mesh(buildFromSpec('p:cloud', SPD.p.cloud, 1, 'p').segs.b.geo, CLOUDM); c.scale.setScalar(.12 + hs(i, 1) * .1); c.position.set(hs(i, 3) * 260 - 30, 55 + hs(i, 4) * 15, hs(i, 5) * 180 - 50); scene.add(c); clouds.push(c); }
-  nvBuild(); calv2Clear(); if (!/nonv/.test(location.search)) nvValidate(); nvPockets(); depthInit(); decor = splitCells(b.mesh(), 40, true); scene.add(decor); solExtras(); calv2Clear(); roadMeshes(); skyInit(); crowdInit(); setTimeout(() => groundFor(OZ(W.zone >= 0 ? W.zone : 0)), 200); bords.forEach(q => { const m = q.mesh(); m.matrixAutoUpdate = false; BORD.push(m); scene.add(m); });
+  nvBuild(); calv2Clear(); if (!/nonv/.test(location.search)) nvValidate(); nvPockets(); depthInit(); decor = splitCells(b.mesh(), 40, true); scene.add(decor); solExtras(); calv2Clear(); roadMeshes(); skyInit(); crowdInit(); setTimeout(() => groundFor(OZ(W.zone >= 0 ? W.zone : 0)), 200); bords.forEach(q => { const m = q.mesh(); m.matrixAutoUpdate = false; BORD.push(m); scene.add(m); }); setTimeout(solBuild, 50);
   buildWalls(true); buildTemple(); for (let z = 0; z < NZ; z++) buildPrayer(z);
 }
 
@@ -4451,8 +4576,8 @@ function update(dt) {
   W.buff = Math.max(0, (W.buff || 0) - dt);
   updParts(dt); updCoins(dt); updRelP(dt);
   /* caméra */
-  const k = Math.min(1, dt * 6); camera.position.x += (W.x - camera.position.x) * k; camera.position.y += (hero.position.y + CAMH - camera.position.y) * k; camera.position.z += (W.z + CAMZ - camera.position.z) * k;
-  { const sx = Math.round(W.x / 2) * 2, sz = Math.round(W.z / 2) * 2; sunL.position.set(sx + 36, 32, sz + 2); sunL.target.position.set(sx, 0, sz - 13); } shakeA = Math.max(0, shakeA - dt * 3); camera.lookAt(camera.position.x + (shakeA ? rnd(-1, 1) * shakeA * .6 : 0), hero.position.y + 1, camera.position.z - CAML + (shakeA ? rnd(-1, 1) * shakeA * .4 : 0));
+  camStep(dt);
+  { const sx = Math.round(W.x / 2) * 2, sz = Math.round(W.z / 2) * 2; sunL.position.set(sx + 36, 32, sz + 2); sunL.target.position.set(sx, 0, sz - 13); } shakeA = Math.max(0, shakeA - dt * 3); camera.lookAt(camera.position.x + (shakeA ? rnd(-1, 1) * shakeA * .6 : 0), hero.position.y + 1, CAMF.z - (CAML - CAMZ) + (shakeA ? rnd(-1, 1) * shakeA * .4 : 0));
   mpTick(dt);
   bossEnt = enemies.find(e => e.boss && !e.done) || null;
 }
@@ -4641,7 +4766,7 @@ function ringTick(dt) { ringInit(); let n = 0, ns = 0; const on = !W.cine; _rdgT
     put1(e.x, e.z, base * thick * pl, RINGC[e._rdg] || '#ff2e2e'); if (e.boss) put1(e.x, e.z, base * 1.45 * pl, '#ff4a2a');
     if ((e.kind === 14 || e.tg || e.pr) && !e.boss) for (let k = 0; k < 4 && ns < RINGN; k++) { const a = k * Math.PI / 2 + T * .6, rr = base * .98; _rp.set(e.x + Math.cos(a) * rr, gy(e.x, e.z) + .21, e.z + Math.sin(a) * rr); _rq.setFromEuler(new THREE.Euler(-Math.PI / 2, 0, -a)); _rs.set(1, 1.6, 1); SPKM.setMatrixAt(ns++, _rm4.compose(_rp, _rq, _rs)); } });
   RINGM.count = n; SPKM.count = ns; RINGM.instanceMatrix.needsUpdate = true; if (RINGM.instanceColor) RINGM.instanceColor.needsUpdate = true; SPKM.instanceMatrix.needsUpdate = true; }
-function xrayTick(dt) { ringTick(dt); for (const o of Zs) if (o && o.plots) for (const p of o.plots) if (p.ghost && !p.real) { const op = .15 * Math.max(0, Math.min(1, (34 - Math.hypot(p.x - W.x, p.z - W.z)) / 18)); p.ghost.visible = op > .005; if (op > .005) p.ghost.traverse(q => { if (q.material) q.material.opacity = op; }); } mapTick(dt); shadowTick(dt); const h = XRU.uHero.value, on = !(W.arena && !W.tmp) && !W.cine; h.set(W.x, (typeof groundH === 'function' ? groundH(W.x, W.z) : 0) + 1.0, W.z); XRU.uCam.value.copy(camera.position); XRU.uOn.value += ((on ? 1 : 0) - XRU.uOn.value) * Math.min(1, dt * 5); }
+function xrayTick(dt) { ringTick(dt); for (const o of Zs) if (o && o.plots) for (const p of o.plots) if (p.ghost && !p.real) { const op = .15 * Math.max(0, Math.min(1, (34 - Math.hypot(p.x - W.x, p.z - W.z)) / 18)); p.ghost.visible = op > .005; if (op > .005) p.ghost.traverse(q => { if (q.material) q.material.opacity = op; }); } mapTick(dt); shadowTick(dt); const h = XRU.uHero.value, on = !(W.arena && !W.tmp) && !W.cine && !!(CAMF.ovh || CAMF.forced || W.tmp); XRU.uAll.value = W.tmp ? 2 : CAMF.forced ? 1 : 0; h.set(W.x, (typeof groundH === 'function' ? groundH(W.x, W.z) : 0) + 1.0, W.z); XRU.uCam.value.copy(camera.position); XRU.uOn.value += ((on ? 1 : 0) - XRU.uOn.value) * Math.min(1, dt * 5); }
 function place(el, x, y, z, show, oy) {
   if (!el) return; if (!show) { el.style.display = 'none'; return; } const p = proj(x, y, z);
   if (p[2] > 1 || p[0] < -90 || p[0] > innerWidth + 90 || p[1] < 60 || p[1] > innerHeight + 40) { el.style.display = 'none'; return; }

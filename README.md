@@ -13,6 +13,7 @@ Jeu d'action-évolution en 3D (Three.js r128), dans un seul fichier `index.html`
 - `plans-niveaux.html` : éditeur et notes de conception des 8 niveaux.
 - `models/` : exports Spline d'origine (personnages, objets, héros) ; le jeu utilise la copie incluse dans `index.html`.
 - `vendor/three.min.js` : Three.js r128.
+- `tools/verif-camera.js` : vérification automatique de la caméra, niveau par niveau (ouvrir le jeu, coller le fichier dans la console puis `await verifCamera()` ; rapport niveaux x points x échecs).
 - `versions/` : copies de sauvegarde (`index-before-bot-2026-10-23.html` = avant les modifications du 23/10/2026).
 - `cenacle-backup.html` : ancienne version (6 zones), pour mémoire.
 
