@@ -1313,9 +1313,9 @@ function depthP(x, z, zn) {
 }
 function depthE(x, z, zn) { const X = PX[zn], r = X && X.pr || (X.pr = zoneRange(zn)); const v = depthP(x, z, zn); if (W.tmp) return v; return Math.max(0, Math.min(1, (v - DIFFGRAD.p0) / (1 - DIFFGRAD.p0))); }
 function earlyPosts(zn) {
-  const X = PX[zn]; if (X.early) return X.early; const out = [], { W: Wd, H: Hd, cs } = NV, st = X.start, pr = X.pray; let gi = 0;
+  const X = PX[zn]; if (X.early) return X.early; const out = [], { W: Wd, H: Hd, cs } = NV, ZBz = ZB[zn], zbx0 = ZBz.poly ? ZBz.x0 : ZBz.cx - 40, zbx1 = ZBz.poly ? ZBz.x1 : ZBz.cx + 40, zbz0 = ZBz.poly ? ZBz.z0 : ZBz.cz - 40, zbz1 = ZBz.poly ? ZBz.z1 : ZBz.cz + 40, zi0 = Math.max(0, nvI(zbx0) - 1), zi1 = Math.min(Wd, nvI(zbx1) + 2), zj0 = Math.max(0, nvJ(zbz0) - 1), zj1 = Math.min(Hd, nvJ(zbz1) + 2), st = X.start, pr = X.pray; let gi = 0;
   for (const [dd0, n] of DIFFGRAD.early) { const dd = Math.min(dd0, X.dmax * .6); let best = null, bs = 1e9;
-    for (let j = 0; j < Hd; j++) for (let i = 0; i < Wd; i++) { const v = PD[j * Wd + i]; if (v < 0) continue; const x = NV.x0 + (i + .5) * cs, z = NV.z0 + (j + .5) * cs; if (!inLv(zn, x, z, 4)) continue; const sc = Math.abs(v * X.dmax - dd); if (sc > 2 || sc >= bs) continue; if (!nvOpen(i, j) || nvBlk(x, z, 1.1, true) || roadD(X, x, z) > 2.2 || (pr && Math.hypot(x - pr.x, z - pr.z) < pr.r + 6.6) || [X.obj.church1, X.obj.church2].some(c => Math.hypot(x - c[0], z - c[1]) < 13) || (X.hill && Math.hypot(x - X.hill.x, z - X.hill.z) < X.hill.Rb + 1) || Math.hypot(x - st[0], z - st[1]) < 7 || out.some(q => Math.hypot(q.x - x, q.z - z) < 4.6)) continue; best = [x, z]; bs = sc; }
+    for (let j = zj0; j < zj1; j++) for (let i = zi0; i < zi1; i++) { const v = PD[j * Wd + i]; if (v < 0) continue; const x = NV.x0 + (i + .5) * cs, z = NV.z0 + (j + .5) * cs; if (!inLv(zn, x, z, 4)) continue; const sc = Math.abs(v * X.dmax - dd); if (sc > 2 || sc >= bs) continue; if (!nvOpen(i, j) || nvBlk(x, z, 1.1, true) || roadD(X, x, z) > 2.2 || (pr && Math.hypot(x - pr.x, z - pr.z) < pr.r + 6.6) || [X.obj.church1, X.obj.church2].some(c => Math.hypot(x - c[0], z - c[1]) < 13) || (X.hill && Math.hypot(x - X.hill.x, z - X.hill.z) < X.hill.Rb + 1) || Math.hypot(x - st[0], z - st[1]) < 7 || out.some(q => Math.hypot(q.x - x, q.z - z) < 4.6)) continue; best = [x, z]; bs = sc; }
     if (!best) continue; out.push({ x: best[0], z: best[1], a: -1 - gi }); if (n > 1) { let b2 = null, bs2 = 1e9; for (let a = -3; a <= 3; a += .5) for (let c = -3; c <= 3; c += .5) { const x = best[0] + a, z = best[1] + c, h = Math.hypot(a, c); if (h < 1.6 || h > 3 || nvBlk(x, z, 1.1, true) || inWater(x, z) || (pr && Math.hypot(x - pr.x, z - pr.z) < pr.r + 6.6)) continue; const sc2 = h + Math.abs(depthP(x, z, zn) * X.dmax - dd); if (sc2 < bs2) { bs2 = sc2; b2 = [x, z]; } } if (b2) out.push({ x: b2[0], z: b2[1], a: -1 - gi }); } gi++; }
   return (X.early = out);
 }
@@ -1459,7 +1459,9 @@ const feltF = (z, k) => FELT.on ? 1 + FELT[k] * z : 1;
 const BAL = { h: [1, 1.8, 1.7, 2.25, 2.1, 2.35, 2.45, 2.8, 3, 3.3, 3.3, 4], d: [1, 1.35, 1.35, 1.55, 1.45, 1.62, 1.68, 1.85, 2, 2.2, 2.2, 2.6], b: [1, 1.6, 1.6, 2.8, 2.3, 3.1, 3.1, 3.6, 3.4, 3.4, 3.2, 3.6], bish: 0.45 };
 const foeStat = (z, kind, boss) => { const q = foeStat0(z, kind, boss); q.dmg *= DMGM * feltF(z, 'dmg') * (BAL.d[z] || 1); q.hp *= feltF(z, 'hp') * (boss ? feltF(z, 'bossHp') * (BAL.b[z] || 1) : 1) * (BAL.h[z] || 1); q.sp *= feltF(z, 'sp'); q.cd /= feltF(z, 'cd'); return q; };
 const bonusOf = (z, kind) => { const k = K(z) * feltF(z, 'rew'); return kind === 6 ? { a: .6 * k, h: 1.2 * k, f: 8 * k } : kind === 4 ? { a: .7 * k, h: 0, f: 5 * k } : kind === 5 ? { a: 0, h: 0, f: 8 * k } : kind === 0 ? { a: .45 * k, h: 0, f: 4 * k } : kind === 1 ? { a: 0, h: 2.8 * k, f: 6 * k } : kind === 2 ? { a: 0, h: 0, f: 8 * k } : kind === 7 ? { a: 0, h: 0, f: 0 } : kind === 8 ? { a: .6 * k, h: 1.2 * k, f: 8 * k } : kind === 14 ? { a: .9 * k, h: 2 * k, f: 12 * k } : kind >= 9 ? { a: 0, h: 0, f: 3 * k } : { a: 3.5 * k, h: 16 * k, f: 150 * k }; };
-function save() { if (window.RESETTING) return; const pd = typeof coinPending === 'function' ? coinPending() : 0; S.f += pd; try { S.t = Date.now(); const str = mpSaveStr(); try { localStorage.setItem(KEY, str); } catch (e) { } dbQueue(str); } catch (e) {} S.f -= pd; }
+let _svT = 0, _svL = -1e9;
+function save() { if (window.RESETTING) return; const n = performance.now(); if (n - _svL < 3000) { if (!_svT) _svT = setTimeout(() => { _svT = 0; saveNow(); }, 3050 - (n - _svL)); return; } saveNow(); }
+function saveNow() { if (window.RESETTING) return; _svL = performance.now(); if (_svT) { clearTimeout(_svT); _svT = 0; } const pd = typeof coinPending === 'function' ? coinPending() : 0; S.f += pd; try { S.t = Date.now(); const str = mpSaveStr(); try { localStorage.setItem(KEY, str); } catch (e) { } dbQueue(str); } catch (e) {} S.f -= pd; }
 /* migration v2 (6 zones) -> v3 (8 niveaux : Jérusalem = 3 secteurs) : ancienne zone 0 -> niveau 1 (ou 1-3 si le Grand Prêtre était vaincu), zones 1-5 -> niveaux 4-8 */
 function migrateSave(s) { return migr6(migrWp5(migr5(migrRS(migr4(migrateSave3(s)))))); }
 /* armure à 5 pièces : une sauvegarde à 6 pièces est tronquée ; la 6e possédée devient un héritage (+25 % de Puissance conservés, S.wpx) */
@@ -2185,8 +2187,10 @@ function nvBuild() {
   nvDilate();
 }
 function nvDilate() {
-  const { W: Wd, H: Hd } = NV, R = NV.raw, pg = NV.pg, wt = NV.wat;
-  for (let j = 0; j < Hd; j++) for (let i = 0; i < Wd; i++) { let b = wt[j * Wd + i] === 1; if (!b) for (let a = -1; a <= 1 && !b; a++) for (let c = -1; c <= 1; c++) { const ni = i + a, nj = j + c; if (ni >= 0 && nj >= 0 && ni < Wd && nj < Hd && R[nj * Wd + ni] === 1) { b = true; break; } } pg[j * Wd + i] = b ? 1 : 0; }
+  /* dilatation 3x3 en deux passes (horizontale puis verticale) : meme resultat que le balayage des 9 voisins, ~2x plus rapide */
+  const { W: Wd, H: Hd } = NV, R = NV.raw, pg = NV.pg, wt = NV.wat, h = nvDilate.h && nvDilate.h.length === Wd * Hd ? nvDilate.h : (nvDilate.h = new Uint8Array(Wd * Hd));
+  for (let j = 0; j < Hd; j++) { const o = j * Wd; for (let i = 0; i < Wd; i++) h[o + i] = (R[o + i] === 1 || (i > 0 && R[o + i - 1] === 1) || (i < Wd - 1 && R[o + i + 1] === 1)) ? 1 : 0; }
+  for (let j = 0; j < Hd; j++) { const o = j * Wd; for (let i = 0; i < Wd; i++) { const k = o + i; pg[k] = (wt[k] === 1 || h[k] || (j > 0 && h[k - Wd]) || (j < Hd - 1 && h[k + Wd])) ? 1 : 0; } }
 }
 /* validation : chaque objectif doit être accessible depuis le départ ; sinon on ouvre le chemin le moins coûteux dans le décor */
 function nvFlood(si, sj) {
@@ -2231,7 +2235,7 @@ function nvValidate() {
 
 /* poches fermées (intérieurs de bâtiments creux, cours closes) : rendues pleines pour que rien ne s'y place ni ne s'y téléporte */
 /* Calvaire v2 : pentes entièrement praticables (seuls le plateau et ses croix gardent leurs collisions) */
-function calv2Clear() { if (!CAL2.on || !HILL) return; const h = HILL; for (let j = 0; j < NV.H; j++) for (let i = 0; i < NV.W; i++) { const x = NV.x0 + (i + .5) * NV.cs, z = NV.z0 + (j + .5) * NV.cs, r = Math.hypot(x - h.x, z - h.z); if (r >= h.Rt && r < h.Rb + .5) NV.raw[j * NV.W + i] = 0; } nvDilate(); }
+function calv2Clear() { if (!CAL2.on || !HILL) return; const h = HILL, ci0 = Math.max(0, nvI(h.x - h.Rb - 2)), ci1 = Math.min(NV.W, nvI(h.x + h.Rb + 2) + 1), cj0 = Math.max(0, nvJ(h.z - h.Rb - 2)), cj1 = Math.min(NV.H, nvJ(h.z + h.Rb + 2) + 1); for (let j = cj0; j < cj1; j++) for (let i = ci0; i < ci1; i++) { const x = NV.x0 + (i + .5) * NV.cs, z = NV.z0 + (j + .5) * NV.cs, r = Math.hypot(x - h.x, z - h.z); if (r >= h.Rt && r < h.Rb + .5) NV.raw[j * NV.W + i] = 0; } nvDilate(); }
 function nvPockets() {
   const { W: Wd, H: Hd } = NV, seen = new Uint8Array(Wd * Hd), Q = new Int32Array(Wd * Hd); let qh = 0, qt = 0; const R = NV.raw, wt = NV.wat;
   const ok = (i, j) => i >= 0 && j >= 0 && i < Wd && j < Hd && !R[j * Wd + i] && !wt[j * Wd + i];
@@ -3367,6 +3371,9 @@ function initGL() {
   onResize(); window.addEventListener('resize', onResize);
   return true;
 }
+/* resolution adaptative : si la moyenne depasse ~26 images/s sur 90 images, on baisse le pixel ratio (jusqu'a 1), puis la carte d'ombres (2048 -> 1024) ; jamais de remontee (pas d'oscillation) */
+const ADP = { pr: 0, t: 0, n: 0, sum: 0, sh: 0 };
+function adaptRes() { const n = performance.now(); if (ADP.t && !document.hidden) { const d = n - ADP.t; if (d < 250) { ADP.sum += d; if (++ADP.n >= 90) { const av = ADP.sum / ADP.n; ADP.sum = 0; ADP.n = 0; if (av > 38) { if (!ADP.pr) ADP.pr = renderer.getPixelRatio(); if (ADP.pr > 1.01) { ADP.pr = Math.max(1, ADP.pr - .25); renderer.setPixelRatio(ADP.pr); onResize(); } else if (!ADP.sh) { ADP.sh = 1; sunL.shadow.mapSize.set(1024, 1024); if (sunL.shadow.map) { sunL.shadow.map.dispose(); sunL.shadow.map = null; } } } } } else { ADP.sum = 0; ADP.n = 0; } } ADP.t = n; }
 function onResize() { const w = innerWidth, h = innerHeight; renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix(); }
 function initWaters() { FLATS = []; planInit(); FLATS = []; PX.forEach(X => X && X.plaza.forEach(p => FLATS.push({ x: p.x, z: p.z, r: p.r + 1.2, h: hraw(p.x, p.z) }))); }
 
@@ -5205,7 +5212,7 @@ async function cloudInit() {
     }
     CLD.st = 'ok'; CLD.ready = true; if (rstr) { CLD.lastKey = savKey(rstr); CLD.lastProg = savScore(remote)[1]; CLD.where = 'cloud'; }
     /* la partie locale est plus avancée et a réellement progressé : on la pousse ; une partie neuve n'écrase jamais rien */
-    if (savScore(local)[1] > 0 && (!remote || savCmp(local, remote) > 0)) { CLD.now = true; save(); }
+    if (savScore(local)[1] > 0 && (!remote || savCmp(local, remote) > 0)) { CLD.now = true; saveNow(); }
     else if (CLD.pend) dbQueue(CLD.pend);
   } catch (e) { CLD.st = 'none'; }
 }
@@ -5223,7 +5230,7 @@ async function dbFlush() {
   finally { CLD.inflight = false; }
   if (retry) setTimeout(dbFlush, 1500 + Math.random() * 2000 * CLD.tries); else if (CLD.pend) dbQueue(CLD.pend);
 }
-function cloudNow() { try { if (window.RESETTING) return; CLD.now = true; save(); } catch (e) { } }
+function cloudNow() { try { if (window.RESETTING) return; CLD.now = true; saveNow(); } catch (e) { } }
 document.addEventListener('visibilitychange', () => { if (document.hidden) cloudNow(); });
 window.addEventListener('pagehide', cloudNow);
 setInterval(() => { const el = document.querySelector('#mpl .svst'); if (!el) return; const t = CLD.where === 'cloud' ? CLD.at : CLD.lt; const hm = t ? new Date(t).toLocaleTimeString(LOC, { hour: '2-digit', minute: '2-digit' }) : '—'; el.textContent = $t('Sauvegardé ✓ ') + hm + ' · ' + (CLD.where === 'cloud' ? $t('en ligne') : $t('sur cet appareil')); }, 1000);
@@ -5237,13 +5244,13 @@ buildUI(); initIcons();
 if (initGL()) {
   W.hp = HPM(); camera.position.set(W.x, CAMH, W.z + CAMZ);
   let last = performance.now(), acc = 0, pa = 0, pm = 0;
-  const loop = now => { const dt = Math.max(0, Math.min(.05, (now - last) / 1000)); last = now; if (!window.MENU_PZ) update(dt); hpTrack(); overlay(); labelDeclutter(); proxyFlush(); xrayTick(dt); renderer.render(scene, camera); acc += dt; pa += dt; pm += dt; if (pa > .15) { pa = 0; paint(); } if (pm > .12) { pm = 0; drawMM(); } if (acc > 5) { acc = 0; save(); } requestAnimationFrame(loop); };
+  const loop = now => { const dt = Math.max(0, Math.min(.05, (now - last) / 1000)); last = now; if (!window.MENU_PZ) update(dt); hpTrack(); overlay(); labelDeclutter(); proxyFlush(); xrayTick(dt); renderer.render(scene, camera); adaptRes(); acc += dt; pa += dt; pm += dt; if (pa > .15) { pa = 0; paint(); } if (pm > .12) { pm = 0; drawMM(); } if (acc > 5) { acc = 0; save(); } requestAnimationFrame(loop); };
   paint();
   if (NEWGAME) note($t('Nouvelle partie'), $t('Tout recommence à Jérusalem.')); else if (offGain > 0) note($t('Pendant ton absence'), $t('Tes évêques ont converti : +') + fmt(offGain) + $t(' points d\'Église.')); else note(ZONES[W.zone].n + ' · ' + ZONES[W.zone].y, ZONES[W.zone].t);
   requestAnimationFrame(loop);
   mpInit();
 }
-document.addEventListener('visibilitychange', () => { if (document.hidden) save(); }); addEventListener('pagehide', save);
+document.addEventListener('visibilitychange', () => { if (document.hidden) saveNow(); }); addEventListener('pagehide', saveNow);
 /* ---------- son : musique et bruitages procéduraux (Web Audio, aucun fichier, aucune licence) ---------- */
 const AUD = { ctx: null, cfg: { m: .5, s: .7, c: .5, mute: 0 }, g: {}, on: false, last: {} };
 try { Object.assign(AUD.cfg, JSON.parse(localStorage.getItem('cenacle_audio') || '{}')); } catch (e) { }
