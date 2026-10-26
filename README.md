@@ -23,6 +23,9 @@ Voir `git log`.
 ## Coop en ligne
 Réglages → Coop : crée une salle, partage le code (ou le lien), tes amis rejoignent avec le code (6 joueurs max). Connexion directe entre navigateurs (WebRTC, signalisation via relais publics nostr, bibliothèque Trystero, licence MIT dans vendor/). Sans compte ni serveur ; peut échouer sur certains réseaux 4G / d'entreprise.
 
+## Sauvegarde en ligne (Cloudflare)
+Sur https://cenacle.pages.dev, la partie est aussi sauvegardée sur le serveur (Cloudflare Pages Functions + D1, voir `functions/api/save.js` et `migrations/`). Aucun compte : l'appareil tire une clé aléatoire de 128 bits (stockée dans le navigateur) ; le serveur ne garde que son empreinte SHA-256. Réglages → Sauvegarde → « Code de récupération » affiche la clé (à garder secrète), « Restaurer avec un code » la saisit sur un autre appareil. La partie la plus avancée gagne ; une partie neuve n'écrase jamais rien ; la remise à zéro efface aussi la copie en ligne. Sans serveur (GitHub Pages, fichier local), le jeu reste en local.
+
 ## Sauvegarde
 La partie est stockée dans le navigateur. Pour la transférer (PC ↔ iPhone) : Réglages → Partie → Exporter la sauvegarde, puis Importer sur l'autre appareil.
 

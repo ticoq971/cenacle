@@ -4345,7 +4345,7 @@ function rstDraw(box, mk) {
   let w = box.querySelector('#rstw'); if (w && !(box.dataset.rst !== String(RST.step) || w.dataset.ready !== String(performance.now() - RST.t0 >= 1500))) return; if (w) w.remove(); box.dataset.rst = String(RST.step);
   w = mk('div', '', 'rstw'); w.id = 'rstw'; w.dataset.ready = String(performance.now() - RST.t0 >= 1500); w.appendChild(mk('h4', $t('Partie')));
   const b = (t, a, cls) => { const e = mk('button', t, cls); e.dataset.a = a; return e; };
-  if (RST.step === 0) { const r = mk('div', '', 'mpr'); r.appendChild(b($t('Réinitialiser la partie'), 'rst0', 'rstb')); w.appendChild(r); const r2 = mk('div', '', 'mpr'); r2.appendChild(b($t('Exporter la sauvegarde'), 'svx')); r2.appendChild(b($t('Importer une sauvegarde'), 'svi')); w.appendChild(r2); }
+  if (RST.step === 0) { const r = mk('div', '', 'mpr'); r.appendChild(b($t('Réinitialiser la partie'), 'rst0', 'rstb')); w.appendChild(r); const r2 = mk('div', '', 'mpr'); r2.appendChild(b($t('Exporter la sauvegarde'), 'svx')); r2.appendChild(b($t('Importer une sauvegarde'), 'svi')); if (CFS.on) { r2.appendChild(b($t('Code de récupération'), 'rck')); r2.appendChild(b($t('Restaurer avec un code'), 'rcr')); r2.style.flexWrap = 'wrap'; r2.querySelectorAll('button').forEach(x => { x.style.flex = '1 1 45%'; }); } w.appendChild(r2); }
   else { w.appendChild(mk('div', $t('Tout effacer ? Fidèles, améliorations, reliques, églises, évêques, progression…'), 'rstq')); const r = mk('div', '', 'mpr'), y = b($t('Oui, tout effacer'), 'rst1', 'rstb rsty'); y.disabled = performance.now() - RST.t0 < 1500; r.appendChild(y); r.appendChild(b($t('Annuler'), 'rstx')); w.appendChild(r); }
   box.appendChild(w);
 }
@@ -4430,7 +4430,7 @@ function mpDraw(full) {
 }
 function mpClick(ev) {
   const b = ev.target.closest('button'); if (!b) return; const a = b.dataset.a; if (b.dataset.st) { STTAB = b.dataset.st; stLayout($('mpl')); return; } if (a === 'close') { $('mpl').style.display = 'none'; MP.open = false; return; }
-  if (a === 'svx') { saveExport(); return; } if (a === 'svi') { saveImport(); return; }
+  if (a === 'svx') { saveExport(); return; } if (a === 'svi') { saveImport(); return; } if (a === 'rck') { cfShowCode(); return; } if (a === 'rcr') { cfRestore(); return; }
   if (a === 'home') { goHome(); return; } if (a === 'rst0') { RST.step = 1; RST.t0 = performance.now(); mpDraw(true); setTimeout(() => { if (RST.step === 1) mpDraw(true); }, 1600); return; } if (a === 'rstx') { RST.step = 0; mpDraw(true); return; } if (a === 'rst1') { if (performance.now() - RST.t0 < 1500) return; doReset(); return; } if (a === 'create') mpJoin(mpRoomCode(), false, true); else if (a === 'nick') { if (mpSetNick($('mpl').querySelector('.mpn').value)) note($t('Pseudo'), $t('Tu t\'appelles maintenant ') + S.nick + '.'); } else if (a === 'newc') { mpLeave(true); mpJoin(mpRoomCode(true), false, true); } else if (b.dataset.k) mpKick(b.dataset.k); else if (b.dataset.ub) mpUnban(b.dataset.ub); else if (a === 'join') mpJoin($('mpl').querySelector('.mpi').value); else if (a === 'copy') mpCopy(); else if (a === 'leave') mpLeave(); else if (a === 'retry') mpInit();
   else if (b.dataset.e && MP.lobby && MP.code) { MP.lobby.emit('emo', { e: b.dataset.e, code: MP.code }).catch(() => {}); } else if (b.dataset.b) mpBlessSend(b.dataset.b);
 }
@@ -5138,6 +5138,30 @@ function updCoins(dt) {
   coinTxtT += dt; if (coinTxtT > .3) { coinTxtT = 0; if (coinTxt > 0) { floatT('+' + fmt(coinTxt), W.x, 3.4 * CS * 1.2, W.z, 'y'); coinTxt = 0; } }
 }
 /* ---------- SAUVEGARDE EN LIGNE : copie privée de la partie dans le db de l'artefact (data/users/<id>/save), en plus du localStorage ---------- */
+/* ---------- SAUVEGARDE EN LIGNE HORS ARTEFACT (Cloudflare Pages + D1) ----------
+   Clé anonyme de 128 bits tirée au hasard sur l'appareil ; le serveur ne garde que son empreinte SHA-256. Même logique que l'artefact :
+   la partie la plus avancée gagne, une partie neuve n'écrase jamais rien. Sans serveur (GitHub Pages, fichier local), on reste en local. */
+const CFS = { on: false };
+function cfKey() { try { let k = localStorage.getItem('cenacle_key'); if (!/^[0-9a-f]{32}$/.test(k || '')) { const a = new Uint8Array(16); crypto.getRandomValues(a); k = [...a].map(b => b.toString(16).padStart(2, '0')).join(''); localStorage.setItem('cenacle_key', k); } return k; } catch (e) { return null; } }
+function cfCode(k) { return (k || cfKey() || '').toUpperCase().replace(/(.{4})(?=.)/g, '$1-'); }
+function cfRefMake() {
+  if (!/^https?:$/.test(location.protocol) || /github\.io$/.test(location.hostname) || typeof fetch !== 'function' || !window.crypto || !crypto.getRandomValues) return null;
+  const k = cfKey(); if (!k) return null; const H = { Authorization: 'Bearer ' + k, 'Content-Type': 'application/json' };
+  const call = async (method, body) => { try { return await fetch('/api/save', { method, headers: H, body, cache: 'no-store', credentials: 'omit', keepalive: !!body && body.length < 60000 }); } catch (e) { throw { code: 'unavailable' }; } };
+  return {
+    async get() { const r = await call('GET'); let j = null; if (r.ok) { try { j = await r.json(); } catch (e) { } } if (!j || typeof j.exists !== 'boolean') throw { code: r.status >= 500 || r.status === 429 ? 'unavailable' : 'none' }; CFS.on = true; return { exists: j.exists, data: () => j.exists ? { data: j.data, ver: j.ver, savedAt: j.updatedAt } : undefined }; },
+    async set(o) { let p = null; try { p = JSON.parse(o.data); } catch (e) { } const sc = savScore(p); const r = await call('PUT', JSON.stringify({ data: o.data, ver: o.ver, score: sc[0] * 1e9 + Math.max(0, sc[1]) })); if (r.status === 409) return; if (!r.ok) throw { code: r.status === 429 || r.status >= 500 ? 'unavailable' : 'invalid_argument' }; },
+    async delete() { const r = await call('DELETE'); if (!r.ok && r.status !== 404) throw { code: 'unavailable' }; }
+  };
+}
+function cfShowCode() { const k = cfKey(); if (!k) return; prompt($t('Ton code de récupération. Garde-le secret : il donne accès à ta partie en ligne. Pour la retrouver sur un autre appareil : Réglages → Partie → Restaurer avec un code.'), cfCode(k)); }
+function cfRestore() {
+  const c = (prompt($t('Colle ton code de récupération :')) || '').toLowerCase().replace(/[^0-9a-f]/g, ''); if (!c) return;
+  if (c.length !== 32) { alert($t('Code invalide.')); return; }
+  if (!confirm($t('Restaurer la partie liée à ce code ? Si elle est plus avancée que celle de cet appareil, elle la remplacera.'))) return;
+  try { localStorage.setItem('cenacle_key', c); sessionStorage.removeItem('cenacle_adopt'); } catch (e) { alert($t('Code invalide.')); return; }
+  window.RESETTING = true; setTimeout(() => location.reload(), 200);
+}
 const CLD = { ref: null, st: 'init', ready: false, pend: null, now: false, inflight: false, timer: 0, last: 0, lastKey: '', lastProg: -1, where: 'local', at: 0, lt: 0, tries: 0 };
 function savScore(s) {
   if (!s || !Array.isArray(s.conv)) return [-1, -1, 0];
@@ -5149,12 +5173,14 @@ function savCmp(a, b) { const A = savScore(a), B = savScore(b); for (let i = 0; 
 const savKey = str => String(str).replace(/"t":\d+/, '');
 async function cloudInit() {
   try {
-    if (!window.claude || !window.claude.use) { CLD.st = 'none'; return; }
-    const user = await window.claude.use('user'), id = user ? await user.id() : null; if (!id) { CLD.st = 'none'; return; }
-    const db = await window.claude.use('db'); if (!db) { CLD.st = 'none'; return; }
-    CLD.ref = db.collection('data/users/' + id).doc('save');
+    if (!window.claude || !window.claude.use) { CLD.ref = cfRefMake(); if (!CLD.ref) { CLD.st = 'none'; return; } }
+    else {
+      const user = await window.claude.use('user'), id = user ? await user.id() : null; if (!id) { CLD.st = 'none'; return; }
+      const db = await window.claude.use('db'); if (!db) { CLD.st = 'none'; return; }
+      CLD.ref = db.collection('data/users/' + id).doc('save');
+    }
     let snap = null; for (let k = 0; k < 2 && !snap; k++) { try { snap = await CLD.ref.get(); } catch (e) { if (e && e.code === 'unavailable' && k === 0) await new Promise(r => setTimeout(r, 800 + Math.random() * 800)); else throw e; } }
-    let remote = null, rstr = null; if (snap && snap.exists) { const d = snap.data() || {}; if (typeof d.data === 'string') { rstr = d.data; try { remote = migrateSave(JSON.parse(rstr)); } catch (e) { remote = null; } } }
+    let remote = null, rstr = null; if (snap && snap.exists) { const d = snap.data() || {}; if (typeof d.data === 'string') { rstr = d.data; CLD.at = +d.savedAt || 0; try { remote = migrateSave(JSON.parse(rstr)); } catch (e) { remote = null; } } }
     let rst = 0; try { rst = +localStorage.getItem('cenacle_rst') || 0; } catch (e) { }
     if (remote && rst && (+remote.t || 0) < rst) { try { await CLD.ref.delete(); } catch (e) { } remote = null; rstr = null; }
     const local = JSON.parse(JSON.stringify(S));

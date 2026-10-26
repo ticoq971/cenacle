@@ -1,0 +1,9 @@
+# Cénacle sur Cloudflare Pages : le jeu est servi tel quel depuis la racine du dépôt ; functions/ contient l'API de sauvegarde.
+name = "cenacle"
+pages_build_output_dir = "."
+compatibility_date = "2026-10-01"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "cenacle-saves"
+database_id = "1cf2d741-04f5-49ee-bcc0-745e799db6ae"

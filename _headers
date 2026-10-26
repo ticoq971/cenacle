@@ -1,0 +1,21 @@
+/index.html
+  Cache-Control: no-cache
+/sw.js
+  Cache-Control: no-cache
+/manifest.webmanifest
+  Cache-Control: no-cache
+/i18n.js
+  Cache-Control: no-cache
+/weapons.js
+  Cache-Control: no-cache
+/armes.js
+  Cache-Control: no-cache
+/vendor/*
+  Cache-Control: public, max-age=604800
+/icons/*
+  Cache-Control: public, max-age=604800
+/menu/*
+  Cache-Control: public, max-age=604800
+/*
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
