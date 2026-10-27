@@ -30,7 +30,7 @@ export async function onRequest(ctx) {
     let b; try { b = await request.json(); } catch (e) { return json({ error: 'json' }, 400); }
     const P = b && PACKS[b.pack]; if (!P) return json({ error: 'pack' }, 400);
     const r = await stripe(env, 'checkout/sessions', {
-      mode: 'payment', success_url: url.origin + '/?pay=ok', cancel_url: url.origin + '/?pay=no', 'line_items[0][quantity]': '1', 'line_items[0][price_data][currency]': 'eur', 'line_items[0][price_data][unit_amount]': String(P.cents),
+      mode: 'payment', success_url: url.origin + '/?paid={CHECKOUT_SESSION_ID}', cancel_url: url.origin + '/?paid=cancel', 'line_items[0][quantity]': '1', 'line_items[0][price_data][currency]': 'eur', 'line_items[0][price_data][unit_amount]': String(P.cents),
       'line_items[0][price_data][product_data][name]': P.name + ' · Cénacle', 'metadata[h]': id, 'metadata[pack]': b.pack,
     });
     const j = await r.json().catch(() => null); if (!r.ok || !j || !j.url) return json({ error: 'stripe', st: r.status, type: j && j.error && j.error.type, code: j && j.error && j.error.code, param: j && j.error && j.error.param }, 502);

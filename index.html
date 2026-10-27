@@ -4498,6 +4498,7 @@ function stLayout(box) {
   const sv = pane('partie').querySelector('button[data-a="svx"]'); if (sv) { const row = sv.parentNode; const old = pane('save').querySelector('.svrow'); if (old) old.remove(); row.classList.add('svrow'); pane('save').appendChild(row); }
   const ph = pane('partie').querySelector('.mphome'); if (ph && pane('partie').firstChild !== ph) pane('partie').insertBefore(ph, pane('partie').firstChild);
   box.querySelectorAll('.stp').forEach(d => d.hidden = d.dataset.t !== STTAB); hd.querySelectorAll('[data-st]').forEach(b => b.classList.toggle('on', b.dataset.st === STTAB));
+  { const pp = pane('partie'); if (SHOP.ready && pp && !pp.querySelector('button[data-a="shop"]')) { const sb = document.createElement('button'); sb.className = 'buy'; sb.dataset.a = 'shop'; sb.style.cssText = 'width:100%;min-height:50px;margin:8px 0'; sb.textContent = $t('🛒 Boutique'); pp.appendChild(sb); } }
   const sub = hd.querySelector('.st-sub'), lab = (STT.find(t => t[0] === STTAB) || [, , ''])[2]; if (sub.textContent !== lab) sub.textContent = lab;
 }
 function mpDraw(full) {
@@ -4533,7 +4534,7 @@ function mpDraw(full) {
   if (MP.host && S.ban && Object.keys(S.ban).length) { dl.appendChild(mk('div', $t('Joueurs expulsés :'), 'mut')); Object.keys(S.ban).forEach(id => { const r = mk('div', '', 'mpr'); r.appendChild(mk('div', '🚫 ' + (S.ban[id].nm || id))); const u = mk('button', $t('Annuler')); u.dataset.ub = id; r.appendChild(u); dl.appendChild(r); }); }
 }
 function mpClick(ev) {
-  const b = ev.target.closest('button'); if (!b) return; const a = b.dataset.a; if (b.dataset.st) { STTAB = b.dataset.st; stLayout($('mpl')); return; } if (a === 'close') { $('mpl').style.display = 'none'; MP.open = false; return; }
+  const b = ev.target.closest('button'); if (!b) return; const a = b.dataset.a; if (b.dataset.st) { STTAB = b.dataset.st; stLayout($('mpl')); return; } if (a === 'close') { $('mpl').style.display = 'none'; MP.open = false; return; } if (a === 'shop') { goHome().then(() => { MENU.scr = 'shop'; menuDraw(); }); return; }
   if (a === 'svx') { saveExport(); return; } if (a === 'svi') { saveImport(); return; } if (a === 'rck') { cfShowCode(); return; } if (a === 'rcr') { cfRestore(); return; }
   if (a === 'home') { goHome(); return; } if (a === 'rst0') { RST.step = 1; RST.t0 = performance.now(); mpDraw(true); setTimeout(() => { if (RST.step === 1) mpDraw(true); }, 1600); return; } if (a === 'rstx') { RST.step = 0; mpDraw(true); return; } if (a === 'rst1') { if (performance.now() - RST.t0 < 1500) return; doReset(); return; } if (a === 'create') mpJoin(mpRoomCode(), false, true); else if (a === 'nick') { if (mpSetNick($('mpl').querySelector('.mpn').value)) note($t('Pseudo'), $t('Tu t\'appelles maintenant ') + S.nick + '.'); } else if (a === 'newc') { mpLeave(true); mpJoin(mpRoomCode(true), false, true); } else if (b.dataset.k) mpKick(b.dataset.k); else if (b.dataset.ub) mpUnban(b.dataset.ub); else if (a === 'join') mpJoin($('mpl').querySelector('.mpi').value); else if (a === 'copy') mpCopy(); else if (a === 'leave') mpLeave(); else if (a === 'retry') mpInit();
   else if (b.dataset.e && MP.lobby && MP.code) { MP.lobby.emit('emo', { e: b.dataset.e, code: MP.code }).catch(() => {}); } else if (b.dataset.b) mpBlessSend(b.dataset.b);
@@ -5137,15 +5138,22 @@ async function shopBuy(id) {
   try { try { save(); } catch (e) { } const j = await shopApi('POST', '', { pack: id }); if (!j.url || String(j.url).indexOf('https://checkout.stripe.com/') !== 0) throw 0; shopPendSet(shopPendGet().concat([j.session])); location.href = j.url; }
   catch (e) { SHOP.busy = false; mToast($t('Paiement indisponible pour le moment. Réessaie plus tard.')); }
 }
+function shopThanks(g, msg) {
+  const old = document.getElementById('shopthx'); if (old) old.remove();
+  const d = document.createElement('div'); d.id = 'shopthx'; d.style.cssText = 'position:fixed;inset:0;z-index:99999;display:grid;place-items:center;background:rgba(20,10,0,.72);padding:16px';
+  d.innerHTML = '<div style="max-width:340px;width:100%;background:#fff6dc;color:#4a2a08;border:3px solid #c8942a;border-radius:18px;padding:22px 18px;text-align:center;font-family:inherit;box-shadow:0 10px 40px #000a"><div style="font-size:3rem;line-height:1">' + (g ? '✅' : 'ℹ️') + '</div><h2 style="margin:8px 0 6px;font-size:1.4rem">' + (g ? $t('Achat confirmé') : msg) + '</h2>' + (g ? '<p style="margin:0 0 14px;font-size:1.05rem">' + $t('Merci pour ton soutien !') + '<br><b>+' + fmt(g.f) + ' F · +' + g.r + ' ' + $t('de chaque ressource') + '</b></p>' : '<p style="margin:0 0 14px"></p>') + '<button class="buy" style="width:100%;min-height:50px;font-size:1.1rem">OK</button></div>';
+  d.addEventListener('click', e => { if (e.target === d || e.target.tagName === 'BUTTON') d.remove(); }); document.body.appendChild(d);
+}
 async function shopClaim(sid) {
   try { const j = await shopApi('GET', '?session=' + encodeURIComponent(sid)); if (!j.paid) return false;
-    S.pay = Array.isArray(S.pay) ? S.pay : []; if (!S.pay.includes(sid) && SHOPP[j.pack]) { const g = shopGrant(j.pack); S.f += g.f; for (let i = 0; i < 6; i++) S.res[i] += g.r; S.pay.push(sid); S.pay = S.pay.slice(-50); try { saveNow(); } catch (e) { } try { note($t('Merci pour ton soutien !'), '+' + fmt(g.f) + ' F · +' + g.r + ' ' + $t('de chaque ressource') + '.'); } catch (e) { } }
+    S.pay = Array.isArray(S.pay) ? S.pay : []; if (!S.pay.includes(sid) && SHOPP[j.pack]) { const g = shopGrant(j.pack); S.f += g.f; for (let i = 0; i < 6; i++) S.res[i] += g.r; S.pay.push(sid); S.pay = S.pay.slice(-50); try { saveNow(); } catch (e) { } try { shopThanks(g); } catch (e) { } }
     return true; } catch (e) { return null; }
 }
 async function shopInit() {
   try { const j = await fetch('/api/shop?status', { cache: 'no-store', credentials: 'omit' }).then(r => r.json()); SHOP.ready = !!(j && j.ready); (j.packs || []).forEach(p => { SHOP.cents[p.id] = p.cents; }); } catch (e) { return; }
   const q = /[?&]paid=(cs_[A-Za-z0-9_]+)/.exec(location.search); let L = shopPendGet(); if (q && !L.includes(q[1])) L.push(q[1]);
-  if (q || /[?&]paid=cancel/.test(location.search)) { try { history.replaceState(null, '', location.pathname + location.hash); } catch (e) { } }
+  const cx = /[?&]paid=cancel/.test(location.search); if (cx) setTimeout(() => { try { shopThanks(null, $t('Paiement annulé')); } catch (e) { } }, 800);
+  if (q || cx) { try { history.replaceState(null, '', location.pathname + location.hash); } catch (e) { } }
   if (SHOP.ready && L.length) { const keep = []; for (const sid of L) { const r = await shopClaim(sid); if (r === null) keep.push(sid); } shopPendSet(keep); }
   try { if (document.getElementById('menu')) menuDraw(); } catch (e) { }
 }
