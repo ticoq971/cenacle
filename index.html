@@ -1240,7 +1240,7 @@ function ringTick(dt) { for (const r of RINGS) { if (!r.m.visible) continue; r.t
 const EARLY_DISCOUNT = { levels: [.65, .65, .65, .8, .9] };
 const ed = l => { const v = EARLY_DISCOUNT.levels[Math.max(0, Math.floor(l))]; return v === undefined ? 1 : v; };
 /* ---------- lieu de prière : une zone rouge de régénération par niveau, autour de l'autel de prière ---------- */
-const PRAYER = { rate: .06, r: 5.6, safe: true, lightH: 15 };
+const PRAYER = { rate: .14, r: 5.6, safe: true, lightH: 15 };
 function buildPrayerStatic(b, X, z, C) {
   const P = X.pray; if (!P) return; const x = P.x, zz = P.z, r = P.r, y0 = terrY(x, zz), tint = (c, k) => new THREE.Color(c).offsetHSL(0, 0, k).getStyle(), gold = '#e8c04a';
   plazaDisc(b, x, zz, r + .55, .135, C.curb, C.curb, 1, 40);
@@ -1249,10 +1249,10 @@ function buildPrayerStatic(b, X, z, C) {
   ribbon(b, [[x - 4.4, zz], [x + 4.4, zz]], .55, .18, gold, gold); ribbon(b, [[x, zz - 4.4], [x, zz + 4.4]], .55, .18, gold, gold);
   plazaDisc(b, x, zz, r - .5, .17, '#d8a040', '#d8a040', 1, 40); plazaDisc(b, x, zz, r - .8, .175, '#a22a3c', '#a22a3c', 1, 40);
   const f0 = NVF; /* décor bas : pas de collision sauf montants */
-  for (let i = 0; i < 6; i++) { const a = i / 6 * 6.2832 + .5, cx = x + Math.cos(a) * (r - 1.1), cz = zz + Math.sin(a) * (r - 1.1), cy = terrY(cx, cz); put(b, G.cyl6, '#f4ecd6', IDM, cx, cy + .3, cz, .14, .6, .14); put(b, G.cyl6, '#c9a227', IDM, cx, cy + .06, cz, .24, .12, .24); }
+  NVX(() => { for (let i = 0; i < 6; i++) { const a = i / 6 * 6.2832 + .5, cx = x + Math.cos(a) * (r - 1.1), cz = zz + Math.sin(a) * (r - 1.1), cy = terrY(cx, cz); put(b, G.cyl6, '#f4ecd6', IDM, cx, cy + .3, cz, .14, .6, .14); put(b, G.cyl6, '#c9a227', IDM, cx, cy + .06, cz, .24, .12, .24); }
   [-1, 1].forEach(s => { const px = x + s * 2.9, pz = zz + 2.4, py = terrY(px, pz); put(b, G.box, '#5a3a1a', IDM, px, py + .3, pz, 1.1, .6, .7); put(b, G.box, '#7a5a2a', IDM, px, py + .75, pz - .15, 1.1, .12, .45); put(b, G.box, '#4a2e14', IDM, px, py + 1.05, pz - .35, 1.1, .6, .1); });
   { const cx = x, cz = zz - 3.1, cy = terrY(cx, cz); put(b, G.box, '#6a4a22', IDM, cx, cy + 1.7, cz, .32, 3.4, .32); put(b, G.box, '#6a4a22', IDM, cx, cy + 2.5, cz, 1.9, .3, .3); put(b, G.box, gold, IDM, cx, cy + 3.5, cz, .5, .12, .5); }
-  [-1, 1].forEach(s => { const px = x + s * 4.1, pz = zz - 1.3, py = terrY(px, pz); put(b, G.cyl6, '#4a3a2a', IDM, px, py + .45, pz, .1, .9, .1); put(b, G.sph, '#b08a3a', IDM, px, py + .95, pz, .28, .22, .28); put(b, G.cyl6, '#4a3a2a', IDM, px, py + .08, pz, .3, .16, .3); });
+  [-1, 1].forEach(s => { const px = x + s * 4.1, pz = zz - 1.3, py = terrY(px, pz); put(b, G.cyl6, '#4a3a2a', IDM, px, py + .45, pz, .1, .9, .1); put(b, G.sph, '#b08a3a', IDM, px, py + .95, pz, .28, .22, .28); put(b, G.cyl6, '#4a3a2a', IDM, px, py + .08, pz, .3, .16, .3); }); });
 }
 function buildPrayer(z) {
   const X = PX[z], P = X.pray; if (!P) return; const g = new THREE.Group(), r = P.r, y = groundH(P.x, P.z);
