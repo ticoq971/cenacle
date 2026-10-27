@@ -88,3 +88,17 @@ window.testMigration = async function () {
     Object.assign(S, JSON.parse(snap)); } } finally { Object.assign(S, JSON.parse(snap)); }
   return JSON.stringify(out);
 };
+
+/* Variante contrainte (v27d) : le boss de chaque niveau ne croît pas de plus de ~x1,7 par rapport au précédent ; EB.rf calé pour dgF(petit le plus faible) = cibleF, SCL.bmh calé pour ~cibleT minutes de farm dans la plage autorisée. */
+window.calibrerContraint = async function (cibleF, cibleT, o) {
+  o = Object.assign({ maxMin: 400 }, o || {}); EB.rf = [1]; SCL.bmh = [1]; SCL.bmd = [1.25];
+  for (let z = 1; z < 12; z++) {
+    let lo = .05, hi = 40; SCL.bmh[z] = SCL.bmh[z - 1] * 1.05; SCL.bmd[z] = SCL.bmh[z] * .9;
+    for (let it = 0; it < 9; it++) { const m = Math.sqrt(lo * hi); EB.rf[z] = m; const r = await simEquilibrage(Object.assign({}, o, { upTo: z })); if (r[z].arrivee.pL > cibleF) hi = m; else lo = m; }
+    EB.rf[z] = +lo.toFixed(2);
+    const prev = SCL.bmh[z - 1]; let blo = prev * .9, bhi = prev * 1.13;
+    for (let it = 0; it < 7; it++) { const m = (blo + bhi) / 2; SCL.bmh[z] = m; SCL.bmd[z] = m * .9; const r = await simEquilibrage(Object.assign({}, o, { upTo: z })), t = r[z].bossMin; if ((typeof t === 'string' ? 1e9 : t) > cibleT) bhi = m; else blo = m; }
+    SCL.bmh[z] = +blo.toFixed(2); SCL.bmd[z] = +(blo * .9).toFixed(2);
+  }
+  return JSON.stringify({ rf: EB.rf, bmh: SCL.bmh, bmd: SCL.bmd });
+};
