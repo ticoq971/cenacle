@@ -5121,19 +5121,19 @@ function dClaim() {
 }
 /* ---------- Boutique (Stripe Checkout, /api/shop) : packs de fidèles et de ressources payés en argent réel ---------- */
 const SHOP = { ready: false, cents: {}, busy: false };
-/* catalogue : Fidèles (argent, abondant : paliers hauts, proportionnels au niveau) puis chaque ressource (plus rare : paliers bas) ; les prix viennent du serveur */
-const SHOPP = {}; [15, 60, 200].forEach((f, j) => { SHOPP['f' + (j + 1)] = { f }; }); for (let i = 0; i < 6; i++) [100, 320, 900].forEach((r, j) => { SHOPP['r' + i + '_' + (j + 1)] = { rz: i, r }; });
+/* catalogue : Foi (monnaie, abondante : paliers hauts, 250 / 1 750 / 10 000 au niveau 1, puis proportionnels au niveau pour rester rentables)  puis chaque ressource (plus rare : paliers bas) ; les prix viennent du serveur */
+const SHOPP = {}; [25, 175, 1000].forEach((f, j) => { SHOPP['f' + (j + 1)] = { f }; }); for (let i = 0; i < 6; i++) [100, 320, 900].forEach((r, j) => { SHOPP['r' + i + '_' + (j + 1)] = { rz: i, r }; });
 /* le contenu d'un pack suit le niveau atteint : f × (un coffre normal du niveau) de fidèles et r de chaque ressource */
 function shopGrant(id) { const P = SHOPP[id], z = Math.max(0, Math.min(11, S.lvl | 0)); return P.f ? { f: Math.round(P.f * 10 * K(z) * FM()) } : { rz: P.rz, r: P.r }; }
-function shopTxt(g) { return g.f ? '+' + fmt(g.f) + ' F' : '+' + g.r + ' ' + RES[g.rz].n; }
+function shopTxt(g) { return g.f ? '+' + fmt(g.f) + $t(' de foi') : '+' + g.r + ' ' + RES[g.rz].n; }
 function shopPrice(id) { const c = SHOP.cents[id]; return c ? (c / 100).toFixed(2).replace('.', DSEP) + ' €' : ''; }
 function shopIco(k, n) { try { return ICO[k].replace('<svg', '<svg width="' + n + '" height="' + n + '" style="vertical-align:middle;flex:none"'); } catch (e) { return ''; } }
 function shopHtml() {
   let h = $t('<h2>Boutique</h2><div class="box">Soutiens le jeu et gagne du temps. Paiement sécurisé par Stripe ; tu reviens ensuite dans le jeu.</div>');
-  const btn = (id, ik) => { const g = shopGrant(id); return '<button class="mb pri" data-m="buy:' + id + '"' + (SHOP.busy ? ' disabled' : '') + ' style="flex:1;min-width:0;padding:8px 4px;font-size:.95rem;min-height:62px"><span style="display:flex;align-items:center;justify-content:center;gap:4px;font-weight:800">' + shopIco(ik, 22) + (g.f ? '+' + fmt(g.f) : '+' + g.r) + '</span><small style="display:block;font-weight:800;color:#3a2200">' + shopPrice(id) + '</small></button>'; };
-  const sec = (ik, name, col, ids) => '<div class="box" style="padding:10px;background:#2b1a0a;border:2px solid #8a6a2a"><div style="display:flex;align-items:center;gap:8px;font-weight:800;font-size:1.05rem;color:' + col + '">' + shopIco(ik, 30) + name + '</div><div style="display:flex;gap:6px;margin-top:8px">' + ids.map(id => btn(id, ik)).join('') + '</div></div>';
-  h += sec('coin', $t('Fidèles'), '#ffe27a', ['f1', 'f2', 'f3']);
-  for (let i = 0; i < 6; i++) h += sec(RESIC[i], RES[i].n, RES[i].c, [1, 2, 3].map(j => 'r' + i + '_' + j));
+  const btn = (id, ik) => { const g = shopGrant(id); return '<button class="mb pri" data-m="buy:' + id + '" aria-label="' + (ik === 'coin' ? $t('Foi') : RES[RESIC.indexOf(ik)].n) + '"' + (SHOP.busy ? ' disabled' : '') + ' style="flex:1;min-width:0;padding:8px 4px;font-size:.95rem;min-height:62px"><span style="display:flex;align-items:center;justify-content:center;gap:4px;font-weight:800">' + (g.f ? '+' + fmt(g.f) : '+' + g.r) + shopIco(ik, 24) + '</span><small style="display:block;font-weight:800;color:#3a2200">' + shopPrice(id) + '</small></button>'; };
+  const sec = (ik, name, col, ids) => '<div class="box" style="padding:10px;background:#2b1a0a;border:2px solid #8a6a2a"><div style="display:flex;align-items:center;gap:8px;font-weight:800;font-size:1.05rem;color:' + col + '">' + shopIco(ik, 34) + (name || '') + '</div><div style="display:flex;gap:6px;margin-top:8px">' + ids.map(id => btn(id, ik)).join('') + '</div></div>';
+  h += sec('coin', $t('Foi'), '#ffe27a', ['f1', 'f2', 'f3']);
+  for (let i = 0; i < 6; i++) h += sec(RESIC[i], '', RES[i].c, [1, 2, 3].map(j => 'r' + i + '_' + j));
   return h + $t('<div class="box" style="font-size:.78rem;opacity:.8">Les achats sont liés à ta sauvegarde en ligne. Garde ton code de récupération (Sauvegardes).</div>') + $t('<button class="mb alt" data-m="home">← Retour</button>');
 }
 function shopPendGet() { try { return JSON.parse(localStorage.getItem('cenacle_pay') || '[]').filter(x => /^cs_/.test(x)).slice(-10); } catch (e) { return []; } }

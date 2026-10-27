@@ -8,7 +8,7 @@
    Le client dédouble l'attribution grâce à l'identifiant de session conservé dans sa sauvegarde. */
 const RN = ['Myrrhe', 'Huile', 'Marbre', 'Pourpre', 'Vitrail', 'Lumière'], TN = ['petit', 'moyen', 'grand'];
 const PACKS = {};
-[99, 299, 799].forEach((c, j) => { PACKS['f' + (j + 1)] = { cents: c, name: 'Fidèles (' + TN[j] + ')' }; });
+[99, 299, 799].forEach((c, j) => { PACKS['f' + (j + 1)] = { cents: c, name: 'Foi (' + TN[j] + ')' }; });
 RN.forEach((n, i) => [99, 299, 699].forEach((c, j) => { PACKS['r' + i + '_' + (j + 1)] = { cents: c, name: n + ' (' + TN[j] + ')' }; }));
 const HDR = { 'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff' };
 const json = (o, status) => new Response(JSON.stringify(o), { status: status || 200, headers: Object.assign({ 'Content-Type': 'application/json; charset=utf-8' }, HDR) });
