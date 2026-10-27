@@ -5121,13 +5121,17 @@ function dClaim() {
 }
 /* ---------- Boutique (Stripe Checkout, /api/shop) : packs de fidèles et de ressources payés en argent réel ---------- */
 const SHOP = { ready: false, cents: {}, busy: false };
-const SHOPP = { p1: { n: 'Bourse du pèlerin', i: '👛', f: 30, r: 4 }, p2: { n: 'Coffre du marchand', i: '🧰', f: 100, r: 12 }, p3: { n: 'Trésor du Cénacle', i: '🏺', f: 300, r: 40 } };
+/* catalogue : Fidèles (argent, abondant : paliers hauts, proportionnels au niveau) puis chaque ressource (plus rare : paliers bas) ; les prix viennent du serveur */
+const SHOPP = {}; [15, 60, 200].forEach((f, j) => { SHOPP['f' + (j + 1)] = { f }; }); for (let i = 0; i < 6; i++) [6, 20, 60].forEach((r, j) => { SHOPP['r' + i + '_' + (j + 1)] = { rz: i, r }; });
 /* le contenu d'un pack suit le niveau atteint : f × (un coffre normal du niveau) de fidèles et r de chaque ressource */
-function shopGrant(id) { const P = SHOPP[id], z = Math.max(0, Math.min(11, S.lvl | 0)); return { f: Math.round(P.f * 10 * K(z) * FM()), r: P.r }; }
+function shopGrant(id) { const P = SHOPP[id], z = Math.max(0, Math.min(11, S.lvl | 0)); return P.f ? { f: Math.round(P.f * 10 * K(z) * FM()) } : { rz: P.rz, r: P.r }; }
+function shopTxt(g) { return g.f ? '+' + fmt(g.f) + ' F' : '+' + g.r + ' ' + RES[g.rz].n; }
 function shopPrice(id) { const c = SHOP.cents[id]; return c ? (c / 100).toFixed(2).replace('.', DSEP) + ' €' : ''; }
 function shopHtml() {
-  let h = $t('<h2>Boutique</h2><div class="box">Soutiens le jeu et gagne du temps : chaque pack ajoute des fidèles et des ressources à ta partie. Paiement sécurisé par Stripe ; tu reviens ensuite dans le jeu.</div>');
-  Object.keys(SHOPP).forEach(id => { const P = SHOPP[id], g = shopGrant(id); h += '<button class="mb pri" data-m="buy:' + id + '"' + (SHOP.busy ? ' disabled' : '') + '>' + P.i + ' ' + $t(P.n) + ' · ' + shopPrice(id) + '<small style="display:block;font-weight:600;opacity:.8">' + fmt(g.f) + ' F · ' + g.r + ' ' + $t('de chaque ressource') + '</small></button>'; });
+  let h = $t('<h2>Boutique</h2><div class="box">Soutiens le jeu et gagne du temps. Paiement sécurisé par Stripe ; tu reviens ensuite dans le jeu.</div>');
+  const btn = id => '<button class="mb pri" data-m="buy:' + id + '"' + (SHOP.busy ? ' disabled' : '') + ' style="flex:1;min-width:0;padding:8px 4px;font-size:.85rem">' + (g => g.f ? '+' + fmt(g.f) : '+' + g.r)(shopGrant(id)) + '<small style="display:block;font-weight:700;opacity:.85">' + shopPrice(id) + '</small></button>';
+  h += '<div class="box" style="padding:8px"><b>' + $t('Fidèles') + '</b><div style="display:flex;gap:6px;margin-top:6px">' + ['f1', 'f2', 'f3'].map(btn).join('') + '</div></div>';
+  for (let i = 0; i < 6; i++) h += '<div class="box" style="padding:8px"><b style="color:' + RES[i].c + '">' + RES[i].n + '</b><div style="display:flex;gap:6px;margin-top:6px">' + [1, 2, 3].map(j => btn('r' + i + '_' + j)).join('') + '</div></div>';
   return h + $t('<div class="box" style="font-size:.78rem;opacity:.8">Les achats sont liés à ta sauvegarde en ligne. Garde ton code de récupération (Sauvegardes).</div>') + $t('<button class="mb alt" data-m="home">← Retour</button>');
 }
 function shopPendGet() { try { return JSON.parse(localStorage.getItem('cenacle_pay') || '[]').filter(x => /^cs_/.test(x)).slice(-10); } catch (e) { return []; } }
@@ -5141,12 +5145,12 @@ async function shopBuy(id) {
 function shopThanks(g, msg) {
   const old = document.getElementById('shopthx'); if (old) old.remove();
   const d = document.createElement('div'); d.id = 'shopthx'; d.style.cssText = 'position:fixed;inset:0;z-index:99999;display:grid;place-items:center;background:rgba(20,10,0,.72);padding:16px';
-  d.innerHTML = '<div style="max-width:340px;width:100%;background:#fff6dc;color:#4a2a08;border:3px solid #c8942a;border-radius:18px;padding:22px 18px;text-align:center;font-family:inherit;box-shadow:0 10px 40px #000a"><div style="font-size:3rem;line-height:1">' + (g ? '✅' : 'ℹ️') + '</div><h2 style="margin:8px 0 6px;font-size:1.4rem">' + (g ? $t('Achat confirmé') : msg) + '</h2>' + (g ? '<p style="margin:0 0 14px;font-size:1.05rem">' + $t('Merci pour ton soutien !') + '<br><b>+' + fmt(g.f) + ' F · +' + g.r + ' ' + $t('de chaque ressource') + '</b></p>' : '<p style="margin:0 0 14px"></p>') + '<button class="buy" style="width:100%;min-height:50px;font-size:1.1rem">OK</button></div>';
+  d.innerHTML = '<div style="max-width:340px;width:100%;background:#fff6dc;color:#4a2a08;border:3px solid #c8942a;border-radius:18px;padding:22px 18px;text-align:center;font-family:inherit;box-shadow:0 10px 40px #000a"><div style="font-size:3rem;line-height:1">' + (g ? '✅' : 'ℹ️') + '</div><h2 style="margin:8px 0 6px;font-size:1.4rem">' + (g ? $t('Achat confirmé') : msg) + '</h2>' + (g ? '<p style="margin:0 0 14px;font-size:1.05rem">' + $t('Merci pour ton soutien !') + '<br><b>' + shopTxt(g) + '</b></p>' : '<p style="margin:0 0 14px"></p>') + '<button class="buy" style="width:100%;min-height:50px;font-size:1.1rem">OK</button></div>';
   d.addEventListener('click', e => { if (e.target === d || e.target.tagName === 'BUTTON') d.remove(); }); document.body.appendChild(d);
 }
 async function shopClaim(sid) {
   try { const j = await shopApi('GET', '?session=' + encodeURIComponent(sid)); if (!j.paid) return false;
-    S.pay = Array.isArray(S.pay) ? S.pay : []; if (!S.pay.includes(sid) && SHOPP[j.pack]) { const g = shopGrant(j.pack); S.f += g.f; for (let i = 0; i < 6; i++) S.res[i] += g.r; S.pay.push(sid); S.pay = S.pay.slice(-50); try { saveNow(); } catch (e) { } try { shopThanks(g); } catch (e) { } }
+    S.pay = Array.isArray(S.pay) ? S.pay : []; if (!S.pay.includes(sid) && SHOPP[j.pack]) { const g = shopGrant(j.pack); if (g.f) S.f += g.f; else S.res[g.rz] += g.r; S.pay.push(sid); S.pay = S.pay.slice(-50); try { saveNow(); } catch (e) { } try { shopThanks(g); } catch (e) { } }
     return true; } catch (e) { return null; }
 }
 async function shopInit() {
@@ -5628,7 +5632,7 @@ function menuClick(ev) {
   else if (a === 'vers' || a === 'rel') menuPanel(() => { openSheet('rg'); vsTab(a === 'vers' ? 1 : 0); drawVs(); $('sht').textContent = $t('Reliques'); $('shs').textContent = VTAB ? $t('Versets ') + nVs() + ' / 12' : S.rel.length + ' / 12'; });
   else if (a === 'set') menuPanel(() => { const s = $('setb'); if (s && !MP.open) s.click(); });
   else if (a === 'snd') { const s = $('sndb'); if (s) s.click(); menuDraw(); } else if (['home', 'new', 'saves', 'install', 'donate', 'shop'].includes(a)) { MENU.scr = a; menuDraw(); }
-  else if (/^buy:p[1-3]$/.test(a)) shopBuy(a.slice(4));
+  else if (/^buy:[fr][0-9_]+$/.test(a)) shopBuy(a.slice(4));
   else if (a === 'newok') { try { sessionStorage.setItem('cenacle_skipmenu', '1'); } catch (e) { } menuClose(); doReset(); }
   else if (a === 'exp') saveExport();
   else if (a === 'imp') saveImport();

@@ -6,11 +6,10 @@
    POST { pack }          -> crée une session Stripe Checkout, répond { url, session }
    GET  ?session=cs_…     -> vérifie le paiement auprès de Stripe ; { paid, pack, again } (again = déjà réclamée avant)
    Le client dédouble l'attribution grâce à l'identifiant de session conservé dans sa sauvegarde. */
-const PACKS = {
-  p1: { cents: 199, name: 'Bourse du pèlerin' },
-  p2: { cents: 499, name: 'Coffre du marchand' },
-  p3: { cents: 999, name: 'Trésor du Cénacle' },
-};
+const RN = ['Myrrhe', 'Huile', 'Marbre', 'Pourpre', 'Vitrail', 'Lumière'], TN = ['petit', 'moyen', 'grand'];
+const PACKS = {};
+[99, 299, 799].forEach((c, j) => { PACKS['f' + (j + 1)] = { cents: c, name: 'Fidèles (' + TN[j] + ')' }; });
+RN.forEach((n, i) => [99, 299, 699].forEach((c, j) => { PACKS['r' + i + '_' + (j + 1)] = { cents: c, name: n + ' (' + TN[j] + ')' }; }));
 const HDR = { 'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff' };
 const json = (o, status) => new Response(JSON.stringify(o), { status: status || 200, headers: Object.assign({ 'Content-Type': 'application/json; charset=utf-8' }, HDR) });
 async function sha256(s) { const b = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s)); return [...new Uint8Array(b)].map(x => x.toString(16).padStart(2, '0')).join(''); }
