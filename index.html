@@ -810,7 +810,11 @@ const zc = z => [ZB[z].cx, ZB[z].cz];
 
 const golZ = (x, z) => typeof HILL !== 'undefined' && HILL && HILL.gate && x < -39.5 && (Math.hypot(x - HILL.x, z - HILL.z) < HILL.Rb + 1.5 || (x > -44 && Math.abs(z - HILL.gz) < 3.4));
 const zoneAt = (x, z) => { if (golZ(x, z)) return GOLZ; for (let q = 0; q < ZB.length; q++) { const B = ZB[q]; if (B.poly && x >= B.x0 && x < B.x1 && z >= B.z0 && z < B.z1) { if (lvPD(q, x, z) <= 0) { const k = lvLinkZ(x, z); if (k >= 0) return k; } return q; } } const c = Math.floor((x + 40) / ZS), r = Math.floor((z + 40) / ZS); const o = r < 0 || r > 2 || c < 0 || c > 3 || LVZ(ZG[r][c]) ? -1 : ZG[r][c]; return o >= 0 ? o : lvLinkZ(x, z); };
-const K = z => Math.pow(4, ZT(z));
+/* Équilibrage v62 : échelle étalée. SCL.k = rapport entre niveaux consécutifs des récompenses et des coûts (K) ; SCL.e = idem pour les ennemis (vie, dégâts). Anciennement ×4 (K) et ×5,1 (ennemis) par palier ZT, soit jusqu'à ×1000 et ×3500 au niveau 12. */
+const SCL = { k: 1.32, e: 1.5, hp: .435, boss: 5.6, a: .5, f: 3,
+  bmh: [0.74,0.84,0.95,1,0.98,0.95,0.9,0.85,0.82,0.8,0.76,0.78], bmd: [0.67,0.76,0.85,0.9,0.88,0.85,0.81,0.77,0.74,0.72,0.68,0.7] }; /* bmh / bmd : facteurs de vie / dégâts du boss par niveau, calés par tools/equilibrage-sim.js (calibrerBoss) */ /* a = gains permanents (Puissance, Vie) par conversion, f = fidèles par conversion */
+const K = z => Math.pow(SCL.k, z);
+const bmH = z => SCL.bmh[z] || 1, bmD = z => SCL.bmd[z] || 1; /* boss : facteur de vie / dégâts en plus dès le niveau 2 (le boss du niveau 1 reste la référence) */
 /* ---------- réapparitions et anti-blocage (paramètres regroupés ici) ---------- */
 const RESP = {
   foe: [75, 120], jit: .2,          /* délai de réapparition d'un ennemi ordinaire (s), ±20 % */
@@ -893,7 +897,7 @@ function nvPathStep(e, tx, tz) {
   const P = e.pth && e.pth.p; if (!P) return null; while (P.length && Math.hypot(P[0][0] - e.x, P[0][1] - e.z) < .7) P.shift(); return P.length ? P[0] : null;
 }
 /* ---------- évêques : ils parcourent la ville, convertissent les habitants, gagnent en puissance et en vie ---------- */
-const BISH = { fPerConv: 1.0, qMax: 25, qFx: .15, qCost: [10, 1.55], walk: 3.2, win: 60, pw0: 10, hp0: 80, blPw: .35, blHp: .15, lxPw: .06, lxHp: .08, qPw: .22, qHp: .15, lxInc: .04, fight: 3.5, din: .25, regen: .012, xpNeed: [5, 3], cool: 120 };
+const BISH = { fPerConv: 1.0, qMax: 25, qFx: .15, qCost: [10, 1.4], walk: 3.2, win: 60, pw0: 10, hp0: 80, blPw: .35, blHp: .15, lxPw: .06, lxHp: .08, qPw: .22, qHp: .15, lxInc: .04, fight: 3.5, din: .25, regen: .012, xpNeed: [5, 3], cool: 120 };
 /* ---------- œuvres du diocèse (Chrétienté) : paroisses, écoles, hôpitaux autour d'une église avec évêque ----------
    0 Paroisses : +15 % de fidèles par conversion de l'évêque ; 1 Écoles (étude « Écoles épiscopales ») : −8 % de délai entre conversions ;
    2 Hôpitaux (étude « Don de guérison ») : +30 % de régénération du Bonus de ville. Niveau max 5 chacune. */
@@ -904,7 +908,7 @@ const ovCost = (z, l) => 3 * costB(z, l);
 function ovBuy(z, p, i) { const l = ovL(z, p, i), c = ovCost(z, l), rq = OEUV.req[i]; if (!OEUV.z.includes(z) || !S.bs[z][p] || l >= OEUV.max || S.pe < c || (rq && !has(rq))) return; S.pe -= c; const k = z + '-' + p; S.ov = S.ov || {}; S.ov[k] = (S.ov[k] || [0, 0, 0]).slice(); S.ov[k][i] = l + 1; note(OEUV.n[i] + $t(' : niveau ') + (l + 1), [$t('L\'évêque rapporte plus de fidèles.'), $t('L\'évêque convertit plus souvent.'), $t('Ta régénération en ville augmente.')][i]); }
 const bqL = (z, p) => (S.bq && S.bq[z] && S.bq[z][p]) || 0;
 const bxs = (z, p) => ((S.bsx = S.bsx || {})[z + '-' + p] = S.bsx[z + '-' + p] || { lx: 0, xp: 0, conv: 0, hp: -1 });
-const bishopF = (z, q) => BISH.fPerConv * BAL.bish * K(z) * FM() * (1 + BISH.qFx * q) * EB.t;
+const bishopF = (z, q) => BISH.fPerConv * BAL.bish * K(z) * SCL.f * FM() * (1 + BISH.qFx * q) * EB.t;
 const bqCost = (z, l) => Math.round(BISH.qCost[0] * K(z) * Math.pow(BISH.qCost[1], l) * ed(l));
 const pw0 = z => BISH.pw0 * (1 + .5 * ZT(z)), hp0 = z => BISH.hp0 * (1 + .5 * ZT(z));
 function bishopStats(z, p, dbl, dq, dlx, mo) {
@@ -1291,7 +1295,7 @@ function prayPose() {
   if (hg) { if (u._neck === undefined) { const bb = new THREE.Box3(); hg.children.forEach(c => { if (c.geometry) { if (!c.geometry.boundingBox) c.geometry.computeBoundingBox(); const b = c.geometry.boundingBox.clone().applyMatrix4(c.matrix); bb.union(b); } }); u._neck = bb.isEmpty() ? 0 : [bb.min.y, (bb.min.z + bb.max.z) / 2]; } const a = .45 * p, py = u._neck ? u._neck[0] : 0, pz = u._neck ? u._neck[1] : 0; hg.rotation.x = a; hg.position.set(0, py - (py * Math.cos(a) - pz * Math.sin(a)), pz - (py * Math.sin(a) + pz * Math.cos(a))); } u.body.position.y = -14 * SPL_U * p; u.halo.scale.setScalar(1 + .35 * p);
 }
 /* ---------- progression de difficulté dans chaque carte (indice de profondeur p le long des routes) ---------- */
-const DIFFGRAD = { hp: [.20, 1.7], dmg: [.15, 1.6], rew: [.7, .6], tmp: .9, easy: .4, mid: .65, deep: .85, label: [.15, .4, .9], ease: [1, .5, .3, .25, .3, .3, .3, .12], early: [[8, 1], [13, 1], [18, 2]], exp: 1.8, p0: .12, pwf: [1.05, 1.08, 1.1, 1.2, 1.35, 1.6, 2, 2.4] };
+const DIFFGRAD = { hp: [.8, .5], dmg: [.75, .4], rew: [.7, .6], tmp: .9, easy: .4, mid: .65, deep: .85, label: [.15, .4, .9], ease: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], early: [[8, 1], [13, 1], [18, 2]], exp: 1.3, p0: .12, pwf: [1.05, 1.08, 1.1, 1.12, 1.14, 1.16, 1.18, 1.2, 1.22, 1.24, 1.26, 1.28] }; /* v62 : écart entrée/fond de niveau resserré (×2,6 au lieu de ×10) et régulier sur les 12 niveaux */
 let PD = null;
 function depthInit() {
   const { W: Wd, H: Hd, cs } = NV; PD = new Float32Array(Wd * Hd).fill(-1); const D = new Float64Array(Wd * Hd);
@@ -1329,13 +1333,13 @@ function diffNorm(zn) {
 /* t156u/t157u : à partir du niveau 2, un ennemi ordinaire = f × (PV, dégâts) du boss du niveau précédent ;
    f va de lo (entrée du niveau, p = 0) à hi (au pied du boss, p = 1) selon le type ; p = profondeur sur le chemin vers le boss (depthE).
    « Au moins » : jamais moins qu'avant (max). Élites : ×1,1 au plus. Récompenses ×(PV nouveaux / anciens)^rew, plafonné à rmax. */
-const EB = { lo: { 0: .70, 1: .78, 4: .80, 8: .80, 14: .82 }, hi: { 0: .86, 1: .92, 4: .94, 8: .92, 14: .95 }, el: 1.1, rew: 1, rmax: 45, k: .5, t: .5, cal: [1, 0.645, 1.13, 1.219, 1.045, 0.742, 1.496, 1.857, 0.326, 0.401, 0.37, 0.055], ca: [1, 0.656, 0.535, 0.81, 0.624, 0.652, 0.733, 0.728, 0.543, 0.491, 0.448, 0.644], ch: [1, 1.792, 2.716, 1.512, 2.172, 3.074, 1.57, 1.699, 3.757, 2.994, 3.372, 2.5], arch: [.06, .025, .45] };
+const EB = { br: 6.4, bd: 5, rx: .6, rf: [1,3.3,3.7,3.9,3.8,3.5,3.3,3.1,2.9,2.8,2.7,2.4], /* rf : niveau d'entrée des ennemis ordinaires par niveau (calibrerPetits) */ lo: { 0: .56, 1: .72, 4: .60, 8: .66, 14: .70 }, hi: { 0: .86, 1: 1.08, 4: .90, 8: .96, 14: 1.0 }, el: 1.1, rew: 1, rmax: 45, k: .5, t: .5, cal: [1, 0.645, 1.13, 1.219, 1.045, 0.742, 1.496, 1.857, 0.326, 0.401, 0.37, 0.055], ca: [1, 0.656, 0.535, 0.81, 0.624, 0.652, 0.733, 0.728, 0.543, 0.491, 0.448, 0.644], ch: [1, 1.792, 2.716, 1.512, 2.172, 3.074, 1.57, 1.699, 3.757, 2.994, 3.372, 2.5], arch: [.06, .025, .45] };
 const ebF = (kind, p) => { const lo = EB.lo[kind] !== undefined ? EB.lo[kind] : .75, hi = EB.hi[kind] !== undefined ? EB.hi[kind] : .9; return lo + (hi - lo) * Math.max(0, Math.min(1, p)); };
 function diffApply(st, zn, boss, kind, x, z) {
   if (boss || kind === 7 || kind === 6 || (kind >= 9 && kind <= 13) || W.arena && !W.tmp) return { p: -1, rm: 1 };
   const p = depthE(x, z, zn), m = dgMul(p, zn), n = diffNorm(zn); const pf = 1 + ((DIFFGRAD.pwf[zn] || 1) - 1) * Math.max(0, p); st.hp *= m.hp * n.hp * pf; st.dmg *= m.dmg * n.dmg * pf;
   if (zn >= 1 && !W.tmp) { const o = foeStat(zn, kind, false), elh = Math.min(EB.el, st.hp / (o.hp * m.hp * n.hp * pf)), eld = Math.min(EB.el, st.dmg / (o.dmg * m.dmg * n.dmg * pf)), B = foeStat(zn - 1, 0, true), f = ebF(kind, p), h0 = st.hp;
-    st.hp = Math.max(h0, f * B.hp * Math.max(1, elh)); st.dmg = Math.max(st.dmg, f * B.dmg * Math.max(1, eld)); st.ebf = f; const R0 = rewRef(zn, 0); st.ebr = R0.r; st.eba = EB.ca[zn] || 1; st.ebh = EB.ch[zn] || 1; st.ebk = EB.k * (EB.cal[zn] || 1) * Math.min(EB.rmax, Math.max(1, st.hp / R0.h)); return { p, rm: R0.r * st.ebk }; }
+    st.hp = Math.max(h0, f * (EB.rf[zn] || 1) * B.hp / (EB.br * bmH(zn - 1)) * Math.max(1, elh)); st.dmg = Math.max(st.dmg, f * (EB.rf[zn] || 1) * B.dmg / (EB.bd * bmD(zn - 1)) * Math.max(1, eld)); st.ebf = f; st.ebk = EB.k; return { p, rm: m.rew * n.rew * EB.k }; }
   st.ebk = EB.k; return { p, rm: m.rew * n.rew * EB.k };
 }
 function dgF(e) { const A = ATK(), eh = Math.max(A * .05, A - e.max / 60), ttk = Math.max(.1, e.hp / (eh / .6)), cd = foeStat(e.zn, e.kind, false).cd || 1.2; return (ttk / cd + 1) * e.dmg / HPM(); }
@@ -1393,14 +1397,14 @@ const wpOn = z => z === 5 ? !!S.wpx : S.wp[z] === 2, /* 5 = héritage de l'ancie
 const wpAtk = () => (wpOn(0) ? .12 : 0) + (S.wpx ? .25 : 0) + (wpAll() ? .15 : 0), wpHp = () => (wpOn(1) ? .15 : 0) + (wpAll() ? .15 : 0);
 const AP = [{ n: $t('Jacques'), robe: '#c0793a', hair: '#3a2a1a', beard: true, hat: 'pilgrim', acc: 'shell', staff: true }, { n: $t('Matthieu'), robe: '#5a7a3a', hair: '#2a2018', beard: true, scroll: true }, { n: $t('Philippe'), robe: '#8a4a6a', hair: '#4a3020', beard: true, staff: true }, { n: $t('Barthélemy'), robe: '#3a7a9a', hair: '#222222', beard: true, scroll: true }, { n: $t('Jean'), robe: '#7a9a5a', hair: '#8a5a2a', beard: false, long: true, book: true }, { n: $t('Jacques le Mineur'), robe: '#8a6a3a', hair: '#3a2a1a', beard: true, staff: true }, { n: $t('Pierre'), robe: '#9a7a3a', hair: '#aaaaaa', beard: true, acc: 'keys', galon: true }, { n: $t('Simon le Zélote'), robe: '#6a3a2a', hair: '#1a1a1a', beard: true, sword: true }, { n: $t('Jude Thaddée'), robe: '#4a7a5a', hair: '#5a3a1a', beard: true, book: true }, { n: $t('André'), robe: '#9a5a6a', hair: '#6a3a1a', beard: true, acc: 'netcross', staff: true }, { n: $t('Thomas'), robe: '#6a6aa8', hair: '#2a1a0a', beard: false, acc: 'square', spear: true }, { n: $t('Matthias'), robe: '#a88a4a', hair: '#4a2a1a', beard: true, scroll: true, staff: true }];
 { const o = AP.slice(); [5, 8, 2, 7, 3, 6, 1, 0, 4, 10, 9, 11].forEach((k, i) => AP[i] = o[k]); } /* Chapitre I : Jacques le Mineur, Jude, Philippe, Simon, Barthélemy (Cana), Pierre (lac), Matthieu (Capharnaüm), Jacques (Béatitudes)… */
-const apN = () => S.ap.filter(v => v === 1).length, apDmg = l => ATK() * (.2 + .09 * l), apCost = (z, l) => Math.round(30 * K(z) * Math.pow(1.6, l) * ed(l)), apRes = l => (1 / (1 + .4 * l)) * (has('cate') ? .6 : 1);
+const apN = () => S.ap.filter(v => v === 1).length, apDmg = l => ATK() * (.2 + .09 * l), apCost = (z, l) => Math.round(30 * K(z) * Math.pow(1.45, l) * ed(l)), apRes = l => (1 / (1 + .4 * l)) * (has('cate') ? .6 : 1);
 const WKC = 400;
 const RT = [[$t('Croix'), $t('de Puissance')], [$t('Calice'), $t('de Vie')], [$t('Livre'), $t('de fidèles gagnés')]];
 const TC = ['#b0b7d4', '#6fcf97', '#5aa8ff', '#c77dff', '#f0bd4a', '#ef6a4d', '#ffffff'];
 const UPG = [[$t('Héros : Puissance'), $t('+17 % de puissance par niveau (de plus en plus), bond ×1,2 aux niveaux 5, 10, 15, 20 (×1,4 au 25)'), '⚔'], [$t('Héros : Vie'), $t('+17 % de points de vie par niveau (de plus en plus), bond ×1,2 aux niveaux 5, 10, 15, 20 (×1,4 au 25)'), '♥'], [$t('Héros : Régénération'), $t('Tu récupères plus vite quand personne ne te frappe (mêmes paliers)'), '✚'], [$t('Héros : Portée'), $t('Ton aura de prédication s\'agrandit (+5 % par niveau, paliers aux niveaux 5 et 10)'), '◎']];
 const UB = [20, 20, 30, 40];
 const Z8 = v => Array.from({ length: 12 }, () => JSON.parse(JSON.stringify(v)));
-let S = { ver: 7, cr: Z8(0), gl: 0, sp: 0, res: [0, 0, 0, 0, 0, 0], rs: {}, rq: null, ms: Z8([0, 0]), bs: Z8([0, 0]), wk: 0, ap: Z8(0), al: Z8(0), fd: 0, pe: 0, cl: Z8([0, 0]), bl: Z8([0, 0]), wp: [0, 0, 0, 0, 0], f: 0, lvl: 0, conv: Z8(0), boss: Z8(0), bA: 0, bH: 0, up: [0, 0, 0, 0], rel: [], relBuys: 0, ch: Z8([0, 0]), cx: Z8([0, 0, 0]), vs: Z8(0), dg: { d: '', n: 0 }, tut: 0, t: Date.now() };
+let S = { ver: 8, cr: Z8(0), gl: 0, sp: 0, res: [0, 0, 0, 0, 0, 0], rs: {}, rq: null, ms: Z8([0, 0]), bs: Z8([0, 0]), wk: 0, ap: Z8(0), al: Z8(0), fd: 0, pe: 0, cl: Z8([0, 0]), bl: Z8([0, 0]), wp: [0, 0, 0, 0, 0], f: 0, lvl: 0, conv: Z8(0), boss: Z8(0), bA: 0, bH: 0, up: [0, 0, 0, 0], rel: [], relBuys: 0, ch: Z8([0, 0]), cx: Z8([0, 0, 0]), vs: Z8(0), dg: { d: '', n: 0 }, tut: 0, t: Date.now() };
 
 /* ---------- Versets : sermons de Jésus (textes AELF, mot pour mot) ---------- */
 const VS = [{"r": "Mt 11, 28", "ti": $t("Venez à moi"), "t": "Venez à moi, vous tous qui peinez sous le poids du fardeau, et moi, je vous procurerai le repos.", "b": ["reg", 0.1], "bl": $t("+10 % Régén."), "bn": $t("+10 % de régénération")}, {"r": "Mt 7, 7", "ti": $t("Frappez, on vous ouvrira"), "t": "Demandez, on vous donnera ; cherchez, vous trouverez ; frappez, on vous ouvrira.", "b": ["chest", 1], "bl": $t("Coffres +1 ress."), "bn": $t("Coffres : +1 ressource")}, {"r": "Jn 2, 19", "ti": $t("Détruisez ce sanctuaire"), "t": "Détruisez ce sanctuaire, et en trois jours je le relèverai.", "b": ["atk", 0.08], "bl": $t("+8 % Puissance"), "bn": $t("+8 % de puissance")}, {"r": "Mt 4, 4", "ti": $t("Pas seulement de pain"), "t": "Il est écrit : L’homme ne vit pas seulement de pain, mais de toute parole qui sort de la bouche de Dieu.", "b": ["hp", 0.08], "bl": $t("+8 % Vie"), "bn": $t("+8 % de vie")}, {"r": "Jn 15, 12", "ti": $t("Aimez-vous les uns les autres"), "t": "Mon commandement, le voici : Aimez-vous les uns les autres comme je vous ai aimés.", "b": ["f", 0.1], "bl": $t("+10 % Fidèles"), "bn": $t("+10 % Fidèles gagnés")}, {"r": "Mt 5, 8", "ti": $t("Heureux les cœurs purs"), "t": "Heureux les cœurs purs, car ils verront Dieu.", "b": ["hp", 0.1], "bl": $t("+10 % Vie"), "bn": $t("+10 % de vie")}, {"r": "Mt 16, 18", "ti": $t("Tu es Pierre"), "t": "Et moi, je te le déclare : Tu es Pierre, et sur cette pierre je bâtirai mon Église ; et la puissance de la Mort ne l’emportera pas sur elle.", "b": ["pe", 0.15], "bl": $t("+15 % PE"), "bn": $t("+15 % de points d’Église")}, {"r": "Jn 8, 12", "ti": $t("La lumière du monde"), "t": "Moi, je suis la lumière du monde. Celui qui me suit ne marchera pas dans les ténèbres, il aura la lumière de la vie.", "b": ["rng", 0.08], "bl": $t("+8 % Portée"), "bn": $t("+8 % de portée")}, {"r": "Jn 4, 14", "ti": $t("Une source d’eau jaillissante"), "t": "L’eau que je lui donnerai deviendra en lui une source d’eau jaillissant pour la vie éternelle.", "b": ["atk", 0.1], "bl": $t("+10 % Puissance"), "bn": $t("+10 % de puissance")}, {"r": "Jn 11, 25", "ti": $t("La résurrection et la vie"), "t": "Moi, je suis la résurrection et la vie. Celui qui croit en moi, même s’il meurt, vivra.", "b": ["hp", 0.12], "bl": $t("+12 % Vie"), "bn": $t("+12 % de vie")}, {"r": "Lc 22, 42", "ti": $t("Non pas ma volonté"), "t": "Père, si tu le veux, éloigne de moi cette coupe ; cependant, que soit faite non pas ma volonté, mais la tienne.", "b": ["bish", 0.15], "bl": $t("Évêques +15 %"), "bn": $t("Évêques : +15 % de cadence")}, {"r": "Lc 23, 34", "ti": $t("Père, pardonne-leur"), "t": "Père, pardonne-leur : ils ne savent pas ce qu’ils font.", "b": ["reg", 0.15], "bl": $t("+15 % Régén."), "bn": $t("+15 % de régénération")}].map(vsL);
@@ -1420,7 +1424,7 @@ const fmt = n => {
 const rval = k => 1.2 * (k + 1) * (k + 1) / 100;
 const relB = t => S.rel.filter(r => r.t === t).reduce((a, r) => a + rval(r.k), 0);
 /* Améliorations de base : effet par niveau (Puissance, Vie : +17 % additifs croissants ; Régénération : +0,4 %/s de vie max ; Portée : +5 %), paliers multiplicatifs tous les 5 niveaux, croissance du coût */
-const UPEFFECT = { per: [.17, .17, .004, .05], ramp: .06, regBase: .008, grow: 1.7, mil: [[5, 1.2], [10, 1.2], [15, 1.2], [20, 1.2], [25, 1.4]], rngMil: [[5, 1.15], [10, 1.15]] };
+const UPEFFECT = { per: [.17, .17, .004, .05], ramp: .06, regBase: .008, grow: 1.45, mil: [[5, 1.2], [10, 1.2], [15, 1.2], [20, 1.2], [25, 1.4]], rngMil: [[5, 1.15], [10, 1.15]] };
 const upMul = (l, L) => L.reduce((a, m) => l >= m[0] ? a * m[1] : a, 1);
 const upBase = (i, l) => UPEFFECT.per[i] * l * (1 + UPEFFECT.ramp * l) * upMul(l, UPEFFECT.mil);
 const upM = (i) => upBase(i, S.up[i]);
@@ -1436,11 +1440,11 @@ const upCost = i => Math.round(UB[i] * Math.pow(UPEFFECT.grow, S.up[i]) * ed(S.u
 const CCOST = (z, p) => Math.round(30 * K(z) * (p ? 2.5 : 1) * ed(p ? 3 : 0)), CNEED = [6, 15];
 const chHeal = c => 8 * (1 + .25 * c) * (has('gueri') ? 1.6 : 1), chAmt = (z, c) => 3 * (1 + .2 * c) * (1 + .5 * ZT(z)) * EB.t, chIv = b => 10 / (1 + .3 * b) * (has('ecoles') ? .6 : 1) / vsM('bish');
 const passive = () => 0;
-const costC = (z, l) => Math.round(12 * Math.pow(1.65, l) * (1 + ZT(z) * .5) * ed(l)), costB = (z, l) => Math.round(10 * Math.pow(1.6, l) * (1 + ZT(z) * .5) * ed(l));
+const costC = (z, l) => Math.round(12 * Math.pow(1.5, l) * (1 + ZT(z) * .5) * ed(l)), costB = (z, l) => Math.round(10 * Math.pow(1.5, l) * (1 + ZT(z) * .5) * ed(l));
 const nChurch = () => S.ch.reduce((a, r) => a + r[0] + r[1], 0);
-const relCost = () => Math.round(60 * Math.pow(1.6, S.relBuys) * ed(S.relBuys));
-const DMGM = 2.2;
-function foeStat0(z, kind, boss) { const k = Math.pow(5.1, ZT(z));
+const relCost = () => Math.round(60 * Math.pow(1.45, S.relBuys) * ed(S.relBuys));
+const DMGM = 1.1;
+function foeStat0(z, kind, boss) { const k = Math.pow(SCL.e, z);
   if (kind === 6) return { hp: 42 * k, dmg: 5.5 * k, cd: 1.2, sp: 5, aggro: 18, reach: 2.6 };
   if (kind === 7) return { hp: 55 * k, dmg: 0, cd: .4, sp: 6.4, aggro: 18, reach: 2.2 };
   if (kind === 8) return { hp: 55 * k, dmg: 7 * k, cd: 1.2, sp: 5.2, aggro: 16, reach: 2.6 };
@@ -1453,21 +1457,42 @@ function foeStat0(z, kind, boss) { const k = Math.pow(5.1, ZT(z));
   if (kind === 4 && !boss) return { hp: 28 * k, dmg: 4.8 * k, cd: 1.9, sp: 3.2, aggro: 22, reach: 13 };
   return boss ? { hp: 1150 * k, dmg: 13 * k, cd: 1.1, sp: 6.2, aggro: 20, reach: 4.6 } : kind ? { hp: 75 * k, dmg: 3.8 * k, cd: 1.3, sp: 4.6, aggro: 14, reach: 2.6 } : { hp: 40 * k, dmg: 5.2 * k, cd: 1.2, sp: 5.2, aggro: 15, reach: 2.6 }; }
 /* progression ressentie : chaque niveau rend les ennemis nettement plus coriaces, rapides et agressifs (récompenses relevées en partie) */
-const FELT = { on: 1, hp: .08, dmg: .06, sp: .03, cd: .025, rew: .08, bossHp: .03 };
+const FELT = { on: 1, hp: 0, dmg: 0, sp: .03, cd: .025, rew: 0, bossHp: 0 };
 const feltF = (z, k) => FELT.on ? 1 + FELT[k] * z : 1;
 /* équilibrage par niveau (le niveau 1 reste tel quel) : h = vie des ennemis, d = dégâts, b = vie des boss en plus ; bish = revenu des évêques (freine l'effet boule de neige) */
-const BAL = { h: [1, 1.8, 1.7, 2.25, 2.1, 2.35, 2.45, 2.8, 3, 3.3, 3.3, 4], d: [1, 1.35, 1.35, 1.55, 1.45, 1.62, 1.68, 1.85, 2, 2.2, 2.2, 2.6], b: [1, 1.6, 1.6, 2.8, 2.3, 3.1, 3.1, 3.6, 3.4, 3.4, 3.2, 3.6], bish: 0.45 };
-const foeStat = (z, kind, boss) => { const q = foeStat0(z, kind, boss); q.dmg *= DMGM * feltF(z, 'dmg') * (BAL.d[z] || 1); q.hp *= feltF(z, 'hp') * (boss ? feltF(z, 'bossHp') * (BAL.b[z] || 1) : 1) * (BAL.h[z] || 1); q.sp *= feltF(z, 'sp'); q.cd /= feltF(z, 'cd'); return q; };
-const bonusOf = (z, kind) => { const k = K(z) * feltF(z, 'rew'); return kind === 6 ? { a: .6 * k, h: 1.2 * k, f: 8 * k } : kind === 4 ? { a: .7 * k, h: 0, f: 5 * k } : kind === 5 ? { a: 0, h: 0, f: 8 * k } : kind === 0 ? { a: .45 * k, h: 0, f: 4 * k } : kind === 1 ? { a: 0, h: 2.8 * k, f: 6 * k } : kind === 2 ? { a: 0, h: 0, f: 8 * k } : kind === 7 ? { a: 0, h: 0, f: 0 } : kind === 8 ? { a: .6 * k, h: 1.2 * k, f: 8 * k } : kind === 14 ? { a: .9 * k, h: 2 * k, f: 12 * k } : kind >= 9 ? { a: 0, h: 0, f: 3 * k } : { a: 3.5 * k, h: 16 * k, f: 150 * k }; };
+const BAL = { h: [], d: [], b: [], bish: 0.45 }; /* v62 : les facteurs par niveau sont remplacés par la courbe SCL (h, d, b restent disponibles pour un réglage fin par niveau) */
+const foeStat = (z, kind, boss) => { const q = foeStat0(z, kind, boss); q.dmg *= DMGM * feltF(z, 'dmg') * (BAL.d[z] || 1) * (boss && kind === 0 ? SCL.boss * bmD(z) : 1); q.hp *= SCL.hp * (boss && kind === 0 ? bmH(z) : 1) * feltF(z, 'hp') * (boss ? feltF(z, 'bossHp') * (BAL.b[z] || 1) : 1) * (BAL.h[z] || 1); q.sp *= feltF(z, 'sp'); q.cd /= feltF(z, 'cd'); return q; };
+const bonusOf = (z, kind) => { const q = bonusOf0(z, kind); q.a *= SCL.a; q.h *= SCL.a; q.f *= SCL.f; return q; };
+const bonusOf0 = (z, kind) => { const k = K(z) * feltF(z, 'rew'); return kind === 6 ? { a: .6 * k, h: 1.2 * k, f: 8 * k } : kind === 4 ? { a: .7 * k, h: 0, f: 5 * k } : kind === 5 ? { a: 0, h: 0, f: 8 * k } : kind === 0 ? { a: .45 * k, h: 0, f: 4 * k } : kind === 1 ? { a: 0, h: 2.8 * k, f: 6 * k } : kind === 2 ? { a: 0, h: 0, f: 8 * k } : kind === 7 ? { a: 0, h: 0, f: 0 } : kind === 8 ? { a: .6 * k, h: 1.2 * k, f: 8 * k } : kind === 14 ? { a: .9 * k, h: 2 * k, f: 12 * k } : kind >= 9 ? { a: 0, h: 0, f: 3 * k } : { a: 3.5 * k, h: 16 * k, f: 30 * k }; };
 let _svT = 0, _svL = -1e9;
 function save() { if (window.RESETTING) return; const n = performance.now(); if (n - _svL < 3000) { if (!_svT) _svT = setTimeout(() => { _svT = 0; saveNow(); }, 3050 - (n - _svL)); return; } saveNow(); }
 function saveNow() { if (window.RESETTING) return; _svL = performance.now(); if (_svT) { clearTimeout(_svT); _svT = 0; } const pd = typeof coinPending === 'function' ? coinPending() : 0; S.f += pd; try { S.t = Date.now(); const str = mpSaveStr(); try { localStorage.setItem(KEY, str); } catch (e) { } dbQueue(str); } catch (e) {} S.f -= pd; }
 /* migration v2 (6 zones) -> v3 (8 niveaux : Jérusalem = 3 secteurs) : ancienne zone 0 -> niveau 1 (ou 1-3 si le Grand Prêtre était vaincu), zones 1-5 -> niveaux 4-8 */
-function migrateSave(s) { return migr6(migrWp5(migr5(migrRS(migr4(migrateSave3(s)))))); }
+function migrateSave(s) { return migr7(migr6(migrWp5(migr5(migrRS(migr4(migrateSave3(s))))))); }
 /* armure à 5 pièces : une sauvegarde à 6 pièces est tronquée ; la 6e possédée devient un héritage (+25 % de Puissance conservés, S.wpx) */
 function migrWp5(s) { if (s && Array.isArray(s.wp) && s.wp.length > 5) { if (s.wp[5] === 2) s.wpx = 1; s.wp = s.wp.slice(0, 5); } return s; }
 /* v6 -> v7 (étape 3) : les niveaux 9 à 11 (Nicée, Constantinople, Hippone) deviennent Samarie·Jéricho, Béthanie et Gethsémani ; le Golgotha (12) et Satan (13) restent.
    Progression gardée (niveau atteint, boss, âmes, apôtres, versets, coffres, fragments) ; seuls le brouillard de carte, les ressources posées et l'épreuve du Concile (chapitre des Apôtres) des niveaux redessinés sont remis à zéro. */
+/* v62 (équilibrage) : les gains permanents (Puissance, Vie : S.bA, S.bH) et les fidèles étaient à l'échelle de l'ancienne courbe (jusqu'à ×1000). Pour ne rendre personne invincible face aux nouveaux ennemis,
+   S.bA / S.bH sont plafonnés à ce que la progression réelle (conversions, boss, églises) rapporte avec la nouvelle courbe (+25 % de marge) ; les fidèles sont ramenés à la nouvelle échelle (K nouveau / K ancien) et plafonnés à ~10 niveaux d'amélioration.
+   Ne sont PAS touchés : niveaux d'amélioration, boss vaincus, conversions, églises, évêques, apôtres, reliques, versets, armes, ressources, Points d'Église (la progression et le score de sauvegarde restent identiques). */
+const MIGREF = { a: [31, 56, 104, 193, 338, 576, 895, 1592, 2237, 3360, 4953, 5961], h: [380, 583, 935, 1216, 1544, 1806, 2597, 3148, 4972, 6759, 9262, 17749] }; /* Puissance / Vie du héros simulé en fin de chaque niveau */
+function migr7(s) {
+  if (!s || typeof s !== 'object' || !Array.isArray(s.conv) || (s.ver || 0) >= 8) return s;
+  let A = 0, H = 0, zm = 0; const arr = (a, z) => (Array.isArray(a) && Array.isArray(a[z])) ? a[z] : [];
+  for (let z = 0; z < NZ; z++) {
+    const n = Math.min(+s.conv[z] || 0, CAP), bz = !!(s.boss && s.boss[z]); if (n > 0 || bz) zm = z;
+    A += n * .6 * bonusOf(z, 0).a * EB.k; H += n * .4 * bonusOf(z, 1).h * EB.k;
+    if (bz) { const b = bonusOf(z, 3); A += b.a; H += b.h; }
+    arr(s.ch, z).forEach(c => { if (c) H += 10 * K(z); }); arr(s.cl, z).forEach(c => { H += 4 * K(z) * (+c || 0); });
+  }
+  const up = Array.isArray(s.up) ? s.up : [0, 0, 0, 0];
+  /* 1) plafond « progression réelle » ; 2) plafond « force de référence » : Puissance / Vie de base (hors reliques, armes, églises) au plus 1,6 × le héros simulé de fin de niveau (tools/equilibrage-sim.js), compte tenu des niveaux d'amélioration conservés */
+  const zr = Math.max(0, Math.min(NZ - 1, +s.lvl || 0)), mA = 1 + upBase(0, +up[0] || 0), mH = 1 + upBase(1, +up[1] || 0);
+  s.bA = Math.max(0, Math.min(+s.bA || 0, A * 1.25, MIGREF.a[zr] * 1.6 / mA - 5)); s.bH = Math.max(0, Math.min(+s.bH || 0, H * 1.25, MIGREF.h[zr] * 1.6 / mH - 60));
+  s.f = Math.max(0, Math.min((+s.f || 0) * K(zm) / Math.pow(4, ZT(zm)), 10 * UB[1] * Math.pow(UPEFFECT.grow, +up[1] || 0)));
+  s.ver = 8; s.mig7 = 1; return s;
+}
 function migr6(s) {
   if (!s || typeof s !== 'object' || !Array.isArray(s.conv) || (s.ver || 0) >= 7) return s;
   const z0 = (s.ver || 0) >= 6 ? 8 : 0;
@@ -2072,9 +2097,9 @@ function updRelP(dt) {
 /* coffres : récompense précalculée et affichée (barre + icônes) */
 const RESIC = ['myrrh', 'oil', 'marble', 'purple', 'glass', 'light'];
 function chestRw(c) {
-  if (c.big) return { relic: false, big: true, lv: 1, f: 20 * 10 * K(c.zn) * FM() }; /* Trésor du Calvaire : 20 × le coffre normal */
+  if (c.big) return { relic: false, big: true, lv: 1, f: 20 * 10 * K(c.zn) * SCL.f * FM() }; /* Trésor du Calvaire : 20 × le coffre normal */
   const r = c.rw || (c.rw = { rn: Math.random(), t: Math.floor(Math.random() * 3), tb: Math.random() < .25 ? 1 : 0 }), K0 = K(c.zn), lv = Math.min(3, Math.floor(ZT(c.zn) / 2) + r.tb);
-  const relic = r.rn < .25 || S.rel.length < 2; return { relic, lv, f: 10 * K0 * FM() };
+  const relic = r.rn < .25 || S.rel.length < 2; return { relic, lv, f: 10 * K0 * SCL.f * FM() };
 }
 function chestHTML(c) { const w = chestRw(c); if (c.big) return $t('<div class="nm" style="color:#ffd860">TRÉSOR DU CALVAIRE</div><div class="cbar"><i></i></div><div class="crw"><span class="cri">') + ICO[RESIC[RZ(c.zn)]] + '<b>60</b></span><span class="cri">' + ICO.relic + '<b>3</b></span><span class="cri">' + ICO.coin + '<b>' + fmt(w.f) + '</b></span></div>'; const ti = CHT(c.zn); return '<div class="nm" style="color:' + CHTC[ti] + ';font-size:.78rem;text-shadow:0 1px 0 #000,0 0 3px #000">' + CHTN[ti] + '</div>' + (chSealed(c) ? $t('<div class="nm" style="color:#ffc0a8;font-size:.7rem;text-shadow:0 1px 0 #000,0 0 3px #000">🔒 Scellé : convertis le boss</div>') : '') + '<div class="cbar"><i></i></div><div class="crw"><span class="cri">' + ICO[RESIC[RZ(c.zn)]] + '<b>' + (CHRES[c.zn] + vsB('chest')) + '</b></span>' + (w.relic ? '<span class="cri">' + ICO.relic + '<b>1</b></span>' : '<span class="cri">' + ICO.coin + '<b>' + fmt(w.f) + '</b></span>') + '</div>'; }
 /* ---------- navigation : grille d'obstacles (0,5 m), collisions glissantes, champ de flot, validation de connectivité ---------- */
@@ -3675,7 +3700,7 @@ function reward(kind, zn, x, z, mult, cn) {
   let y = 2.2; const fx = x + 2.4; if (a) { floatT('+' + fmt(a) + $t(' Puissance'), fx, y, z, 'a'); y += 1.1; } if (h) { floatT('+' + fmt(h) + $t(' Vie'), fx, y, z, 'g'); y += 1.1; } if (!cn) floatT('+' + fmt(F) + ' F', fx, y, z, 'y');
   if (!window._byB && kind !== 3 && (kind <= 8 && kind !== 7 || kind === 14)) { S.conv[zn]++; if (S.conv[zn] === NEEDZ(zn) && !S.boss[zn]) note($t('Le boss apparaît !'), ZONES[zn].boss + $t(' t\'attend dans cette zone.')); else if (S.conv[zn] === CNEED[0] || S.conv[zn] === CNEED[1]) note($t('Église disponible !'), $t('Approche d\'un emplacement doré pour bâtir une église.')); else if (S.conv[zn] === CAP) note($t('Zone convertie'), $t('Les prochains convertis ne donnent plus de bonus permanent ici.')); }
 }
-function giveRelic(k, x, z) { if (S.rel.length >= 12) { const f = 8 * K(W.zone) * FM(); S.f += f; bagFullPop(x, z, f); floatT($t('Sac plein : +') + fmt(f) + ' F', x, 5, z, 'y'); return; } S.rel.push({ t: Math.floor(Math.random() * 3), k, nw: 1 }); const nr = S.rel[S.rel.length - 1], fus = relFusePair(S.rel.length - 1) >= 0; relNote(nr); try { relicPop(nr.t, x, z, nr.k, fus); } catch (e) { } relicTip(); floatT($t('Relique trouvée !'), x, 5.5, z, 'c'); burst(x, 3, z, 0xffe27a, 30, 7, 9); }
+function giveRelic(k, x, z) { if (S.rel.length >= 12) { const f = 8 * K(W.zone) * SCL.f * FM(); S.f += f; bagFullPop(x, z, f); floatT($t('Sac plein : +') + fmt(f) + ' F', x, 5, z, 'y'); return; } S.rel.push({ t: Math.floor(Math.random() * 3), k, nw: 1 }); const nr = S.rel[S.rel.length - 1], fus = relFusePair(S.rel.length - 1) >= 0; relNote(nr); try { relicPop(nr.t, x, z, nr.k, fus); } catch (e) { } relicTip(); floatT($t('Relique trouvée !'), x, 5.5, z, 'c'); burst(x, 3, z, 0xffe27a, 30, 7, 9); }
 function convertEnemy(e) {
   if (e.shield) { e.hp = Math.max(1, e.hp); return; }
   if (e.cal !== undefined) (S.cal = S.cal || [])[e.cal] = 1;
@@ -3726,7 +3751,7 @@ function corruptApostle(d) { S.ap[d.zn] = 2; floatT(AP[d.zn].n + $t(' est corrom
 const APV = [1, .95, 1.2, .8, .9, 1, 1, .95, 1.1, 1, 1.2, 1];
 const ahL = z => (S.ah && S.ah[z]) || 0;
 const apHpMax = (z, l, h) => Math.round(30 * K(z) * APV[z] * (1 + .15 * (l === undefined ? S.al[z] : l)) * (1 + .25 * (h === undefined ? ahL(z) : h)));
-const apHCost = (z, h) => Math.round(25 * K(z) * Math.pow(1.55, h) * ed(h));
+const apHCost = (z, h) => Math.round(25 * K(z) * Math.pow(1.4, h) * ed(h));
 const apMax = d => apHpMax(d.zn);
 function hitApostle(d, e) { if (d.hp === undefined) d.hp = apMax(d); const dm = e.dmg * rnd(.9, 1.1) * .7; d.hp -= dm; floatT('-' + fmt(dm), d.x + rnd(-.6, .6), 3.8, d.z, 'r'); if (d.hp <= 0) { d.dn = 15; floatT(AP[d.zn].n + $t(' est à terre'), d.x, 5, d.z, 'r'); note($t('Apôtre à terre'), AP[d.zn].n + $t(' se relève dans 15 s (3 fois plus vite pendant ta prière).')); } }
 const eff = (e, dm) => Math.max(dm * .05, dm - (e.defM || e.max) / 60);
@@ -3776,13 +3801,13 @@ function giveGift(z, x, zz) {
   if (r < .3) giveRes(z, 2 + (Math.random() < .5 ? 1 : 0), x, zz);
   else if (r < .55) { const k = ['spd', 'atk', 'reg', 'rng'][Math.floor(Math.random() * 4)]; W.bf[k] = 50; floatT(BF[k][0] + ' · ' + BF[k][1], x, 5.5, zz, 'c'); note($t('Bénédiction : ') + BF[k][0], BF[k][1] + $t(' pendant 50 s.')); }
   else if (r < .7) giveRelic(Math.min(3, Math.floor(ZT(z) / 2)), x, zz);
-  else if (r < .88) { const f = 4 * K(z) * FM(); S.f += f; floatT($t('Offrande : +') + fmt(f) + ' F', x, 5.5, zz, 'y'); }
+  else if (r < .88) { const f = 4 * K(z) * SCL.f * FM(); S.f += f; floatT($t('Offrande : +') + fmt(f) + ' F', x, 5.5, zz, 'y'); }
   else { const a = chAmt(z, 0) / EB.t * 4; S.pe += a; floatT('+' + fmt(a) + $t(' PE'), x, 5.5, zz, 'p'); }
 }
 function giveRes(z0, n, x, zz) { const z = RZ(z0); if (z === 1) n = Math.ceil(n * 1.5); S.res[z] += n; if (z > 1) { const h = Math.max(1, Math.round(n * .5)); S.res[1] += h; floatT('+' + h + ' ' + RES[1].n, x, 5.4, zz, '', RES[1].c); } floatT('+' + n + ' ' + RES[z].n, x, 4.6, zz, '', RES[z].c); burst(x, 2, zz, parseInt(RES[z].c.slice(1), 16), 8, 4, 6); }
 /* Usages des ressources de zone (dès la zone 0) : offrande (bénédiction 3 min), onction (apôtres), échange contre des fidèles */
 const RESUSE = { offer: { cost: 6, dur: 180, keys: ['atk', 'reg', 'rng', 'atk', 'reg', 'atk'], txt: [$t('+25 % de Puissance'), $t('régénération ×2,5'), $t('portée +15 %'), $t('+25 % de Puissance'), $t('régénération ×2,5'), $t('+25 % de Puissance')] }, unct: { cost: 4 }, sell: { n: 10, rate: 4 } };
-const resSellGain = i => Math.round(RESUSE.sell.rate * K(i) * FM() * RESUSE.sell.n);
+const resSellGain = i => Math.round(RESUSE.sell.rate * K(i) * SCL.f * FM() * RESUSE.sell.n);
 function resUse(i, kind) {
   const U = RESUSE, nm = RES[i].n;
   if (kind === 'o') { if (S.res[i] < U.offer.cost) return; S.res[i] -= U.offer.cost; const k = U.offer.keys[i]; W.bf[k] = Math.max(W.bf[k], U.offer.dur); note($t('Offrande : ') + nm, U.offer.txt[i] + $t(' pendant ') + Math.round(U.offer.dur / 60 * 10) / 10 + ' min.'); burst(W.x, 2.5, W.z, parseInt(RES[i].c.slice(1), 16), 40, 7, 9); }
@@ -3803,7 +3828,7 @@ function drawResUse() {
 }
 document.addEventListener('click', ev => { const b = ev.target.closest('button[data-ru]'); if (!b || b.disabled) return; const [i, k] = b.dataset.ru.split('-'); resUse(+i, k); drawResUse(); if ($('rinv')) { $('rinv').dataset.h = ''; } });
 { const vr = $('vr'); if (vr && vr.closest('.pill')) vr.closest('.pill').addEventListener('click', () => { FOLD.mem.res = true; FOLD.set('res', 1); const bx = $('ruse'); if (bx) bx.dataset.h = ''; openSheet('rsg'); }); }
-function dropRes(e) { if (e.boss) { giveRes(e.zn, 6, e.x, e.z); return; } const x = (e.tg || e.stat ? 2 : .22) * (e.ebk || 1), k = Math.floor(x), n = k + (Math.random() < x - k ? 1 : 0); if (n > 0) giveRes(e.zn, n, e.x, e.z); }
+function dropRes(e) { if (e.boss) { giveRes(e.zn, 6, e.x, e.z); return; } const x = (e.tg || e.stat ? 2 : .5) * (1 + .12 * e.zn), k = Math.floor(x), n = k + (Math.random() < x - k ? 1 : 0); if (n > 0) giveRes(e.zn, n, e.x, e.z); }
 function updNodes(dt, alive, Zo, zn) {
   Zo.nodes.forEach(n => {
     if (n.tm > 0) { n.tm -= dt; if (n.tm <= 0) n.gem.visible = n.ring.visible = true; return; }
@@ -4015,7 +4040,7 @@ function leaveArena(win) {
   const ep = W.epr, zn = ep ? ep.zn : LASTZ; W.epr = null; W.spirit = null; W.arena = null; W.prFill = 1; W.by = null; clearEnemies(); clearProj(); spiritG.visible = false; for (const k in EPR) if (EPR[k].g) EPR[k].g.visible = false;
   W.zone = zn; const [x, z] = zoneStart(zn); W.x = x; W.z = z; W.hp = HPM(); W.dead = 0; camera.position.set(x, CAMH, z + CAMZ); W.spawnT = 1.5; W.tgFill = 1;
   if (ep) { const en = EPR[zn].e; if (en) { W.x = en.x; W.z = en.z + 3; camera.position.set(W.x, CAMH, W.z + CAMZ); } }
-  if (win && ep) { (S.epr = S.epr || {})[zn] = Date.now(); const f = 40 * K(zn) * FM() * EB.t; S.f += f; if (Math.random() < EB.t) giveRelic(Math.min(4, Math.round(ZT(zn)) + 1), W.x, W.z + 4); note(EPR[zn].n + $t(' : victoire !'), '+' + fmt(f) + $t(' F et une relique. Prochaine épreuve dans ') + Math.round(EPRCD / 60) + ' min.'); save(); }
+  if (win && ep) { (S.epr = S.epr || {})[zn] = Date.now(); const f = 40 * K(zn) * SCL.f * FM() * EB.t; S.f += f; if (Math.random() < EB.t) giveRelic(Math.min(4, Math.round(ZT(zn)) + 1), W.x, W.z + 4); note(EPR[zn].n + $t(' : victoire !'), '+' + fmt(f) + $t(' F et une relique. Prochaine épreuve dans ') + Math.round(EPRCD / 60) + ' min.'); save(); }
   else if (win) note($t('Retour'), $t('Tu quittes le monde spirituel.'));
   else note($t('Retour au checkpoint'), $t('Tu repars du début de la zone.'));
 }
@@ -4131,8 +4156,8 @@ function crossCard() {
 }
 
 const NAMES = { 7: $t('Collecteur d\'impôts'), 8: $t('Légionnaire romain'), 9: $t('Loup'), 10: $t('Lion'), 11: $t('Ours'), 12: $t('Démon'), 13: $t('Satan'), 14: $t('Centurion') };
-function taxKill(e) { const g = (e.loot || 0) > 0 ? Math.floor(e.loot * 1.5) : Math.round(6 * K(e.zn) * FM() * EB.t); spawnCoins(e.x, e.z, g, 4); floatT((e.loot ? $t('Butin récupéré : +') : $t('Collecteur vaincu : +')) + fmt(g) + ' F', e.x, 4.8, e.z, 'y'); }
-function arenaKill(e) { const f = (e.kind >= 12 ? 25 : 3) * K(e.zn) * FM() * EB.t; spawnCoins(e.x, e.z, f, e.kind >= 12 ? 6 : 3); }
+function taxKill(e) { const g = (e.loot || 0) > 0 ? Math.floor(e.loot * 1.5) : Math.round(6 * K(e.zn) * SCL.f * FM() * EB.t); spawnCoins(e.x, e.z, g, 4); floatT((e.loot ? $t('Butin récupéré : +') : $t('Collecteur vaincu : +')) + fmt(g) + ' F', e.x, 4.8, e.z, 'y'); }
+function arenaKill(e) { const f = (e.kind >= 12 ? 25 : 3) * K(e.zn) * SCL.f * FM() * EB.t; spawnCoins(e.x, e.z, f, e.kind >= 12 ? 6 : 3); }
 function onIsland(x, z) { return WATERS.some(w => w.t === 'o' && Math.hypot(w.x - x, w.z - z) < w.ro); }
 function protSpots(Zo) { const L = []; Zo.sick.forEach(q => { if (!q.done && !(q.prog > 0)) L.push([q, q.type ? 2 : 1]); }); Zo.chests.forEach(c => { if (!c.open && !onIsland(c.x, c.z)) { const g = c.big ? [1, 0] : CHG[CHT(c.zn)]; L.push([c, g[0], g[1]]); } }); return L; }
 function ensureCalvary() {
@@ -4721,11 +4746,12 @@ function hurtFx(a) { shakeA = Math.max(shakeA, a); if (FAST) return; const f = $
 /* ---------- superposition (étiquettes, flèche, mini-carte) ---------- */
 /* valeurs affichées sous la barre : fidèles réellement crédités à la conversion (même formule que reward / taxKill / arenaKill) et dégâts réellement infligés par coup (après réduction de l'arme spirituelle) */
 /* facteur de fidèles d'un ennemi ordinaire : (récompense du plus faible du niveau) x (ses dégâts / dégâts du plus faible du même type) */
-function rewRef(zn, kind) { const X = PX[zn], c = X._rr || (X._rr = {}); if (c[kind]) return c[kind]; const p0 = Math.max(0, zoneRange(zn)[0]), m0 = dgMul(p0, zn), n = diffNorm(zn), pf0 = 1 + ((DIFFGRAD.pwf[zn] || 1) - 1) * p0; return (c[kind] = { d: foeStat(zn, kind, false).dmg * m0.dmg * n.dmg * pf0, r: m0.rew * n.rew, h: foeStat(zn, kind, false).hp * m0.hp * n.hp * pf0 }); }
-function rewD(e) { if (e.rewD) return e.rewD; if (e.ebr) return (e.rewD = e.ebr * e.ebk); let v = e.rewM || 1; if (!e.boss && e.kind !== 7 && !(e.kind >= 9 && e.kind <= 13) && e.dgp >= 0 && e.dmgS > 0) { const R = rewRef(e.zn, e.kind); if (R.d > 0) v = R.r * e.dmgS / R.d * (e.ebk || 1); } return (e.rewD = v); }
+function rewRef(zn, kind) { const X = PX[zn], c = X._rr || (X._rr = {}); if (c[kind]) return c[kind]; const L = slotsOf(zn), q0 = L.length ? L.reduce((a, b) => b.p < a.p ? b : a) : { x: X.start[0], z: X.start[1], p: 0 }, p0 = Math.max(0, zoneRange(zn)[0]), m0 = dgMul(p0, zn), n = diffNorm(zn), st = Object.assign({}, foeStat(zn, kind, false)), t0 = W.tmp, a0 = W.arena; W.tmp = 0; W.arena = 0; try { diffApply(st, zn, false, kind, q0.x, q0.z); } finally { W.tmp = t0; W.arena = a0; } return (c[kind] = { d: st.dmg, r: m0.rew * n.rew, h: st.hp }); }
+/* v62 : la récompense d'un ennemi ordinaire croît comme (ses dégâts / ceux du plus faible du même type du niveau)^EB.rx ; avant : strictement proportionnelle */
+function rewD(e) { if (e.rewD) return e.rewD; let v = e.rewM || 1; if (!e.boss && e.kind !== 7 && !(e.kind >= 9 && e.kind <= 13) && e.dgp >= 0 && e.dmgS > 0) { const R = rewRef(e.zn, e.kind); if (R.d > 0) v = R.r * Math.pow(Math.max(.25, e.dmgS / R.d), EB.rx) * (e.ebk || 1); } return (e.rewD = v); }
 function foeRew(e) {
-  const z = e.zn; if (e.kind === 7) return (e.loot || 0) > 0 ? Math.floor(e.loot * 1.5) : Math.round(6 * K(z) * FM());
-  if (e.kind >= 9 && e.kind <= 13) return (e.kind >= 12 ? 25 : 3) * K(z) * FM();
+  const z = e.zn; if (e.kind === 7) return (e.loot || 0) > 0 ? Math.floor(e.loot * 1.5) : Math.round(6 * K(z) * SCL.f * FM());
+  if (e.kind >= 9 && e.kind <= 13) return (e.kind >= 12 ? 25 : 3) * K(z) * SCL.f * FM();
   const k = e.boss ? 3 : e.kind, b = bonusOf(z, k), capOk = k === 3 || S.conv[z] < CAP; let F = b.f * FM() * (e.tg && !e.boss ? 2.5 : e.stat ? 2 : 1) * rewMul(e) * rewD(e); if (!capOk) F *= .5; return F;
 }
 function foeDmgShown(e) { return e.kind === 7 || !(e.dmg > 0) ? 0 : e.dmg * (wpOn(3) ? .88 : 1); }
@@ -5099,7 +5125,7 @@ const chSealed = c => !c.big && CHT(c.zn) === 3 && !S.boss[c.zn];
 var DG_SHOWN = '', RCAT = 0;
 const dKey = d => { d = d || new Date(); return d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate(); };
 function dState() { const g = S.dg || { d: '', n: 0 }, today = dKey(), y = new Date(); y.setDate(y.getDate() - 1); const claimed = g.d === today, streak = claimed || g.d === dKey(y) ? g.n : 0; return { claimed, day: claimed ? ((g.n - 1) % 7) + 1 : (streak % 7) + 1, shown: claimed ? g.n : streak + 1, streak, today }; }
-function dRew() { const C = 10 * K(S.lvl) * FM(), rz = RZ(S.lvl); return [{ f: 2 * C }, { r: 4 }, { f: 4 * C }, { bf: 1 }, { r: 8 }, { f: 8 * C }, { rel: 1, r: 12, f: 15 * C }].map(o => Object.assign(o, { rz })); }
+function dRew() { const C = 10 * K(S.lvl) * SCL.f * FM(), rz = RZ(S.lvl); return [{ f: 2 * C }, { r: 4 }, { f: 4 * C }, { bf: 1 }, { r: 8 }, { f: 8 * C }, { rel: 1, r: 12, f: 15 * C }].map(o => Object.assign(o, { rz })); }
 function dTxt(o) { return o.bf ? $t('Ferveur 3 min') : o.rel ? $t('Relique · ') + o.r + ' ' + RES[o.rz].n + ' · ' + fmt(o.f) + ' F' : o.r ? o.r + ' ' + RES[o.rz].n : fmt(o.f) + ' F'; }
 function drawDg() {
   const el = $('dg'); if (!el) return; const st = dState(), R = dRew(), I = k => ICO[k].replace('<svg', '<svg width="30" height="30"'), RI = I(RESIC[R[0].rz]), FI = I('coin');
@@ -5837,6 +5863,9 @@ return { room, user, other(id,p){ const prev=others.get(id); others.set(id,Objec
 <script type="text/plain" data-boot>
 /* ---------- notes de mise à jour : la plus récente en tête ; pour une nouvelle version, ajouter un objet au début de PATCHN ---------- */
 const PATCHN = [
+  { v: '27c', d: '2026-10-27', fr: ['Équilibrage : progression étalée. Les chiffres montent beaucoup moins vite d’un niveau à l’autre (jusqu’au niveau 12, on reste surtout en milliers) : ennemis, boss, récompenses en fidèles et en ressources, coûts d’amélioration.', 'Niveau 1 : héros 60 de vie / 5 de puissance au départ, petits ennemis de 10 à 30 de vie, boss à 300 de vie ; le boss demande de farmer longtemps, et ainsi à chaque niveau.', 'La récompense en fidèles d’un ennemi croît moins vite que ses dégâts (exposant 0,6).', 'Anciennes parties : tes niveaux d’amélioration, boss, églises et apôtres sont conservés ; la Puissance et la Vie gagnées par conversion ainsi que les fidèles sont recalculés sur la nouvelle échelle.'],
+    en: ['Balance: smoother progression. Numbers now grow much more slowly from level to level (mostly thousands up to level 12): enemies, bosses, faithful and resource rewards, upgrade costs.', 'Level 1: hero starts at 60 life / 5 power, small enemies have 10 to 30 life, the boss has 300 life; beating a boss takes long farming, at every level.', 'An enemy’s faithful reward now grows slower than its damage (exponent 0.6).', 'Existing saves: your upgrade levels, bosses, churches and apostles are kept; the Power and Life earned from conversions and your faithful are recomputed on the new scale.'],
+    es: ['Equilibrio: progresión más pausada. Las cifras suben mucho más despacio de un nivel a otro (hasta el nivel 12 casi todo en miles): enemigos, jefes, recompensas de fieles y recursos, costes de mejora.', 'Nivel 1: el héroe empieza con 60 de vida / 5 de poder, los enemigos pequeños tienen de 10 a 30 de vida, el jefe 300; vencer a un jefe exige farmear mucho, en cada nivel.', 'La recompensa en fieles de un enemigo crece más despacio que su daño (exponente 0,6).', 'Partidas anteriores: se conservan tus niveles de mejora, jefes, iglesias y apóstoles; el Poder y la Vida ganados por conversión y tus fieles se recalculan con la nueva escala.'] },
   { v: '24s', d: '2026-10-24', fr: ['Chapitre I reconstruit : 13 lieux en Israël, de Jérusalem au Golgotha, puis le monde spirituel.', 'Armes de foi : 12 armes gagnées sur les boss (Fouet, Bâton du berger… Glaive de l’Esprit), La Parole au départ ; armes spirituelles, jamais contre les personnes.', 'Armure de Dieu en 5 pièces.', 'Lumière de la conversion plus petite et plus douce.', 'Vibrations à chaque conversion (Android) ; réglage « Vibrations ».', 'Ennemis plus forts selon le niveau et la proximité du boss, plus d’archers et de frondeurs, postés le long des chemins.', 'Boss qui attaquent à distance (pierres, javelots, flèches) avec une visée annoncée : esquive-les.', 'Gethsémani devient une oliveraie ; Samarie et Jéricho ont leurs maisons, le puits de Jacob et le sycomore de Zachée.', 'Combat contre Satan rééquilibré pour le Glaive de l’Esprit.', 'Progression 2 fois plus lente : les gains par minute de jeu (F, PE, ressources, Puissance, Vie) sont divisés par deux ; les packs de la boutique ne changent pas.', 'Coop : en rejoignant un ami, tu arrives dans son niveau et tu le suis quand il en change ; ton personnage est hissé au minimum du niveau et l’arme de foi du niveau t’est prêtée, le temps de la partie (ta sauvegarde n’est pas modifiée).', 'Menu principal : Réglages, Cadeau du jour, Versets et Reliques s’ouvrent sans lancer la partie ; en les fermant, tu reviens au menu.'],
     en: ['Chapter I rebuilt: 13 places in Israel, from Jerusalem to Golgotha, then the spiritual world.', 'Weapons of faith: 12 weapons won from bosses (Whip, Shepherd’s Staff… Sword of the Spirit), the Word to start with; spiritual weapons, never against people.', 'Armor of God in 5 pieces.', 'Smaller, softer conversion light.', 'Vibration on each conversion (Android); “Vibration” setting.', 'Stronger enemies by level and closeness to the boss, more archers and slingers, posted along the paths.', 'Bosses that attack from range (stones, javelins, arrows) with a visible aim: dodge them.', 'Gethsemane becomes an olive grove; Samaria and Jericho get their houses, Jacob’s well and Zacchaeus’ sycamore.', 'Satan fight rebalanced for the Sword of the Spirit.', 'Progression 2× slower: gains per minute of play (F, PE, resources, Power, Life) are halved; store packs are unchanged.', 'Co-op: when you join a friend, you arrive in their level and follow them when they change level; your character is raised to the level’s minimum and lent that level’s weapon of faith for the session (your save is not changed).', 'Main menu: Settings, Daily gift, Verses and Relics open without starting the game; closing them brings you back to the menu.'],
     es: ['Capítulo I reconstruido: 13 lugares en Israel, de Jerusalén al Gólgota, y luego el mundo espiritual.', 'Armas de fe: 12 armas ganadas a los jefes (Látigo, Cayado del pastor… Espada del Espíritu), la Palabra al empezar; armas espirituales, nunca contra las personas.', 'Armadura de Dios en 5 piezas.', 'Luz de la conversión más pequeña y suave.', 'Vibración en cada conversión (Android); ajuste «Vibración».', 'Enemigos más fuertes según el nivel y la cercanía del jefe, más arqueros y honderos, apostados a lo largo de los caminos.', 'Jefes que atacan a distancia (piedras, jabalinas, flechas) con la puntería anunciada: esquívalos.', 'Getsemaní se convierte en un olivar; Samaria y Jericó tienen sus casas, el pozo de Jacob y el sicómoro de Zaqueo.', 'Combate contra Satanás reequilibrado para la Espada del Espíritu.', 'Progresión 2 veces más lenta: las ganancias por minuto de juego (F, PE, recursos, Poder, Vida) se reducen a la mitad; los packs de la tienda no cambian.', 'Coop: al unirte a un amigo, llegas a su nivel y lo sigues cuando cambia de nivel; tu personaje sube al mínimo del nivel y se te presta el arma de fe del nivel durante la partida (tu partida guardada no cambia).', 'Menú principal: Ajustes, Regalo del día, Versículos y Reliquias se abren sin iniciar la partida; al cerrarlos vuelves al menú.'] },
