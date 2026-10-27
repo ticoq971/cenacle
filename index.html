@@ -4431,7 +4431,7 @@ async function goHome() {
   try { save(); } catch (e) { }
   try { $('mpl').style.display = 'none'; MP.open = false; } catch (e) { }
   if (MP.code) { try { await mpLeave(true); } catch (e) { } }
-  window.MENU_PZ = 1; MENU.scr = 'home'; menuOpen(); menuDraw();
+  window.MENU_PZ = 1; MENU.scr = 'home'; menuOpen(); menuDraw(); mGiftAuto();
 }
 let STTAB = 'son';
 const STT = [['son', '🔊', $t('Son')], ['coop', '🤝', $t('Coop')], ['save', '💾', $t('Sauvegarde')], ['partie', '🏠', $t('Partie')]];
@@ -5064,7 +5064,8 @@ function dClaim() {
   if (o.rel) giveRelic(Math.min(3, Math.floor(ZT(S.lvl) / 2) + 1), W.x, W.z);
   S.dg = { d: st.today, n: st.streak + 1 }; save(); note($t('Cadeau du jour'), $t('Jour ') + st.day + ' : ' + dTxt(o) + '.'); drawDg();
 }
-setInterval(() => { try { if (document.getElementById('menu') || window.MENU_PZ || !S.tut || W.cine || W.spirit || W.arena) return; const st = dState(); if (st.claimed || DG_SHOWN === st.today || $('sheet').classList.contains('open')) return; DG_SHOWN = st.today; openSheet('dg'); } catch (e) { } }, 3000);
+/* cadeau du jour : s'ouvre une fois par jour dès l'arrivée dans le menu, jamais en pleine partie */
+function mGiftAuto() { try { if (!document.getElementById('menu') || !S.tut) return; const st = dState(); if (st.claimed || DG_SHOWN === st.today) return; DG_SHOWN = st.today; menuPanel(() => openSheet('dg')); } catch (e) { } }
 /* ---------- Recherche : 3 catégories ---------- */
 const RCATS = [['🐴', $t('Déplacement'), ['ane', 'cheval', 'wk']], ['⚔️', $t('Combat'), ['souffle', 'feu', 'lumiere']], ['⛪', $t('Église'), ['pain', 'gueri', 'cate', 'ecoles']]];
 const RSD = { ane: $t('+25 % vitesse'), cheval: $t('+50 % vitesse'), wk: $t('Bassins, fleuves et lacs'), souffle: $t('+15 % portée'), feu: $t('Feu sur les ennemis proches · 25 s'), lumiere: $t('+12 % Puissance · +10 % critiques'), pain: $t('+20 % fidèles'), gueri: $t('Soins des églises ×1,6'), cate: $t('Apôtres : corruption −40 %'), ecoles: $t('Évêques : conversions ×1,67') };
@@ -5541,7 +5542,7 @@ function menuClick(ev) {
   else if (a === 'donego' && DONATE_URL) window.open(DONATE_URL, '_blank', 'noopener');
 }
 /* ouverture : pas de menu pour un lien d'invitation coop (on rejoint directement) ni juste après « Nouvelle partie » */
-{ let skip = false; try { skip = /coop=/.test(location.hash + location.search) || sessionStorage.getItem('cenacle_skipmenu') === '1' || !!window.claude; sessionStorage.removeItem('cenacle_skipmenu'); } catch (e) { } if (!skip) { menuOpen(); setTimeout(menuDraw, 1500); } }
+{ let skip = false; try { skip = /coop=/.test(location.hash + location.search) || sessionStorage.getItem('cenacle_skipmenu') === '1' || !!window.claude; sessionStorage.removeItem('cenacle_skipmenu'); } catch (e) { } if (!skip) { menuOpen(); setTimeout(() => { menuDraw(); mGiftAuto(); }, 1500); } }
 try { window.LDdone && LDdone(); } catch (e) { }
 const IC_SND = { on: '<svg viewBox="0 0 24 24"><path d="M3.5 9h4l5.5-4.5v15L7.5 15h-4z" fill="#ffe08a" stroke="#7a4e12" stroke-width=".8" stroke-linejoin="round"/><path d="M16 8.5a5 5 0 0 1 0 7M18.6 5.8a8.6 8.6 0 0 1 0 12.4" stroke="#ffe08a" stroke-width="2.2" fill="none" stroke-linecap="round"/></svg>', off: '<svg viewBox="0 0 24 24"><path d="M3.5 9h4l5.5-4.5v15L7.5 15h-4z" fill="#ffe08a" stroke="#7a4e12" stroke-width=".8" stroke-linejoin="round"/><path d="M16 9l5.5 6M21.5 9L16 15" stroke="#ff7a5a" stroke-width="2.6" stroke-linecap="round"/></svg>' };
 { const b = document.createElement('button'); b.id = 'sndb'; b.innerHTML = AUD.cfg.mute ? IC_SND.off : IC_SND.on; b.setAttribute('aria-label', $t('Son')); b.addEventListener('click', ev => { ev.stopPropagation(); audInit(); AUD.cfg.mute = AUD.cfg.mute ? 0 : 1; audSave(); audApply(); b.innerHTML = AUD.cfg.mute ? IC_SND.off : IC_SND.on; b.classList.toggle('off', !!AUD.cfg.mute); }); b.classList.toggle('off', !!AUD.cfg.mute); const gm = $('game') || document.body; gm.appendChild(b); }
