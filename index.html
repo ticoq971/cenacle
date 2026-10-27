@@ -331,7 +331,7 @@ button:focus-visible{outline:3px solid #fff;outline-offset:2px}
 #cinet{font:400 1.7rem var(--display);color:#ffe27a;text-align:center;padding:0 24px;text-shadow:0 2px 0 #000}#cine.fl #cinet{color:#7a4a00;text-shadow:none}
 #end{position:absolute;inset:0;display:none;place-items:center;background:radial-gradient(circle,#fff6c8,#e8b84a);z-index:31;text-align:center;padding:24px}#end.on{display:grid}#end h2{font:400 2.4rem var(--display);color:#6a3a00;margin:0 0 10px}#end p{color:#4a2a00;font-size:1.05rem;line-height:1.4;margin:0 0 18px}#end button{font:400 1.2rem var(--display);padding:12px 28px;border-radius:14px;border:3px solid #fff;background:#3d7fe0;color:#fff;cursor:pointer}
 .en.tax .nm,.en.tax .eb2{display:block}.en.tax .tags{display:flex}.en.tax .nm{color:#ffd24a;font-size:1.05rem}.en.tax{filter:drop-shadow(0 0 7px #ffd24a)}.en.tax .nm::before{content:'💰 '}.en.grd .nm::before{content:'🛡 '}
-#mmw{display:none!important}#setb{flex:none;width:46px;height:46px;border-radius:50%;border:3px solid #fff;background:#3d7fe0;color:#fff;font-size:1.5rem;line-height:1;padding:0;cursor:pointer;pointer-events:auto;box-shadow:0 3px 0 #1d3f80}#mpp{cursor:pointer;pointer-events:auto}#mpl{position:absolute;right:8px;top:104px;width:min(290px,calc(100% - 16px));background:#1b2150ee;border:3px solid #fff;border-radius:14px;padding:10px 12px;z-index:9;display:none;pointer-events:auto;color:#fff;font:600 .9rem var(--body)}
+#shopb{position:absolute;left:max(10px,env(safe-area-inset-left,0px));top:calc(env(safe-area-inset-top,0px) + 62px);width:46px;height:46px;border-radius:50%;border:3px solid #fff;background:linear-gradient(#ffe08a,#d89a2a);color:#3a2200;font-size:1.4rem;line-height:1;padding:0;cursor:pointer;pointer-events:auto;box-shadow:0 3px 0 #8a5a12;place-items:center}#mmw{display:none!important}#setb{flex:none;width:46px;height:46px;border-radius:50%;border:3px solid #fff;background:#3d7fe0;color:#fff;font-size:1.5rem;line-height:1;padding:0;cursor:pointer;pointer-events:auto;box-shadow:0 3px 0 #1d3f80}#mpp{cursor:pointer;pointer-events:auto}#mpl{position:absolute;right:8px;top:104px;width:min(290px,calc(100% - 16px));background:#1b2150ee;border:3px solid #fff;border-radius:14px;padding:10px 12px;z-index:9;display:none;pointer-events:auto;color:#fff;font:600 .9rem var(--body)}
 #mpl h4{margin:0 0 6px;font:400 1.05rem var(--display);color:var(--gold)}#mpl .mut{opacity:.75;font-size:.8rem;margin-top:6px}#mpl .rstw{margin-top:12px;padding-top:8px;border-top:1px solid #ffffff22}#mpl .rstw h4{font-size:.9rem;color:#ff9a90}#mpl .rstq{font-size:.8rem;margin:4px 0;color:#ffd0cc}#mpl button.rstb{background:transparent;border-color:#ee3a4488;color:#ff8a80;min-height:34px}#mpl button.rstb.rsty{background:#c8262e;border-color:#fff;color:#fff}#mpl .mpr{display:flex;gap:8px;align-items:center;justify-content:space-between;margin:4px 0}#mpl .mpr div{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 #mpl button{font:700 .85rem var(--body);border:2px solid #fff;border-radius:10px;background:#3d7fe0;color:#fff;padding:5px 9px;cursor:pointer}#mpl button:disabled{opacity:.4}#mpl .mpe{display:flex;gap:6px;margin-top:8px}#mpl .mpi{flex:1;min-width:0;font:700 1rem var(--body);text-transform:uppercase;border:2px solid #fff;border-radius:10px;background:#0e1233;color:#fff;padding:6px 8px}#mpl .mpcode{font:400 1.8rem var(--display);letter-spacing:.2em;text-align:center;color:#fff;background:#0e1233;border-radius:10px;padding:4px 0;margin-bottom:6px}#mpl .mpt{width:100%;box-sizing:border-box;background:#0e1233;color:#fff;border:2px solid #fff;border-radius:10px;font:600 .8rem var(--body);margin-top:6px}#mpl .mpe button{flex:1;font-size:1.1rem;padding:4px 0;background:#2a3070}
 .en.ally .nm{display:block;color:#9dffb8;font-size:.85rem}.en.ally .eb2 i{background:linear-gradient(#8dffb0,#2fbf6a)}
@@ -563,7 +563,7 @@ body.fbh #setb,body.fbh #sndb{display:none!important}
     <div id="hud"><div id="hl">
       <div class="row rs2"><div class="pill chip"><i>F</i><span id="vf">0</span></div><div class="pill" id="vpw" hidden><span id="vp">0</span></div><div class="pill chip" id="pep" role="button" aria-label="Points d'Église"><i>É</i><span id="vpe">0</span><em id="bmin"></em></div><div class="pill chip" id="mpp" style="display:none" role="button" aria-label="Joueurs"><span id="vmp">👥 1</span></div><div class="pill chip rc" data-r="0"><i class="ri"></i><span id="vr0">0</span></div><div class="pill chip rc" data-r="1"><i class="ri"></i><span id="vr1">0</span></div><div class="pill chip rc" data-r="2"><i class="ri"></i><span id="vr2">0</span></div><div class="pill chip rc" data-r="3"><i class="ri"></i><span id="vr3">0</span></div><div class="pill chip rc" data-r="4"><i class="ri"></i><span id="vr4">0</span></div><div class="pill chip rc" data-r="5"><i class="ri"></i><span id="vr5">0</span></div><span id="rsp" hidden><i id="rsi"></i><span id="vr">0</span></span></div><div id="zl"></div>
       <div id="quest"><small id="qs">OBJECTIF</small><b id="qt"></b><div class="qb"><i id="qi" style="width:0"></i></div></div>
-    </div><button id="setb" aria-label="Paramètres et coop"><svg viewBox="0 0 24 24"><path fill="#ffe08a" stroke="#7a4e12" stroke-width=".7" fill-rule="evenodd" d="M10.3 2h3.4l.5 2.6 1.9.8 2.2-1.5 2.4 2.4-1.5 2.2.8 1.9 2.6.5v3.4l-2.6.5-.8 1.9 1.5 2.2-2.4 2.4-2.2-1.5-1.9.8-.5 2.6h-3.4l-.5-2.6-1.9-.8-2.2 1.5-2.4-2.4 1.5-2.2-.8-1.9L2 13.7v-3.4l2.6-.5.8-1.9-1.5-2.2 2.4-2.4 2.2 1.5 1.9-.8zM12 8.4a3.6 3.6 0 1 0 0 7.2 3.6 3.6 0 0 0 0-7.2z"/></svg></button><div id="mmw" style="display:none"><canvas id="mm" width="320" height="240"></canvas></div></div>
+    </div><button id="shopb" aria-label="Boutique" style="display:none">🛒</button><button id="setb" aria-label="Paramètres et coop"><svg viewBox="0 0 24 24"><path fill="#ffe08a" stroke="#7a4e12" stroke-width=".7" fill-rule="evenodd" d="M10.3 2h3.4l.5 2.6 1.9.8 2.2-1.5 2.4 2.4-1.5 2.2.8 1.9 2.6.5v3.4l-2.6.5-.8 1.9 1.5 2.2-2.4 2.4-2.2-1.5-1.9.8-.5 2.6h-3.4l-.5-2.6-1.9-.8-2.2 1.5-2.4-2.4 1.5-2.2-.8-1.9L2 13.7v-3.4l2.6-.5.8-1.9-1.5-2.2 2.4-2.4 2.2 1.5 1.9-.8zM12 8.4a3.6 3.6 0 1 0 0 7.2 3.6 3.6 0 0 0 0-7.2z"/></svg></button><div id="mmw" style="display:none"><canvas id="mm" width="320" height="240"></canvas></div></div>
   </div>
   <div id="banner" role="status"><div><b id="bt"></b><span id="bs"></span></div></div>
   <div id="tut"><b>Comment jouer</b>Glisse le doigt pour marcher. Approche-toi des gens : tu les convertis tout seul.</div>
@@ -573,7 +573,7 @@ body.fbh #setb,body.fbh #sndb{display:none!important}
   <button id="fire" aria-label="Langues de feu"><span>🔥</span><small id="fcd"></small></button>
   <div id="bdgt"></div>
   <div id="mapov" hidden><div id="mapp" role="dialog" aria-label="Carte"><div id="maph"><select id="mapsel" aria-label="Carte affichée"></select><span id="mapexp"></span><button id="mapx" aria-label="Fermer la carte">✕</button></div><div id="mapcw"><canvas id="mapc"></canvas><div id="mapbt"><button data-m="in" aria-label="Zoomer">+</button><button data-m="out" aria-label="Dézoomer">−</button><button data-m="me" aria-label="Recentrer sur le héros">⌖</button></div><div id="mapcard" hidden></div></div><details id="mapleg"><summary>Légende et filtres</summary><div id="mapflt"></div></details></div></div>
-  <div id="side"><button class="sb hb2 mapbtn" id="mapb" aria-label="Carte"><span class="r"><svg viewBox="0 0 24 24" fill="none" stroke="#ffd24a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6l6-2 6 2 6-2v14l-6 2-6-2-6 2z"/><path d="M9 4v14M15 6v14"/></svg></span><span class="l">CARTE</span><span class="bd" id="bd_map" hidden></span><em id="mapn" hidden>!</em></button><button class="sb hb2" data-s="rg" aria-label="Reliques"><span class="r"><svg viewBox="0 0 24 24" fill="none" stroke="#ffd24a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v4M10 5h4"/><path d="M7 9h10l-1 11H8z"/><path d="M10 13h4"/></svg></span><span class="l">RELIQUES</span><span class="bd" id="bd_rg" hidden></span></button><button class="sb hb2" data-s="rsg" aria-label="Recherche"><span class="r"><svg viewBox="0 0 24 24" fill="none" stroke="#ffd24a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h11a3 3 0 0 1 0 6H8a3 3 0 0 0 0 6h11"/><path d="M5 4v16h11"/></svg></span><span class="l">RECHERCHE</span><span class="bd" id="bd_rsg" hidden></span></button><button class="sb hb2" id="upb" data-s="ug" aria-label="Améliorer"><span class="r"><svg viewBox="0 0 24 24" fill="none" stroke="#ffd24a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20V6"/><path d="M6 11l6-6 6 6"/><path d="M5 21h14"/></svg></span><span class="l">AMÉLIORER</span><span class="bd" id="bd_ug" hidden></span></button><button class="sb hb2" data-s="cg" aria-label="Églises"><span class="r"><svg viewBox="0 0 24 24" fill="none" stroke="#ffd24a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v5M10 4h4"/><path d="M6 21V11l6-4 6 4v10"/><path d="M10 21v-4a2 2 0 0 1 4 0v4"/></svg></span><span class="l">ÉGLISES</span><span class="bd" id="bd_cg" hidden></span></button></div>
+  <div id="side"><button class="sb hb2 mapbtn" id="mapb" aria-label="Carte"><span class="r"><svg viewBox="0 0 24 24" fill="none" stroke="#ffd24a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6l6-2 6 2 6-2v14l-6 2-6-2-6 2z"/><path d="M9 4v14M15 6v14"/></svg></span><span class="l">CARTE</span><span class="bd" id="bd_map" hidden></span><em id="mapn" hidden>!</em></button><button class="sb hb2" data-s="rg" aria-label="Reliques"><span class="r"><svg viewBox="0 0 24 24" fill="none" stroke="#ffd24a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v4M10 5h4"/><path d="M7 9h10l-1 11H8z"/><path d="M10 13h4"/></svg></span><span class="l">RELIQUES</span><span class="bd" id="bd_rg" hidden></span></button><button class="sb hb2" data-s="ag" aria-label="Arsenal"><span class="r"><svg viewBox="0 0 24 24" fill="none" stroke="#ffd24a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4.5L19.5 4.5 19.5 9.5 9 20 4 20 4 15z"/><path d="M13 7l4 4M4 20l-1.5 1.5"/></svg></span><span class="l">ARSENAL</span><span class="bd" id="bd_ag" hidden></span></button><button class="sb hb2" data-s="rsg" aria-label="Recherche"><span class="r"><svg viewBox="0 0 24 24" fill="none" stroke="#ffd24a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h11a3 3 0 0 1 0 6H8a3 3 0 0 0 0 6h11"/><path d="M5 4v16h11"/></svg></span><span class="l">RECHERCHE</span><span class="bd" id="bd_rsg" hidden></span></button><button class="sb hb2" id="upb" data-s="ug" aria-label="Améliorer"><span class="r"><svg viewBox="0 0 24 24" fill="none" stroke="#ffd24a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20V6"/><path d="M6 11l6-6 6 6"/><path d="M5 21h14"/></svg></span><span class="l">AMÉLIORER</span><span class="bd" id="bd_ug" hidden></span></button><button class="sb hb2" data-s="cg" aria-label="Églises"><span class="r"><svg viewBox="0 0 24 24" fill="none" stroke="#ffd24a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v5M10 4h4"/><path d="M6 21V11l6-4 6 4v10"/><path d="M10 21v-4a2 2 0 0 1 4 0v4"/></svg></span><span class="l">ÉGLISES</span><span class="bd" id="bd_cg" hidden></span></button></div>
   <svg width="0" height="0" style="position:absolute;width:0;height:0" aria-hidden="true"><defs><linearGradient id="rq-g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff1b0"/><stop offset=".45" stop-color="#f2c14e"/><stop offset="1" stop-color="#a8701a"/></linearGradient><linearGradient id="rq-b" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#d89a5a"/><stop offset="1" stop-color="#6a3a14"/></linearGradient><linearGradient id="rq-s" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset=".5" stop-color="#c8d2e0"/><stop offset="1" stop-color="#7a8698"/></linearGradient><radialGradient id="rq-r"><stop offset="0" stop-color="#ffb0a0"/><stop offset="1" stop-color="#c0282a"/></radialGradient><radialGradient id="rq-e"><stop offset="0" stop-color="#b0ffd0"/><stop offset="1" stop-color="#1c8a4e"/></radialGradient><radialGradient id="rq-u"><stop offset="0" stop-color="#bfe0ff"/><stop offset="1" stop-color="#2a5ab8"/></radialGradient></defs></svg><div id="sheet"><div id="sp"><div id="sh"><button id="shome" class="bk" aria-label="Menu principal">⌂</button><h2 id="sht">Améliorer</h2><p id="shs"></p><button id="sx" class="x" aria-label="Fermer">✕</button><div id="stabs"><button data-s="ug">Améliorer</button><button data-s="rsg">Recherche</button><button data-s="cg">Églises</button><button data-s="rg">Reliques</button></div></div>
     <div id="sbody">
             <div class="pn" id="ug" hidden><div class="band">Dès le <b>niveau 10</b> (Portée : 8), chaque amélioration demande aussi la ressource de sa zone, une fois cette zone atteinte.</div><div class="pn" id="ups"></div><h3 class="sec">Apôtres</h3><div class="pn" id="apl"></div><div id="hg"></div></div>
@@ -589,7 +589,9 @@ body.fbh #setb,body.fbh #sndb{display:none!important}
 <script type="text/plain" data-boot>
 /* lien de don : laisser vide tant qu'il n'y en a pas (le bouton « Faire un don » reste caché) */
 const DONATE_URL = 'https://buy.stripe.com/5kQcN5enAbIyftf3im8bS00';
-const KEY = 'cenacle_v2'; const _hw = new THREE.Vector3(); const CS = .8, CAMH = 24, CAMZ = 22, CAML = 26;
+const KEY = 'cenacle_v2'; const _hw = new THREE.Vector3(); /* mobile (écran tactile) : vue plus haute, plus au-dessus de l'action (≈ 59° au lieu de 47°) */
+const CAMMOB = (() => { try { return matchMedia('(pointer:coarse)').matches; } catch (e) { return false; } })();
+const CS = .8, CAMH = CAMMOB ? 28 : 24, CAMZ = CAMMOB ? 17 : 22, CAML = 26;
 /* ---------- CAMÉRA : dégagement garanti ----------
    Grille de 1 m des hauteurs de tout ce qui est SOLIDE ET POSÉ AU SOL (relief, bâtiments, murs, rochers, troncs, églises) : un triangle
    est « posé » s'il repose sur le sol ou sur un triangle déjà posé ; sinon il est « en surplomb » (couronnes d'arbres, auvents,
@@ -1240,7 +1242,7 @@ function ringTick(dt) { for (const r of RINGS) { if (!r.m.visible) continue; r.t
 const EARLY_DISCOUNT = { levels: [.65, .65, .65, .8, .9] };
 const ed = l => { const v = EARLY_DISCOUNT.levels[Math.max(0, Math.floor(l))]; return v === undefined ? 1 : v; };
 /* ---------- lieu de prière : une zone rouge de régénération par niveau, autour de l'autel de prière ---------- */
-const PRAYER = { rate: .06, r: 5.6, safe: true, lightH: 15 };
+const PRAYER = { rate: .14, r: 5.6, safe: true, lightH: 15 };
 function buildPrayerStatic(b, X, z, C) {
   const P = X.pray; if (!P) return; const x = P.x, zz = P.z, r = P.r, y0 = terrY(x, zz), tint = (c, k) => new THREE.Color(c).offsetHSL(0, 0, k).getStyle(), gold = '#e8c04a';
   plazaDisc(b, x, zz, r + .55, .135, C.curb, C.curb, 1, 40);
@@ -1249,10 +1251,10 @@ function buildPrayerStatic(b, X, z, C) {
   ribbon(b, [[x - 4.4, zz], [x + 4.4, zz]], .55, .18, gold, gold); ribbon(b, [[x, zz - 4.4], [x, zz + 4.4]], .55, .18, gold, gold);
   plazaDisc(b, x, zz, r - .5, .17, '#d8a040', '#d8a040', 1, 40); plazaDisc(b, x, zz, r - .8, .175, '#a22a3c', '#a22a3c', 1, 40);
   const f0 = NVF; /* décor bas : pas de collision sauf montants */
-  for (let i = 0; i < 6; i++) { const a = i / 6 * 6.2832 + .5, cx = x + Math.cos(a) * (r - 1.1), cz = zz + Math.sin(a) * (r - 1.1), cy = terrY(cx, cz); put(b, G.cyl6, '#f4ecd6', IDM, cx, cy + .3, cz, .14, .6, .14); put(b, G.cyl6, '#c9a227', IDM, cx, cy + .06, cz, .24, .12, .24); }
+  NVX(() => { for (let i = 0; i < 6; i++) { const a = i / 6 * 6.2832 + .5, cx = x + Math.cos(a) * (r - 1.1), cz = zz + Math.sin(a) * (r - 1.1), cy = terrY(cx, cz); put(b, G.cyl6, '#f4ecd6', IDM, cx, cy + .3, cz, .14, .6, .14); put(b, G.cyl6, '#c9a227', IDM, cx, cy + .06, cz, .24, .12, .24); }
   [-1, 1].forEach(s => { const px = x + s * 2.9, pz = zz + 2.4, py = terrY(px, pz); put(b, G.box, '#5a3a1a', IDM, px, py + .3, pz, 1.1, .6, .7); put(b, G.box, '#7a5a2a', IDM, px, py + .75, pz - .15, 1.1, .12, .45); put(b, G.box, '#4a2e14', IDM, px, py + 1.05, pz - .35, 1.1, .6, .1); });
   { const cx = x, cz = zz - 3.1, cy = terrY(cx, cz); put(b, G.box, '#6a4a22', IDM, cx, cy + 1.7, cz, .32, 3.4, .32); put(b, G.box, '#6a4a22', IDM, cx, cy + 2.5, cz, 1.9, .3, .3); put(b, G.box, gold, IDM, cx, cy + 3.5, cz, .5, .12, .5); }
-  [-1, 1].forEach(s => { const px = x + s * 4.1, pz = zz - 1.3, py = terrY(px, pz); put(b, G.cyl6, '#4a3a2a', IDM, px, py + .45, pz, .1, .9, .1); put(b, G.sph, '#b08a3a', IDM, px, py + .95, pz, .28, .22, .28); put(b, G.cyl6, '#4a3a2a', IDM, px, py + .08, pz, .3, .16, .3); });
+  [-1, 1].forEach(s => { const px = x + s * 4.1, pz = zz - 1.3, py = terrY(px, pz); put(b, G.cyl6, '#4a3a2a', IDM, px, py + .45, pz, .1, .9, .1); put(b, G.sph, '#b08a3a', IDM, px, py + .95, pz, .28, .22, .28); put(b, G.cyl6, '#4a3a2a', IDM, px, py + .08, pz, .3, .16, .3); }); });
 }
 function buildPrayer(z) {
   const X = PX[z], P = X.pray; if (!P) return; const g = new THREE.Group(), r = P.r, y = groundH(P.x, P.z);
@@ -1461,7 +1463,7 @@ const foeStat = (z, kind, boss) => { const q = foeStat0(z, kind, boss); q.dmg *=
 const bonusOf = (z, kind) => { const k = K(z) * feltF(z, 'rew'); return kind === 6 ? { a: .6 * k, h: 1.2 * k, f: 8 * k } : kind === 4 ? { a: .7 * k, h: 0, f: 5 * k } : kind === 5 ? { a: 0, h: 0, f: 8 * k } : kind === 0 ? { a: .45 * k, h: 0, f: 4 * k } : kind === 1 ? { a: 0, h: 2.8 * k, f: 6 * k } : kind === 2 ? { a: 0, h: 0, f: 8 * k } : kind === 7 ? { a: 0, h: 0, f: 0 } : kind === 8 ? { a: .6 * k, h: 1.2 * k, f: 8 * k } : kind === 14 ? { a: .9 * k, h: 2 * k, f: 12 * k } : kind >= 9 ? { a: 0, h: 0, f: 3 * k } : { a: 3.5 * k, h: 16 * k, f: 150 * k }; };
 let _svT = 0, _svL = -1e9;
 function save() { if (window.RESETTING) return; const n = performance.now(); if (n - _svL < 3000) { if (!_svT) _svT = setTimeout(() => { _svT = 0; saveNow(); }, 3050 - (n - _svL)); return; } saveNow(); }
-function saveNow() { if (window.RESETTING) return; _svL = performance.now(); if (_svT) { clearTimeout(_svT); _svT = 0; } const pd = typeof coinPending === 'function' ? coinPending() : 0; S.f += pd; try { S.t = Date.now(); const str = mpSaveStr(); try { localStorage.setItem(KEY, str); } catch (e) { } dbQueue(str); } catch (e) {} S.f -= pd; }
+function saveNow() { if (window.RESETTING) return; _svL = performance.now(); if (_svT) { clearTimeout(_svT); _svT = 0; } const pd = typeof coinPending === 'function' ? coinPending() : 0, pr = typeof relPending === 'function' ? relPending() : []; S.f += pd; pr.forEach(o => S.rel.push(o)); try { S.t = Date.now(); const str = mpSaveStr(); try { localStorage.setItem(KEY, str); } catch (e) { } dbQueue(str); } catch (e) {} S.f -= pd; if (pr.length) S.rel.length -= pr.length; }
 /* migration v2 (6 zones) -> v3 (8 niveaux : Jérusalem = 3 secteurs) : ancienne zone 0 -> niveau 1 (ou 1-3 si le Grand Prêtre était vaincu), zones 1-5 -> niveaux 4-8 */
 function migrateSave(s) { return migr6(migrWp5(migr5(migrRS(migr4(migrateSave3(s)))))); }
 /* armure à 5 pièces : une sauvegarde à 6 pièces est tronquée ; la 6e possédée devient un héritage (+25 % de Puissance conservés, S.wpx) */
@@ -2059,7 +2061,37 @@ function relicPop(t, x, z, k, fus) {
   RELP.push({ g, t: 0, f, el, x, z });
 }
 function bagFullPop(x, z, f) { const el = relicLabel($t('<b>🎒 Sac plein</b>converti en +') + fmt(f) + $t(' F<small>Fusionne tes reliques pour faire de la place</small>')); if (el) RELP.push({ g: null, t: 0, f: 1, el, x, z, full: 1 }); }
-function relicTip() { if (S.rtut || FAST) return; S.rtut = 1; const d = document.createElement('div'); d.id = 'rtip'; d.innerHTML = $t('<b>Reliques</b> : elles s’ajoutent à ton Sac. Deux reliques identiques fusionnent pour devenir plus fortes. <u>Toucher pour ouvrir le Sac</u>'); setTimeout(() => document.body.appendChild(d), 2600); const rm = () => { if (d.parentNode) d.remove(); }; d.addEventListener('click', () => { rm(); openSheet('rg'); }); setTimeout(rm, 11000); save(); }
+/* reliques au sol : comme les points de foi, la relique tombe par terre, reste là un instant, puis vient seule vers le héros ; aucun grand texte à l'écran */
+const RELG = [];
+function relPending() { return RELG.slice(0, Math.max(0, 12 - S.rel.length)).map(r => ({ t: r.t, k: r.k, nw: 1 })); }
+function relCollect(r, quiet) {
+  try { if (r.g) scene.remove(r.g); } catch (e) { }
+  if (S.rel.length >= 12) { const f = 8 * K(W.zone) * FM(); S.f += f; if (!quiet) floatT($t('Sac plein : +') + fmt(f) + ' F', W.x, 4.2, W.z, 'y'); return; }
+  S.rel.push({ t: r.t, k: r.k, nw: 1 }); const nr = S.rel[S.rel.length - 1];
+  if (!quiet) { const fus = relFusePair(S.rel.length - 1) >= 0; floatT(REM[nr.t] + ' ' + RNM[nr.t] + $t(' niv. ') + (nr.k + 1) + (fus ? $t(' · fusion possible') : ''), W.x, 4.6, W.z, 'c'); burst(W.x, 2.2, W.z, 0xffe27a, 14, 5, 7); relicTip(); }
+  try { bdgEvent('rg:new', $t('Nouvelle relique')); } catch (e) { }
+  save();
+}
+function flushRelics() { while (RELG.length) relCollect(RELG.pop(), true); }
+function spawnRelic(t, k, x, z) {
+  if (RELG.length >= 8) relCollect(RELG.shift(), true);
+  const key = ['relic_cross', 'relic_chalice', 'relic_book'][t % 3], f = PF[key] * 1.15, g = propGroup(key, f, { center: true });
+  const a = Math.random() * 6.283, sp = rnd(1.2, 2.6); g.position.set(x, gy(x, z) + 1.2, z); scene.add(g);
+  RELG.push({ g, t, k, f, x, y: gy(x, z) + 1.2, z, vx: Math.cos(a) * sp, vy: rnd(4.5, 6.5), vz: Math.sin(a) * sp, st: 0, tm: 0, ph: rnd(0, 6), sp: 0 });
+  burst(x, gy(x, z) + 1, z, 0xffe27a, 16, 5, 7);
+}
+function updRelG(dt) {
+  if (!RELG.length) return; const hx = W.x, hz = W.z, hy = hero.position.y + .9;
+  for (let i = RELG.length - 1; i >= 0; i--) {
+    const r = RELG[i]; r.tm += dt; r.ph += dt * 3;
+    if (r.st === 0) { r.vy -= 17 * dt; r.x += r.vx * dt; r.y += r.vy * dt; r.z += r.vz * dt; const g1 = gy(r.x, r.z) + .45; if (r.y < g1) { r.y = g1; r.vx = r.vz = r.vy = 0; r.st = 1; r.tm = 0; } }
+    if (r.st < 2 && !(W.dead > 0)) { if (Math.hypot(hx - r.x, hz - r.z) < 1.8 && r.st === 1) { r.st = 2; r.sp = 8; } else if (r.st === 1 && r.tm > 1.5) { r.st = 2; r.sp = 2.5; } }
+    if (r.st === 2) { const dx = hx - r.x, dy = hy - r.y, dz = hz - r.z, d = Math.hypot(dx, dy, dz) || 1; r.sp = Math.min(26, r.sp + 40 * dt); const stp = r.sp * dt; if (d <= stp + .4) { RELG.splice(i, 1); relCollect(r); continue; } r.x += dx / d * stp; r.y += dy / d * stp; r.z += dz / d * stp; }
+    const bob = r.st === 1 ? .12 + Math.sin(r.ph * 1.3) * .1 : 0; r.g.position.set(r.x, r.y + bob, r.z); r.g.rotation.y += dt * 2.4; r.g.scale.setScalar(r.f * (r.st === 2 ? Math.max(.35, Math.min(1, (Math.hypot(hx - r.x, hz - r.z) - .3) / 2.5)) : 1));
+    if (r.st === 1 && ((r.ph * 2) | 0) % 9 === 0 && Math.random() < .15) burst(r.x, r.y + .3, r.z, 0xffe27a, 1, 1.2, 1.5);
+  }
+}
+function relicTip() { if (S.rtut || FAST) return; S.rtut = 1; const d = document.createElement('div'); d.id = 'rtip'; d.innerHTML = $t('<b>Reliques</b> : elles s’ajoutent à ton Sac. Deux reliques identiques fusionnent pour devenir plus fortes. <u>Toucher pour ouvrir le Sac</u>'); setTimeout(() => document.body.appendChild(d), 2600); const rm = () => { if (d.parentNode) d.remove(); }; d.addEventListener('click', () => { rm(); openSheet('rg'); }); setTimeout(rm, 6000); save(); }
 function updRelP(dt) {
   for (let i = RELP.length - 1; i >= 0; i--) {
     const r = RELP[i]; r.t += dt; const DUR = 2.2;
@@ -3675,7 +3707,7 @@ function reward(kind, zn, x, z, mult, cn) {
   let y = 2.2; const fx = x + 2.4; if (a) { floatT('+' + fmt(a) + $t(' Puissance'), fx, y, z, 'a'); y += 1.1; } if (h) { floatT('+' + fmt(h) + $t(' Vie'), fx, y, z, 'g'); y += 1.1; } if (!cn) floatT('+' + fmt(F) + ' F', fx, y, z, 'y');
   if (!window._byB && kind !== 3 && (kind <= 8 && kind !== 7 || kind === 14)) { S.conv[zn]++; if (S.conv[zn] === NEEDZ(zn) && !S.boss[zn]) note($t('Le boss apparaît !'), ZONES[zn].boss + $t(' t\'attend dans cette zone.')); else if (S.conv[zn] === CNEED[0] || S.conv[zn] === CNEED[1]) note($t('Église disponible !'), $t('Approche d\'un emplacement doré pour bâtir une église.')); else if (S.conv[zn] === CAP) note($t('Zone convertie'), $t('Les prochains convertis ne donnent plus de bonus permanent ici.')); }
 }
-function giveRelic(k, x, z) { if (S.rel.length >= 12) { const f = 8 * K(W.zone) * FM(); S.f += f; bagFullPop(x, z, f); floatT($t('Sac plein : +') + fmt(f) + ' F', x, 5, z, 'y'); return; } S.rel.push({ t: Math.floor(Math.random() * 3), k, nw: 1 }); const nr = S.rel[S.rel.length - 1], fus = relFusePair(S.rel.length - 1) >= 0; relNote(nr); try { relicPop(nr.t, x, z, nr.k, fus); } catch (e) { } relicTip(); floatT($t('Relique trouvée !'), x, 5.5, z, 'c'); burst(x, 3, z, 0xffe27a, 30, 7, 9); }
+function giveRelic(k, x, z) { spawnRelic(Math.floor(Math.random() * 3), k, x, z); }
 function convertEnemy(e) {
   if (e.shield) { e.hp = Math.max(1, e.hp); return; }
   if (e.cal !== undefined) (S.cal = S.cal || [])[e.cal] = 1;
@@ -4028,7 +4060,7 @@ const SATAN = { hp: 18, dmg: 1.5, hx: 120, def: 30, minD: .025, maxD: .04, add: 
 const SPIR = { win: [.8, 1.25], heal: [.35, .25], d: { h: 4, d: [.01, .02] }, r: { h: 14, d: [.015, .03] } };
 const spCl = (v, rel) => Math.min(rel * SPIR.win[1], Math.max(rel * SPIR.win[0], v));
 function spRel(e, c, m) { const u = ATK() * satRef(), H = HPM(); e.hp = e.max = spCl(e.max, c.h * u * m); e.dmg = e.dmgS = Math.min(c.d[1] * H, Math.max(c.d[0] * H, e.dmg)); return e; }
-const satRef = () => { try { let r = 1; if (typeof ARMD !== 'undefined' && S.wl) ARMD.W.forEach(w => { if (S.wl[w.id] > 0) r = Math.max(r, w.P); }); return r; } catch (x) { return 1; } };
+const satRef = () => { try { let r = 1; if (typeof ARMD !== 'undefined' && S.wl) ARMD.W.forEach(w => { if (S.wl[w.id] > 0) r = Math.max(r, w.P0 || w.P); }); return r; } catch (x) { return 1; } };
 const TELE = [];
 function teleClear() { TELE.forEach(t => scene.remove(t.m)); TELE.length = 0; W.tele = TELE; }
 function teleAdd(x, z, r, delay, frac) { const g = new THREE.Group(), ring = new THREE.Mesh(new THREE.RingGeometry(r - .35, r, 48), new THREE.MeshBasicMaterial({ color: 0xff2a2a, transparent: true, opacity: .9, side: THREE.DoubleSide, depthWrite: false })), disc = new THREE.Mesh(new THREE.CircleGeometry(r, 48), new THREE.MeshBasicMaterial({ color: 0xff3a1a, transparent: true, opacity: .18, depthWrite: false })); ring.rotation.x = disc.rotation.x = -Math.PI / 2; ring.position.y = .2; disc.position.y = .18; g.add(disc, ring); g.position.set(x, groundH(x, z), z); scene.add(g); TELE.push({ m: g, disc, x, z, r, t: delay, t0: delay, frac }); W.tele = TELE; }
@@ -4679,7 +4711,7 @@ function update(dt) {
   skyT.set(W.spirit ? '#2a0a22' : W.tmp ? '#e8dcc0' : W.arena ? '#1c1822' : ZONES[zn].sky); scene.background.lerp(skyT, Math.min(1, dt * 1.5)); scene.fog.color.copy(scene.background); gradeTick(dt, zn); scatTick(); skyTick(); crowdTick(dt); ambTick(dt, zn); ringTick(dt);
   for (let i = projs.length - 1; i >= 0; i--) { const q = projs[i]; if (!q) continue; q.life -= dt; q.m.position.x += q.vx * dt; q.m.position.z += q.vz * dt; q.m.position.y = 2.4 + (q.k === 'fire' ? Math.sin(q.life * 12) * .12 : 0); if (q.k === 'stone') q.m.rotation.x += dt * 9; if (alive && Math.hypot(q.m.position.x - W.x, q.m.position.z - W.z) < (q.rr || 1.5)) { scene.remove(q.m); projs.splice(i, 1); W.by = null; hurtHero(q.dmg, .5); } else if (q.life <= 0) { scene.remove(q.m); projs.splice(i, 1); } }
   W.buff = Math.max(0, (W.buff || 0) - dt);
-  updParts(dt); updCoins(dt); updRelP(dt);
+  updParts(dt); updCoins(dt); updRelP(dt); updRelG(dt);
   /* caméra */
   camStep(dt);
   { const sx = Math.round(W.x / 2) * 2, sz = Math.round(W.z / 2) * 2; sunL.position.set(sx + 36, 32, sz + 2); sunL.target.position.set(sx, 0, sz - 13); } shakeA = Math.max(0, shakeA - dt * 3); camera.lookAt(camera.position.x + (shakeA ? rnd(-1, 1) * shakeA * .6 : 0), hero.position.y + 1, camera.position.z - CAML + (shakeA ? rnd(-1, 1) * shakeA * .4 : 0));
@@ -5161,8 +5193,9 @@ async function shopClaim(sid) {
     S.pay = Array.isArray(S.pay) ? S.pay : []; if (!S.pay.includes(sid) && SHOPP[j.pack]) { const g = shopGrant(j.pack); if (g.f) S.f += g.f; else S.res[g.rz] += g.r; S.pay.push(sid); S.pay = S.pay.slice(-50); try { saveNow(); } catch (e) { } try { shopThanks(g); } catch (e) { } }
     return true; } catch (e) { return null; }
 }
+document.getElementById('shopb').addEventListener('click', () => { goHome().then(() => { MENU.scr = 'shop'; menuDraw(); }); });
 async function shopInit() {
-  try { const j = await fetch('/api/shop?status', { cache: 'no-store', credentials: 'omit' }).then(r => r.json()); SHOP.ready = !!(j && j.ready); (j.packs || []).forEach(p => { SHOP.cents[p.id] = p.cents; }); } catch (e) { return; }
+  try { const j = await fetch('/api/shop?status', { cache: 'no-store', credentials: 'omit' }).then(r => r.json()); SHOP.ready = !!(j && j.ready); try { const sb = document.getElementById('shopb'); if (sb) sb.style.display = SHOP.ready ? 'grid' : 'none'; } catch (e) { } (j.packs || []).forEach(p => { SHOP.cents[p.id] = p.cents; }); } catch (e) { return; }
   const q = /[?&]paid=(cs_[A-Za-z0-9_]+)/.exec(location.search); let L = shopPendGet(); if (q && !L.includes(q[1])) L.push(q[1]);
   const cx = /[?&]paid=cancel/.test(location.search); if (cx) setTimeout(() => { try { shopThanks(null, $t('Paiement annulé')); } catch (e) { } }, 800);
   if (q || cx) { try { history.replaceState(null, '', location.pathname + location.hash); } catch (e) { } }
@@ -5271,7 +5304,7 @@ function spawnCoins(x, z, val, n) {
   for (let i = 0; i < n; i++) { const v = i === n - 1 ? rest : val / n; rest -= v; const a = Math.random() * 6.283, sp = rnd(2, 4.6); COINS.push({ v, x: x + Math.cos(a) * .3, y: gy(x, z) + 1.4, z: z + Math.sin(a) * .3, vx: Math.cos(a) * sp, vy: rnd(5.5, 8), vz: Math.sin(a) * sp, st: 0, tm: 0, b: 0, ph: rnd(0, 6), sp: 0 }); }
 }
 function coinCredit(v) { S.f += v; coinTxt += v; if (T - coinPulseT > .2) { coinPulseT = T; const el = document.querySelector('#hl .row .pill'); if (el) { el.classList.remove('pulse'); void el.offsetWidth; el.classList.add('pulse'); } } }
-function flushCoins() { COINS.forEach(c => coinCredit(c.v)); COINS.length = 0; if (coinIM) { coinIM.count = coinHL.count = coinSP.count = coinSH.count = coinGL.count = 0; } }
+function flushCoins() { try { flushRelics(); } catch (e) { } COINS.forEach(c => coinCredit(c.v)); COINS.length = 0; if (coinIM) { coinIM.count = coinHL.count = coinSP.count = coinSH.count = coinGL.count = 0; } }
 function updCoins(dt) {
   if (!coinIM) return; const hx = W.x, hz = W.z, hy = hero.position.y + .9;
   for (let i = COINS.length - 1; i >= 0; i--) {
@@ -5504,8 +5537,8 @@ function mHome() {
   h += '<div class="m-hero"><div class="m-bg"></div><div class="m-rays"></div><div class="m-motes"></div><div class="m-fade"></div></div>';
   h += '<div class="m-main"><div class="m-cont" data-m="play" role="button"><b><span class="m-play">▶\uFE0E</span> ' + (has ? $t('Continuer') : $t('Jouer')) + '</b><small>' + mSub() + '</small></div>';
   h += $t('<div class="m-sec"><span>CHAPITRES</span></div><div class="m-row"><div class="m-card on" data-m="chap" role="button"><div class="m-ill" style="background-image:url(menu/th-jesus.jpg)"><span class="m-tag">I</span></div><div class="m-tx"><b>Jésus</b><small>La vie du Christ · ') + x + '/12</small><div class="m-pb"><i style="width:' + Math.max(0, x / 12 * 100).toFixed(1) + '%"></i></div></div></div>';
-  h += '<div class="m-card lk" data-m="lk2" role="button"><div class="m-ill" style="background-image:url(menu/th-apo.jpg)"><span class="m-tag">II</span><span class="m-lkb">' + LK + $t('</span></div><div class="m-tx"><b>Apôtres</b><small>Termine le chapitre de Jésus</small></div></div></div>');
-  h += $t('<div class="m-sec m-sec2"><span>ANCIEN TESTAMENT</span></div><div class="m-row4">') + ['Noé', 'Abraham', 'Moïse', 'David'].map(n => '<div class="m-card m-otc" data-m="lkot" role="button"><div class="m-ill m-ot">' + OT[n] + '<span class="m-lks">' + LK + '</span></div><div class="m-tx"><b>' + $t(n) + '</b></div></div>').join('') + '</div></div>';
+  h += '<div class="m-card lk" data-m="lk2" role="button"><div class="m-ill" style="background-image:url(menu/th-apo.jpg)"><span class="m-tag">II</span><span class="m-lkb">' + $t('<span style="font:800 .6rem sans-serif;letter-spacing:.03em;color:#ffe9a0;text-align:center;line-height:1.05">BIENTÔT</span>') + $t('</span></div><div class="m-tx"><b>Apôtres</b><small>Arrive bientôt</small></div></div></div>');
+  h += $t('<div class="m-sec m-sec2"><span>ANCIEN TESTAMENT</span></div><div class="m-row4">') + ['Noé', 'Abraham', 'Moïse', 'David'].map(n => '<div class="m-card m-otc" data-m="lkot" role="button"><div class="m-ill m-ot">' + OT[n] + '<span class="m-lks" style="width:auto;padding:0 6px;border-radius:9px;font:800 .5rem sans-serif;color:#ffe9a0">' + $t('BIENTÔT') + '</span></div><div class="m-tx"><b>' + $t(n) + '</b></div></div>').join('') + '</div></div>';
   h += $t('<div class="m-bot"><div data-m="saves" role="button">💾 Sauvegardes</div>') + (sa ? '' : $t('<div data-m="install" role="button">📲 Installer</div>')) + (SHOP.ready ? $t('<div class="alt" data-m="shop" role="button">🛒 Boutique</div>') : '') + (DONATE_URL ? $t('<div class="alt" data-m="donate" role="button">❤️ Don</div>') : '') + '</div><div id="mtoast" class="m-toast"></div>';
   return h;
 }
@@ -5634,8 +5667,8 @@ function menuClick(ev) {
   else if (a === 'chap') { MENU.scr = 'chap'; MENU.sel = undefined; menuDraw(); }
   else if (a === 'nsel') { const i = +b.dataset.z; if (mState(i) === 'lk') mToast($t('Niveau verrouillé : termine d’abord le niveau ') + (mCurIdx() + 1) + '.'); else { MENU.sel = i; menuDraw(); } }
   else if (a === 'go') mGo(MENU.sel);
-  else if (a === 'lk2') mToast($t('Chapitre II · Apôtres : termine d’abord le chapitre de Jésus. Il arrive avec la prochaine grande mise à jour.'));
-  else if (a === 'lkot') mToast($t('Ancien Testament : ces chapitres arriveront après celui des Apôtres.'));
+  else if (a === 'lk2') mToast($t('Chapitre II · Apôtres : arrive bientôt.'));
+  else if (a === 'lkot') mToast($t('Ancien Testament : arrive bientôt, après le chapitre des Apôtres.'));
   else if (a === 'gift') menuPanel(() => { DG_SHOWN = dKey(); openSheet('dg'); });
   else if (a === 'vers' || a === 'rel') menuPanel(() => { openSheet('rg'); vsTab(a === 'vers' ? 1 : 0); drawVs(); $('sht').textContent = $t('Reliques'); $('shs').textContent = VTAB ? $t('Versets ') + nVs() + ' / 12' : S.rel.length + ' / 12'; });
   else if (a === 'set') menuPanel(() => { const s = $('setb'); if (s && !MP.open) s.click(); });
