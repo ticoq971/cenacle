@@ -5401,8 +5401,8 @@ function mHome() {
   h += '<div class="m-hero"><div class="m-bg"></div><div class="m-rays"></div><div class="m-motes"></div><div class="m-fade"></div></div>';
   h += '<div class="m-main"><div class="m-cont" data-m="play" role="button"><b><span class="m-play">▶\uFE0E</span> ' + (has ? $t('Continuer') : $t('Jouer')) + '</b><small>' + mSub() + '</small></div>';
   h += $t('<div class="m-sec"><span>CHAPITRES</span></div><div class="m-row"><div class="m-card on" data-m="chap" role="button"><div class="m-ill" style="background-image:url(menu/th-jesus.jpg)"><span class="m-tag">I</span></div><div class="m-tx"><b>Jésus</b><small>La vie du Christ · ') + x + '/12</small><div class="m-pb"><i style="width:' + Math.max(0, x / 12 * 100).toFixed(1) + '%"></i></div></div></div>';
-  h += '<div class="m-card lk" data-m="lk2" role="button"><div class="m-ill" style="background-image:url(menu/th-apo.jpg)"><span class="m-tag">II</span><span class="m-lkb">' + LK + $t('</span></div><div class="m-tx"><b>Apôtres</b><small>Termine le chapitre de Jésus</small></div></div></div>');
-  h += $t('<div class="m-sec m-sec2"><span>ANCIEN TESTAMENT</span></div><div class="m-row4">') + ['Noé', 'Abraham', 'Moïse', 'David'].map(n => '<div class="m-card m-otc" data-m="lkot" role="button"><div class="m-ill m-ot">' + OT[n] + '<span class="m-lks">' + LK + '</span></div><div class="m-tx"><b>' + $t(n) + '</b></div></div>').join('') + '</div></div>';
+  h += '<div class="m-card lk" data-m="lk2" role="button"><div class="m-ill" style="background-image:url(menu/th-apo.jpg)"><span class="m-tag">II</span><span class="m-lkb">' + $t('<span style="font:800 .6rem sans-serif;letter-spacing:.03em;color:#ffe9a0;text-align:center;line-height:1.05">BIENTÔT</span>') + $t('</span></div><div class="m-tx"><b>Apôtres</b><small>Arrive bientôt</small></div></div></div>');
+  h += $t('<div class="m-sec m-sec2"><span>ANCIEN TESTAMENT</span></div><div class="m-row4">') + ['Noé', 'Abraham', 'Moïse', 'David'].map(n => '<div class="m-card m-otc" data-m="lkot" role="button"><div class="m-ill m-ot">' + OT[n] + '<span class="m-lks" style="width:auto;padding:0 6px;border-radius:9px;font:800 .5rem sans-serif;color:#ffe9a0">' + $t('BIENTÔT') + '</span></div><div class="m-tx"><b>' + $t(n) + '</b></div></div>').join('') + '</div></div>';
   h += $t('<div class="m-bot"><div data-m="saves" role="button">💾 Sauvegardes</div>') + (sa ? '' : $t('<div data-m="install" role="button">📲 Installer</div>')) + (DONATE_URL ? $t('<div class="alt" data-m="donate" role="button">❤️ Don</div>') : '') + '</div><div id="mtoast" class="m-toast"></div>';
   return h;
 }
@@ -5529,8 +5529,8 @@ function menuClick(ev) {
   else if (a === 'chap') { MENU.scr = 'chap'; MENU.sel = undefined; menuDraw(); }
   else if (a === 'nsel') { const i = +b.dataset.z; if (mState(i) === 'lk') mToast($t('Niveau verrouillé : termine d’abord le niveau ') + (mCurIdx() + 1) + '.'); else { MENU.sel = i; menuDraw(); } }
   else if (a === 'go') mGo(MENU.sel);
-  else if (a === 'lk2') mToast($t('Chapitre II · Apôtres : termine d’abord le chapitre de Jésus. Il arrive avec la prochaine grande mise à jour.'));
-  else if (a === 'lkot') mToast($t('Ancien Testament : ces chapitres arriveront après celui des Apôtres.'));
+  else if (a === 'lk2') mToast($t('Chapitre II · Apôtres : arrive bientôt.'));
+  else if (a === 'lkot') mToast($t('Ancien Testament : arrive bientôt, après le chapitre des Apôtres.'));
   else if (a === 'gift') menuPanel(() => { DG_SHOWN = dKey(); openSheet('dg'); });
   else if (a === 'vers' || a === 'rel') menuPanel(() => { openSheet('rg'); vsTab(a === 'vers' ? 1 : 0); drawVs(); $('sht').textContent = $t('Reliques'); $('shs').textContent = VTAB ? $t('Versets ') + nVs() + ' / 12' : S.rel.length + ' / 12'; });
   else if (a === 'set') menuPanel(() => { const s = $('setb'); if (s && !MP.open) s.click(); });
