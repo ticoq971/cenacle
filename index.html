@@ -3461,7 +3461,7 @@ function sampleG(x, z) {
 }
 async function initGL() {
   try { renderer = new THREE.WebGLRenderer({ canvas: $('gl'), antialias: true }); } catch (e) { $('nogl').style.display = 'grid'; return false; }
-  renderer.setPixelRatio(Math.min(2, window.devicePixelRatio || 1)); renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  renderer.setPixelRatio(Math.min(window.ECO ? 1.5 : 2, window.devicePixelRatio || 1)); renderer.shadowMap.enabled = true; renderer.shadowMap.type = window.ECO ? THREE.PCFShadowMap : THREE.PCFSoftShadowMap;
   scene = new THREE.Scene(); camera = new THREE.PerspectiveCamera(47, 1, .5, 330); HULLM = HULL(); HULLM.visible = true; geoms();
   scene.background = new THREE.Color(ZONES[TEMZ].sky); scene.fog = new THREE.Fog(ZONES[TEMZ].sky, 105, 270);
   HEMI = new THREE.HemisphereLight(0xfff0d8, 0xa88a64, .44); scene.add(HEMI);
@@ -3477,6 +3477,7 @@ async function initGL() {
   return true;
 }
 /* resolution adaptative : si la moyenne depasse ~26 images/s sur 90 images, on baisse le pixel ratio (jusqu'a 1), puis la carte d'ombres (2048 -> 1024) ; jamais de remontee (pas d'oscillation) */
+window.ECO = 1; try { if (localStorage.getItem('cenacle_eco') === '0') window.ECO = 0; } catch (e) { }
 const ADP = { pr: 0, t: 0, n: 0, sum: 0, sh: 0 };
 function adaptRes() { const n = performance.now(); if (ADP.t && !document.hidden) { const d = n - ADP.t; if (d < 250) { ADP.sum += d; if (++ADP.n >= 90) { const av = ADP.sum / ADP.n; ADP.sum = 0; ADP.n = 0; if (av > 38) { if (!ADP.pr) ADP.pr = renderer.getPixelRatio(); if (ADP.pr > 1.01) { ADP.pr = Math.max(1, ADP.pr - .25); renderer.setPixelRatio(ADP.pr); onResize(); } else if (!ADP.sh) { ADP.sh = 1; sunL.shadow.mapSize.set(1024, 1024); if (sunL.shadow.map) { sunL.shadow.map.dispose(); sunL.shadow.map = null; } } } } } else { ADP.sum = 0; ADP.n = 0; } } ADP.t = n; }
 function onResize() { const w = innerWidth, h = innerHeight; renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix(); }
@@ -5418,7 +5419,7 @@ buildUI(); initIcons();
 if (window.__GLOK) {
   W.hp = HPM(); camera.position.set(W.x, CAMH, W.z + CAMZ);
   let last = performance.now(), acc = 0, pa = 0, pm = 0;
-  const loop = now => { if (!window.BOOTF) window.BOOTF = Math.round(performance.now()); const dt = Math.max(0, Math.min(.05, (now - last) / 1000)); last = now; if (!window.MENU_PZ) update(dt); hpTrack(); overlay(); labelDeclutter(); proxyFlush(); xrayTick(dt); renderer.render(scene, camera); adaptRes(); acc += dt; pa += dt; pm += dt; if (pa > .15) { pa = 0; paint(); } if (pm > .12) { pm = 0; drawMM(); } if (acc > 5) { acc = 0; save(); } requestAnimationFrame(loop); };
+  const loop = now => { if (window.ECO && now - last < 30) { requestAnimationFrame(loop); return; } if (!window.BOOTF) window.BOOTF = Math.round(performance.now()); const dt = Math.max(0, Math.min(.05, (now - last) / 1000)); last = now; if (!window.MENU_PZ) update(dt); hpTrack(); overlay(); labelDeclutter(); proxyFlush(); xrayTick(dt); renderer.render(scene, camera); adaptRes(); acc += dt; pa += dt; pm += dt; if (pa > .15) { pa = 0; paint(); } if (pm > .12) { pm = 0; drawMM(); } if (acc > 5) { acc = 0; save(); } requestAnimationFrame(loop); };
   paint();
   if (NEWGAME) note($t('Nouvelle partie'), $t('Tout recommence à Jérusalem.')); else if (offGain > 0) note($t('Pendant ton absence'), $t('Tes évêques ont converti : +') + fmt(offGain) + $t(' points d\'Église.')); else note(ZONES[W.zone].n + ' · ' + ZONES[W.zone].y, ZONES[W.zone].t);
   requestAnimationFrame(loop);
@@ -5695,6 +5696,7 @@ function sndDraw(box, mk) {
   const row = (lab, k) => { const r = mk('div', '', 'mpr sndr'), i = mk('input'); i.type = 'range'; i.min = 0; i.max = 100; i.value = Math.round(AUD.cfg[k] * 100); i.setAttribute('aria-label', lab); i.addEventListener('input', () => { AUD.cfg[k] = i.value / 100; audInit(); audApply(); audSave(); if (k !== 'm') sfx(k === 'c' ? 'click' : 'coin'); }); ['keydown', 'keyup'].forEach(ev => i.addEventListener(ev, e => e.stopPropagation())); r.appendChild(mk('div', lab)); r.appendChild(i); w.appendChild(r); };
   row($t('🎵 Musique'), 'm'); row($t('💥 Bruitages'), 's'); row($t('👆 Clics'), 'c');
   const r = mk('div', '', 'mpr sndr'), cb = mk('input'); cb.type = 'checkbox'; cb.checked = !!AUD.cfg.mute; cb.id = 'sndmu'; cb.addEventListener('change', () => { AUD.cfg.mute = cb.checked ? 1 : 0; audInit(); audApply(); audSave(); }); const l = mk('label', $t('Couper tout le son')); l.htmlFor = 'sndmu'; r.appendChild(cb); r.appendChild(l); w.appendChild(r);
+  { const re = mk('div', '', 'mpr sndr'), ce = mk('input'); ce.type = 'checkbox'; ce.checked = !!window.ECO; ce.id = 'ecoc'; ce.addEventListener('change', () => { window.ECO = ce.checked ? 1 : 0; try { localStorage.setItem('cenacle_eco', window.ECO ? '1' : '0'); } catch (e) { } if (renderer) { ADP.pr = 0; renderer.setPixelRatio(Math.min(window.ECO ? 1.5 : 2, window.devicePixelRatio || 1)); onResize(); } }); const le = mk('label', $t('🔋 Économie d’énergie (moins de chauffe, 30 images/s)')); le.htmlFor = 'ecoc'; re.appendChild(ce); re.appendChild(le); w.appendChild(re); }
   w.appendChild(mk('div', $t('iPhone : le bouton silencieux coupe aussi le son.'), 'mut')); box.appendChild(w); if (window.langRow) langRow(box);
 }
 </script>
