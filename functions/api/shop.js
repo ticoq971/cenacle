@@ -33,7 +33,7 @@ export async function onRequest(ctx) {
       mode: 'payment', 'line_items[0][quantity]': '1', 'line_items[0][price_data][currency]': 'eur', 'line_items[0][price_data][unit_amount]': String(P.cents),
       'line_items[0][price_data][product_data][name]': P.name + ' · Cénacle', 'metadata[h]': id, 'metadata[pack]': b.pack,
     });
-    const j = await r.json().catch(() => null); if (!r.ok || !j || !j.url) return json({ error: 'stripe' }, 502);
+    const j = await r.json().catch(() => null); if (!r.ok || !j || !j.url) return json({ error: 'stripe', st: r.status, type: j && j.error && j.error.type, code: j && j.error && j.error.code, param: j && j.error && j.error.param }, 502);
     return json({ url: j.url, session: j.id });
   }
 
