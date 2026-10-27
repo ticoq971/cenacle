@@ -589,7 +589,9 @@ body.fbh #setb,body.fbh #sndb{display:none!important}
 <script type="text/plain" data-boot>
 /* lien de don : laisser vide tant qu'il n'y en a pas (le bouton « Faire un don » reste caché) */
 const DONATE_URL = 'https://buy.stripe.com/5kQcN5enAbIyftf3im8bS00';
-const KEY = 'cenacle_v2'; const _hw = new THREE.Vector3(); const CS = .8, CAMH = 24, CAMZ = 22, CAML = 26;
+const KEY = 'cenacle_v2'; const _hw = new THREE.Vector3(); /* mobile (écran tactile) : vue plus haute, plus au-dessus de l'action (≈ 59° au lieu de 47°) */
+const CAMMOB = (() => { try { return matchMedia('(pointer:coarse)').matches; } catch (e) { return false; } })();
+const CS = .8, CAMH = CAMMOB ? 28 : 24, CAMZ = CAMMOB ? 17 : 22, CAML = 26;
 /* ---------- CAMÉRA : dégagement garanti ----------
    Grille de 1 m des hauteurs de tout ce qui est SOLIDE ET POSÉ AU SOL (relief, bâtiments, murs, rochers, troncs, églises) : un triangle
    est « posé » s'il repose sur le sol ou sur un triangle déjà posé ; sinon il est « en surplomb » (couronnes d'arbres, auvents,
@@ -3974,7 +3976,7 @@ const SATAN = { hp: 18, dmg: 1.5, hx: 120, def: 30, minD: .025, maxD: .04, add: 
 const SPIR = { win: [.8, 1.25], heal: [.35, .25], d: { h: 4, d: [.01, .02] }, r: { h: 14, d: [.015, .03] } };
 const spCl = (v, rel) => Math.min(rel * SPIR.win[1], Math.max(rel * SPIR.win[0], v));
 function spRel(e, c, m) { const u = ATK() * satRef(), H = HPM(); e.hp = e.max = spCl(e.max, c.h * u * m); e.dmg = e.dmgS = Math.min(c.d[1] * H, Math.max(c.d[0] * H, e.dmg)); return e; }
-const satRef = () => { try { let r = 1; if (typeof ARMD !== 'undefined' && S.wl) ARMD.W.forEach(w => { if (S.wl[w.id] > 0) r = Math.max(r, w.P); }); return r; } catch (x) { return 1; } };
+const satRef = () => { try { let r = 1; if (typeof ARMD !== 'undefined' && S.wl) ARMD.W.forEach(w => { if (S.wl[w.id] > 0) r = Math.max(r, w.P0 || w.P); }); return r; } catch (x) { return 1; } };
 const TELE = [];
 function teleClear() { TELE.forEach(t => scene.remove(t.m)); TELE.length = 0; W.tele = TELE; }
 function teleAdd(x, z, r, delay, frac) { const g = new THREE.Group(), ring = new THREE.Mesh(new THREE.RingGeometry(r - .35, r, 48), new THREE.MeshBasicMaterial({ color: 0xff2a2a, transparent: true, opacity: .9, side: THREE.DoubleSide, depthWrite: false })), disc = new THREE.Mesh(new THREE.CircleGeometry(r, 48), new THREE.MeshBasicMaterial({ color: 0xff3a1a, transparent: true, opacity: .18, depthWrite: false })); ring.rotation.x = disc.rotation.x = -Math.PI / 2; ring.position.y = .2; disc.position.y = .18; g.add(disc, ring); g.position.set(x, groundH(x, z), z); scene.add(g); TELE.push({ m: g, disc, x, z, r, t: delay, t0: delay, frac }); W.tele = TELE; }

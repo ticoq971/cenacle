@@ -6,10 +6,12 @@ const ARMD = {"W": [{"id": "parole", "c": "D", "z": -1, "n": "La Parole", "P": 1
 (function () {
   'use strict';
   const L_ = s => (typeof $t === 'function' ? $t(s) : s), TH3 = THREE;
+  /* progression plus marquée : chaque arme gagnée sur un boss plus loin frappe nettement plus fort (+18 % par niveau de boss, en plus de sa base) */
+  ARMD.W.forEach(w => { if (w.P0 === undefined) { const zf = 1 + .18 * Math.max(0, w.z); w.P0 = w.P; w.P *= zf; w.m *= zf; } });
   const WB = {}, BYZ = []; ARMD.W.forEach(w => { WB[w.id] = w; if (w.z >= 0) BYZ[w.z] = w; });
   const CATS = ['D', 'M', 'C'], CCOL = { D: 0x5ab8ff, M: 0xd49aff, C: 0xffd24a }, CHEX = { D: '#5ab8ff', M: '#d49aff', C: '#ffd24a' };
   const A = window.ARM = { WB, BYZ, mode: 0, tgt: null, set: null, jc: 0, hos: 0, lastShot: -9, cur: WB.parole, r: 0 };
-  const lvl = id => (S.wl && S.wl[id]) || 0, own = id => lvl(id) > 0, dmgLv = L => 1 + .1 * (Math.max(1, L) - 1);
+  const lvl = id => (S.wl && S.wl[id]) || 0, own = id => lvl(id) > 0, dmgLv = L => 1 + .22 * (Math.max(1, L) - 1);
   const RNGs = () => { try { return RNG(); } catch (e) { return 8; } };
   const isEq = id => !!(S.wq && CATS.some(c => S.wq[c] === id));
   /* ---------- sauvegarde : S.wl = { id: niveau }, S.wq = { D, M, C }, S.wdisc = avertissement vu ---------- */
