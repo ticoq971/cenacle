@@ -5118,6 +5118,37 @@ function dClaim() {
   if (o.rel) giveRelic(Math.min(3, Math.floor(ZT(S.lvl) / 2) + 1), W.x, W.z);
   S.dg = { d: st.today, n: st.streak + 1 }; save(); note($t('Cadeau du jour'), $t('Jour ') + st.day + ' : ' + dTxt(o) + '.'); drawDg();
 }
+/* ---------- Boutique (Stripe Checkout, /api/shop) : packs de fidèles et de ressources payés en argent réel ---------- */
+const SHOP = { ready: false, cents: {}, busy: false };
+const SHOPP = { p1: { n: 'Bourse du pèlerin', i: '👛', f: 30, r: 4 }, p2: { n: 'Coffre du marchand', i: '🧰', f: 100, r: 12 }, p3: { n: 'Trésor du Cénacle', i: '🏺', f: 300, r: 40 } };
+/* le contenu d'un pack suit le niveau atteint : f × (un coffre normal du niveau) de fidèles et r de chaque ressource */
+function shopGrant(id) { const P = SHOPP[id], z = Math.max(0, Math.min(11, S.lvl | 0)); return { f: Math.round(P.f * 10 * K(z) * FM()), r: P.r }; }
+function shopPrice(id) { const c = SHOP.cents[id]; return c ? (c / 100).toFixed(2).replace('.', DSEP) + ' €' : ''; }
+function shopHtml() {
+  let h = $t('<h2>Boutique</h2><div class="box">Soutiens le jeu et gagne du temps : chaque pack ajoute des fidèles et des ressources à ta partie. Paiement sécurisé par Stripe ; tu reviens ensuite dans le jeu.</div>');
+  Object.keys(SHOPP).forEach(id => { const P = SHOPP[id], g = shopGrant(id); h += '<button class="mb pri" data-m="buy:' + id + '"' + (SHOP.busy ? ' disabled' : '') + '>' + P.i + ' ' + $t(P.n) + ' · ' + shopPrice(id) + '<small style="display:block;font-weight:600;opacity:.8">' + fmt(g.f) + ' F · ' + g.r + ' ' + $t('de chaque ressource') + '</small></button>'; });
+  return h + $t('<div class="box" style="font-size:.78rem;opacity:.8">Les achats sont liés à ta sauvegarde en ligne. Garde ton code de récupération (Sauvegardes).</div>') + $t('<button class="mb alt" data-m="home">← Retour</button>');
+}
+function shopPendGet() { try { return JSON.parse(localStorage.getItem('cenacle_pay') || '[]').filter(x => /^cs_/.test(x)).slice(-10); } catch (e) { return []; } }
+function shopPendSet(a) { try { localStorage.setItem('cenacle_pay', JSON.stringify(a.slice(-10))); } catch (e) { } }
+async function shopApi(method, qs, body) { const k = cfKey(); if (!k) throw 0; const r = await fetch('/api/shop' + (qs || ''), { method, headers: { Authorization: 'Bearer ' + k, 'Content-Type': 'application/json' }, body: body ? JSON.stringify(body) : undefined, cache: 'no-store', credentials: 'omit' }); const j = await r.json().catch(() => null); if (!j) throw 0; return j; }
+async function shopBuy(id) {
+  if (SHOP.busy || !SHOPP[id]) return; SHOP.busy = true; mToast($t('Ouverture du paiement…'));
+  try { try { save(); } catch (e) { } const j = await shopApi('POST', '', { pack: id }); if (!j.url || String(j.url).indexOf('https://checkout.stripe.com/') !== 0) throw 0; shopPendSet(shopPendGet().concat([j.session])); location.href = j.url; }
+  catch (e) { SHOP.busy = false; mToast($t('Paiement indisponible pour le moment. Réessaie plus tard.')); }
+}
+async function shopClaim(sid) {
+  try { const j = await shopApi('GET', '?session=' + encodeURIComponent(sid)); if (!j.paid) return false;
+    S.pay = Array.isArray(S.pay) ? S.pay : []; if (!S.pay.includes(sid) && SHOPP[j.pack]) { const g = shopGrant(j.pack); S.f += g.f; for (let i = 0; i < 6; i++) S.res[i] += g.r; S.pay.push(sid); S.pay = S.pay.slice(-50); try { saveNow(); } catch (e) { } try { note($t('Merci pour ton soutien !'), '+' + fmt(g.f) + ' F · +' + g.r + ' ' + $t('de chaque ressource') + '.'); } catch (e) { } }
+    return true; } catch (e) { return null; }
+}
+async function shopInit() {
+  try { const j = await fetch('/api/shop?status', { cache: 'no-store', credentials: 'omit' }).then(r => r.json()); SHOP.ready = !!(j && j.ready); (j.packs || []).forEach(p => { SHOP.cents[p.id] = p.cents; }); } catch (e) { return; }
+  const q = /[?&]paid=(cs_[A-Za-z0-9_]+)/.exec(location.search); let L = shopPendGet(); if (q && !L.includes(q[1])) L.push(q[1]);
+  if (q || /[?&]paid=cancel/.test(location.search)) { try { history.replaceState(null, '', location.pathname + location.hash); } catch (e) { } }
+  if (SHOP.ready && L.length) { const keep = []; for (const sid of L) { const r = await shopClaim(sid); if (r === null) keep.push(sid); } shopPendSet(keep); }
+  try { if (document.getElementById('menu')) menuDraw(); } catch (e) { }
+}
 /* cadeau du jour : s'ouvre une fois par jour dès l'arrivée dans le menu, jamais en pleine partie */
 function mGiftAuto() { try { if (!document.getElementById('menu') || !S.tut) return; const st = dState(); if (st.claimed || DG_SHOWN === st.today) return; DG_SHOWN = st.today; menuPanel(() => openSheet('dg')); } catch (e) { } }
 /* ---------- Recherche : 3 catégories ---------- */
@@ -5455,7 +5486,7 @@ function mHome() {
   h += $t('<div class="m-sec"><span>CHAPITRES</span></div><div class="m-row"><div class="m-card on" data-m="chap" role="button"><div class="m-ill" style="background-image:url(menu/th-jesus.jpg)"><span class="m-tag">I</span></div><div class="m-tx"><b>Jésus</b><small>La vie du Christ · ') + x + '/12</small><div class="m-pb"><i style="width:' + Math.max(0, x / 12 * 100).toFixed(1) + '%"></i></div></div></div>';
   h += '<div class="m-card lk" data-m="lk2" role="button"><div class="m-ill" style="background-image:url(menu/th-apo.jpg)"><span class="m-tag">II</span><span class="m-lkb">' + LK + $t('</span></div><div class="m-tx"><b>Apôtres</b><small>Termine le chapitre de Jésus</small></div></div></div>');
   h += $t('<div class="m-sec m-sec2"><span>ANCIEN TESTAMENT</span></div><div class="m-row4">') + ['Noé', 'Abraham', 'Moïse', 'David'].map(n => '<div class="m-card m-otc" data-m="lkot" role="button"><div class="m-ill m-ot">' + OT[n] + '<span class="m-lks">' + LK + '</span></div><div class="m-tx"><b>' + $t(n) + '</b></div></div>').join('') + '</div></div>';
-  h += $t('<div class="m-bot"><div data-m="saves" role="button">💾 Sauvegardes</div>') + (sa ? '' : $t('<div data-m="install" role="button">📲 Installer</div>')) + (DONATE_URL ? $t('<div class="alt" data-m="donate" role="button">❤️ Don</div>') : '') + '</div><div id="mtoast" class="m-toast"></div>';
+  h += $t('<div class="m-bot"><div data-m="saves" role="button">💾 Sauvegardes</div>') + (sa ? '' : $t('<div data-m="install" role="button">📲 Installer</div>')) + (SHOP.ready ? $t('<div class="alt" data-m="shop" role="button">🛒 Boutique</div>') : '') + (DONATE_URL ? $t('<div class="alt" data-m="donate" role="button">❤️ Don</div>') : '') + '</div><div id="mtoast" class="m-toast"></div>';
   return h;
 }
 function mPath() {
@@ -5562,6 +5593,8 @@ function menuDraw() {
     h += $t('<div class="box"><b>iPhone · Safari</b><div class="stp"><b>1</b>Touche ') + SVG_SHARE + $t(' <b style="background:none;color:inherit;width:auto">Partager</b> en bas de l’écran</div><div class="stp"><b>2</b>Choisis « Sur l’écran d’accueil »</div></div>');
     h += $t('<div class="box"><b>iPhone · Chrome</b><div class="stp"><b>1</b>Touche ') + SVG_SHARE + $t(' à droite de l’adresse</div><div class="stp"><b>2</b>Choisis « Ajouter à l’écran d’accueil »</div></div>');
     h += $t('<div class="box"><b>Android · Chrome</b><div class="stp"><b>1</b>Touche le menu <b style="background:none;color:inherit;width:auto">⋮</b> en haut à droite</div><div class="stp"><b>2</b>« Installer l’application » ou « Ajouter à l’écran d’accueil »</div></div><p class="note">L’appli s’ouvre ensuite en plein écran et fonctionne même hors connexion (sauf la coop en ligne).</p><button class="mb alt" data-m="home">← Retour</button>');
+  } else if (MENU.scr === 'shop') {
+    h += shopHtml();
   } else if (MENU.scr === 'donate') {
     h += $t('<h2>Faire un don</h2><div class="box">Le jeu est gratuit et sans publicité. Si tu l’aimes, tu peux soutenir son développement.</div><button class="mb pri" data-m="donego">❤ Ouvrir la page de don</button><button class="mb alt" data-m="home">← Retour</button>');
   }
@@ -5586,7 +5619,8 @@ function menuClick(ev) {
   else if (a === 'gift') menuPanel(() => { DG_SHOWN = dKey(); openSheet('dg'); });
   else if (a === 'vers' || a === 'rel') menuPanel(() => { openSheet('rg'); vsTab(a === 'vers' ? 1 : 0); drawVs(); $('sht').textContent = $t('Reliques'); $('shs').textContent = VTAB ? $t('Versets ') + nVs() + ' / 12' : S.rel.length + ' / 12'; });
   else if (a === 'set') menuPanel(() => { const s = $('setb'); if (s && !MP.open) s.click(); });
-  else if (a === 'snd') { const s = $('sndb'); if (s) s.click(); menuDraw(); } else if (['home', 'new', 'saves', 'install', 'donate'].includes(a)) { MENU.scr = a; menuDraw(); }
+  else if (a === 'snd') { const s = $('sndb'); if (s) s.click(); menuDraw(); } else if (['home', 'new', 'saves', 'install', 'donate', 'shop'].includes(a)) { MENU.scr = a; menuDraw(); }
+  else if (/^buy:p[1-3]$/.test(a)) shopBuy(a.slice(4));
   else if (a === 'newok') { try { sessionStorage.setItem('cenacle_skipmenu', '1'); } catch (e) { } menuClose(); doReset(); }
   else if (a === 'exp') saveExport();
   else if (a === 'imp') saveImport();
@@ -5596,7 +5630,7 @@ function menuClick(ev) {
   else if (a === 'donego' && DONATE_URL) window.open(DONATE_URL, '_blank', 'noopener');
 }
 /* ouverture : pas de menu pour un lien d'invitation coop (on rejoint directement) ni juste après « Nouvelle partie » */
-{ let skip = false; try { skip = /coop=/.test(location.hash + location.search) || sessionStorage.getItem('cenacle_skipmenu') === '1' || !!window.claude; sessionStorage.removeItem('cenacle_skipmenu'); } catch (e) { } if (!skip) { menuOpen(); setTimeout(() => { menuDraw(); mGiftAuto(); }, 1500); } }
+{ let skip = false; try { skip = /coop=/.test(location.hash + location.search) || sessionStorage.getItem('cenacle_skipmenu') === '1' || !!window.claude; sessionStorage.removeItem('cenacle_skipmenu'); } catch (e) { } if (!skip) { menuOpen(); shopInit(); setTimeout(() => { menuDraw(); mGiftAuto(); }, 1500); } }
 try { window.LDdone && LDdone(); } catch (e) { }
 const IC_SND = { on: '<svg viewBox="0 0 24 24"><path d="M3.5 9h4l5.5-4.5v15L7.5 15h-4z" fill="#ffe08a" stroke="#7a4e12" stroke-width=".8" stroke-linejoin="round"/><path d="M16 8.5a5 5 0 0 1 0 7M18.6 5.8a8.6 8.6 0 0 1 0 12.4" stroke="#ffe08a" stroke-width="2.2" fill="none" stroke-linecap="round"/></svg>', off: '<svg viewBox="0 0 24 24"><path d="M3.5 9h4l5.5-4.5v15L7.5 15h-4z" fill="#ffe08a" stroke="#7a4e12" stroke-width=".8" stroke-linejoin="round"/><path d="M16 9l5.5 6M21.5 9L16 15" stroke="#ff7a5a" stroke-width="2.6" stroke-linecap="round"/></svg>' };
 { const b = document.createElement('button'); b.id = 'sndb'; b.innerHTML = AUD.cfg.mute ? IC_SND.off : IC_SND.on; b.setAttribute('aria-label', $t('Son')); b.addEventListener('click', ev => { ev.stopPropagation(); audInit(); AUD.cfg.mute = AUD.cfg.mute ? 0 : 1; audSave(); audApply(); b.innerHTML = AUD.cfg.mute ? IC_SND.off : IC_SND.on; b.classList.toggle('off', !!AUD.cfg.mute); }); b.classList.toggle('off', !!AUD.cfg.mute); const gm = $('game') || document.body; gm.appendChild(b); }
