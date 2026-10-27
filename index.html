@@ -1461,7 +1461,7 @@ const foeStat = (z, kind, boss) => { const q = foeStat0(z, kind, boss); q.dmg *=
 const bonusOf = (z, kind) => { const k = K(z) * feltF(z, 'rew'); return kind === 6 ? { a: .6 * k, h: 1.2 * k, f: 8 * k } : kind === 4 ? { a: .7 * k, h: 0, f: 5 * k } : kind === 5 ? { a: 0, h: 0, f: 8 * k } : kind === 0 ? { a: .45 * k, h: 0, f: 4 * k } : kind === 1 ? { a: 0, h: 2.8 * k, f: 6 * k } : kind === 2 ? { a: 0, h: 0, f: 8 * k } : kind === 7 ? { a: 0, h: 0, f: 0 } : kind === 8 ? { a: .6 * k, h: 1.2 * k, f: 8 * k } : kind === 14 ? { a: .9 * k, h: 2 * k, f: 12 * k } : kind >= 9 ? { a: 0, h: 0, f: 3 * k } : { a: 3.5 * k, h: 16 * k, f: 150 * k }; };
 let _svT = 0, _svL = -1e9;
 function save() { if (window.RESETTING) return; const n = performance.now(); if (n - _svL < 3000) { if (!_svT) _svT = setTimeout(() => { _svT = 0; saveNow(); }, 3050 - (n - _svL)); return; } saveNow(); }
-function saveNow() { if (window.RESETTING) return; _svL = performance.now(); if (_svT) { clearTimeout(_svT); _svT = 0; } const pd = typeof coinPending === 'function' ? coinPending() : 0; S.f += pd; try { S.t = Date.now(); const str = mpSaveStr(); try { localStorage.setItem(KEY, str); } catch (e) { } dbQueue(str); } catch (e) {} S.f -= pd; }
+function saveNow() { if (window.RESETTING) return; _svL = performance.now(); if (_svT) { clearTimeout(_svT); _svT = 0; } const pd = typeof coinPending === 'function' ? coinPending() : 0, pr = typeof relPending === 'function' ? relPending() : []; S.f += pd; pr.forEach(o => S.rel.push(o)); try { S.t = Date.now(); const str = mpSaveStr(); try { localStorage.setItem(KEY, str); } catch (e) { } dbQueue(str); } catch (e) {} S.f -= pd; if (pr.length) S.rel.length -= pr.length; }
 /* migration v2 (6 zones) -> v3 (8 niveaux : Jérusalem = 3 secteurs) : ancienne zone 0 -> niveau 1 (ou 1-3 si le Grand Prêtre était vaincu), zones 1-5 -> niveaux 4-8 */
 function migrateSave(s) { return migr6(migrWp5(migr5(migrRS(migr4(migrateSave3(s)))))); }
 /* armure à 5 pièces : une sauvegarde à 6 pièces est tronquée ; la 6e possédée devient un héritage (+25 % de Puissance conservés, S.wpx) */
@@ -2059,7 +2059,37 @@ function relicPop(t, x, z, k, fus) {
   RELP.push({ g, t: 0, f, el, x, z });
 }
 function bagFullPop(x, z, f) { const el = relicLabel($t('<b>🎒 Sac plein</b>converti en +') + fmt(f) + $t(' F<small>Fusionne tes reliques pour faire de la place</small>')); if (el) RELP.push({ g: null, t: 0, f: 1, el, x, z, full: 1 }); }
-function relicTip() { if (S.rtut || FAST) return; S.rtut = 1; const d = document.createElement('div'); d.id = 'rtip'; d.innerHTML = $t('<b>Reliques</b> : elles s’ajoutent à ton Sac. Deux reliques identiques fusionnent pour devenir plus fortes. <u>Toucher pour ouvrir le Sac</u>'); setTimeout(() => document.body.appendChild(d), 2600); const rm = () => { if (d.parentNode) d.remove(); }; d.addEventListener('click', () => { rm(); openSheet('rg'); }); setTimeout(rm, 11000); save(); }
+/* reliques au sol : comme les points de foi, la relique tombe par terre, reste là un instant, puis vient seule vers le héros ; aucun grand texte à l'écran */
+const RELG = [];
+function relPending() { return RELG.slice(0, Math.max(0, 12 - S.rel.length)).map(r => ({ t: r.t, k: r.k, nw: 1 })); }
+function relCollect(r, quiet) {
+  try { if (r.g) scene.remove(r.g); } catch (e) { }
+  if (S.rel.length >= 12) { const f = 8 * K(W.zone) * FM(); S.f += f; if (!quiet) floatT($t('Sac plein : +') + fmt(f) + ' F', W.x, 4.2, W.z, 'y'); return; }
+  S.rel.push({ t: r.t, k: r.k, nw: 1 }); const nr = S.rel[S.rel.length - 1];
+  if (!quiet) { const fus = relFusePair(S.rel.length - 1) >= 0; floatT(REM[nr.t] + ' ' + RNM[nr.t] + $t(' niv. ') + (nr.k + 1) + (fus ? $t(' · fusion possible') : ''), W.x, 4.6, W.z, 'c'); burst(W.x, 2.2, W.z, 0xffe27a, 14, 5, 7); relicTip(); }
+  try { bdgEvent('rg:new', $t('Nouvelle relique')); } catch (e) { }
+  save();
+}
+function flushRelics() { while (RELG.length) relCollect(RELG.pop(), true); }
+function spawnRelic(t, k, x, z) {
+  if (RELG.length >= 8) relCollect(RELG.shift(), true);
+  const key = ['relic_cross', 'relic_chalice', 'relic_book'][t % 3], f = PF[key] * 1.15, g = propGroup(key, f, { center: true });
+  const a = Math.random() * 6.283, sp = rnd(1.2, 2.6); g.position.set(x, gy(x, z) + 1.2, z); scene.add(g);
+  RELG.push({ g, t, k, f, x, y: gy(x, z) + 1.2, z, vx: Math.cos(a) * sp, vy: rnd(4.5, 6.5), vz: Math.sin(a) * sp, st: 0, tm: 0, ph: rnd(0, 6), sp: 0 });
+  burst(x, gy(x, z) + 1, z, 0xffe27a, 16, 5, 7);
+}
+function updRelG(dt) {
+  if (!RELG.length) return; const hx = W.x, hz = W.z, hy = hero.position.y + .9;
+  for (let i = RELG.length - 1; i >= 0; i--) {
+    const r = RELG[i]; r.tm += dt; r.ph += dt * 3;
+    if (r.st === 0) { r.vy -= 17 * dt; r.x += r.vx * dt; r.y += r.vy * dt; r.z += r.vz * dt; const g1 = gy(r.x, r.z) + .45; if (r.y < g1) { r.y = g1; r.vx = r.vz = r.vy = 0; r.st = 1; r.tm = 0; } }
+    if (r.st < 2 && !(W.dead > 0)) { if (Math.hypot(hx - r.x, hz - r.z) < 1.8 && r.st === 1) { r.st = 2; r.sp = 8; } else if (r.st === 1 && r.tm > 1.5) { r.st = 2; r.sp = 2.5; } }
+    if (r.st === 2) { const dx = hx - r.x, dy = hy - r.y, dz = hz - r.z, d = Math.hypot(dx, dy, dz) || 1; r.sp = Math.min(26, r.sp + 40 * dt); const stp = r.sp * dt; if (d <= stp + .4) { RELG.splice(i, 1); relCollect(r); continue; } r.x += dx / d * stp; r.y += dy / d * stp; r.z += dz / d * stp; }
+    const bob = r.st === 1 ? .12 + Math.sin(r.ph * 1.3) * .1 : 0; r.g.position.set(r.x, r.y + bob, r.z); r.g.rotation.y += dt * 2.4; r.g.scale.setScalar(r.f * (r.st === 2 ? Math.max(.35, Math.min(1, (Math.hypot(hx - r.x, hz - r.z) - .3) / 2.5)) : 1));
+    if (r.st === 1 && ((r.ph * 2) | 0) % 9 === 0 && Math.random() < .15) burst(r.x, r.y + .3, r.z, 0xffe27a, 1, 1.2, 1.5);
+  }
+}
+function relicTip() { if (S.rtut || FAST) return; S.rtut = 1; const d = document.createElement('div'); d.id = 'rtip'; d.innerHTML = $t('<b>Reliques</b> : elles s’ajoutent à ton Sac. Deux reliques identiques fusionnent pour devenir plus fortes. <u>Toucher pour ouvrir le Sac</u>'); setTimeout(() => document.body.appendChild(d), 2600); const rm = () => { if (d.parentNode) d.remove(); }; d.addEventListener('click', () => { rm(); openSheet('rg'); }); setTimeout(rm, 6000); save(); }
 function updRelP(dt) {
   for (let i = RELP.length - 1; i >= 0; i--) {
     const r = RELP[i]; r.t += dt; const DUR = 2.2;
@@ -3591,7 +3621,7 @@ function reward(kind, zn, x, z, mult, cn) {
   let y = 2.2; const fx = x + 2.4; if (a) { floatT('+' + fmt(a) + $t(' Puissance'), fx, y, z, 'a'); y += 1.1; } if (h) { floatT('+' + fmt(h) + $t(' Vie'), fx, y, z, 'g'); y += 1.1; } if (!cn) floatT('+' + fmt(F) + ' F', fx, y, z, 'y');
   if (!window._byB && kind !== 3 && (kind <= 8 && kind !== 7 || kind === 14)) { S.conv[zn]++; if (S.conv[zn] === NEEDZ(zn) && !S.boss[zn]) note($t('Le boss apparaît !'), ZONES[zn].boss + $t(' t\'attend dans cette zone.')); else if (S.conv[zn] === CNEED[0] || S.conv[zn] === CNEED[1]) note($t('Église disponible !'), $t('Approche d\'un emplacement doré pour bâtir une église.')); else if (S.conv[zn] === CAP) note($t('Zone convertie'), $t('Les prochains convertis ne donnent plus de bonus permanent ici.')); }
 }
-function giveRelic(k, x, z) { if (S.rel.length >= 12) { const f = 8 * K(W.zone) * FM(); S.f += f; bagFullPop(x, z, f); floatT($t('Sac plein : +') + fmt(f) + ' F', x, 5, z, 'y'); return; } S.rel.push({ t: Math.floor(Math.random() * 3), k, nw: 1 }); const nr = S.rel[S.rel.length - 1], fus = relFusePair(S.rel.length - 1) >= 0; relNote(nr); try { relicPop(nr.t, x, z, nr.k, fus); } catch (e) { } relicTip(); floatT($t('Relique trouvée !'), x, 5.5, z, 'c'); burst(x, 3, z, 0xffe27a, 30, 7, 9); }
+function giveRelic(k, x, z) { spawnRelic(Math.floor(Math.random() * 3), k, x, z); }
 function convertEnemy(e) {
   if (e.shield) { e.hp = Math.max(1, e.hp); return; }
   if (e.cal !== undefined) (S.cal = S.cal || [])[e.cal] = 1;
@@ -4594,7 +4624,7 @@ function update(dt) {
   skyT.set(W.spirit ? '#2a0a22' : W.tmp ? '#e8dcc0' : W.arena ? '#1c1822' : ZONES[zn].sky); scene.background.lerp(skyT, Math.min(1, dt * 1.5)); scene.fog.color.copy(scene.background); gradeTick(dt, zn); scatTick(); skyTick(); crowdTick(dt); ambTick(dt, zn); ringTick(dt);
   for (let i = projs.length - 1; i >= 0; i--) { const q = projs[i]; if (!q) continue; q.life -= dt; q.m.position.x += q.vx * dt; q.m.position.z += q.vz * dt; q.m.position.y = 2.4 + (q.k === 'fire' ? Math.sin(q.life * 12) * .12 : 0); if (q.k === 'stone') q.m.rotation.x += dt * 9; if (alive && Math.hypot(q.m.position.x - W.x, q.m.position.z - W.z) < (q.rr || 1.5)) { scene.remove(q.m); projs.splice(i, 1); W.by = null; hurtHero(q.dmg, .5); } else if (q.life <= 0) { scene.remove(q.m); projs.splice(i, 1); } }
   W.buff = Math.max(0, (W.buff || 0) - dt);
-  updParts(dt); updCoins(dt); updRelP(dt);
+  updParts(dt); updCoins(dt); updRelP(dt); updRelG(dt);
   /* caméra */
   camStep(dt);
   { const sx = Math.round(W.x / 2) * 2, sz = Math.round(W.z / 2) * 2; sunL.position.set(sx + 36, 32, sz + 2); sunL.target.position.set(sx, 0, sz - 13); } shakeA = Math.max(0, shakeA - dt * 3); camera.lookAt(camera.position.x + (shakeA ? rnd(-1, 1) * shakeA * .6 : 0), hero.position.y + 1, camera.position.z - CAML + (shakeA ? rnd(-1, 1) * shakeA * .4 : 0));
@@ -5135,7 +5165,7 @@ function spawnCoins(x, z, val, n) {
   for (let i = 0; i < n; i++) { const v = i === n - 1 ? rest : val / n; rest -= v; const a = Math.random() * 6.283, sp = rnd(2, 4.6); COINS.push({ v, x: x + Math.cos(a) * .3, y: gy(x, z) + 1.4, z: z + Math.sin(a) * .3, vx: Math.cos(a) * sp, vy: rnd(5.5, 8), vz: Math.sin(a) * sp, st: 0, tm: 0, b: 0, ph: rnd(0, 6), sp: 0 }); }
 }
 function coinCredit(v) { S.f += v; coinTxt += v; if (T - coinPulseT > .2) { coinPulseT = T; const el = document.querySelector('#hl .row .pill'); if (el) { el.classList.remove('pulse'); void el.offsetWidth; el.classList.add('pulse'); } } }
-function flushCoins() { COINS.forEach(c => coinCredit(c.v)); COINS.length = 0; if (coinIM) { coinIM.count = coinHL.count = coinSP.count = coinSH.count = coinGL.count = 0; } }
+function flushCoins() { try { flushRelics(); } catch (e) { } COINS.forEach(c => coinCredit(c.v)); COINS.length = 0; if (coinIM) { coinIM.count = coinHL.count = coinSP.count = coinSH.count = coinGL.count = 0; } }
 function updCoins(dt) {
   if (!coinIM) return; const hx = W.x, hz = W.z, hy = hero.position.y + .9;
   for (let i = COINS.length - 1; i >= 0; i--) {
