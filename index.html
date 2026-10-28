@@ -1401,7 +1401,7 @@ const apN = () => S.ap.filter(v => v === 1).length, apDmg = l => ATK() * (.2 + .
 const WKC = 400;
 const RT = [[$t('Croix'), $t('de Puissance')], [$t('Calice'), $t('de Vie')], [$t('Livre'), $t('de fidèles gagnés')]];
 const TC = ['#b0b7d4', '#6fcf97', '#5aa8ff', '#c77dff', '#f0bd4a', '#ef6a4d', '#ffffff'];
-const UPG = [[$t('Héros : Puissance'), $t('+17 % de puissance par niveau (de plus en plus), bond ×1,2 aux niveaux 5, 10, 15, 20 (×1,4 au 25)'), '⚔'], [$t('Héros : Vie'), $t('+17 % de points de vie par niveau (de plus en plus), bond ×1,2 aux niveaux 5, 10, 15, 20 (×1,4 au 25)'), '♥'], [$t('Héros : Régénération'), $t('Tu récupères plus vite quand personne ne te frappe (mêmes paliers)'), '✚'], [$t('Héros : Portée'), $t('Ton aura de prédication s\'agrandit (+5 % par niveau, paliers aux niveaux 5 et 10)'), '◎']];
+const UPG = [[$t('Héros : Puissance'), $t('+17 % de puissance par niveau (de plus en plus), petit bond ×1,2 aux niveaux 5, 15, 25 ; gros bonds ×2 aux niveaux 10 et 20, ×2,5 au 30'), '⚔'], [$t('Héros : Vie'), $t('+17 % de points de vie par niveau (de plus en plus), petit bond ×1,2 aux niveaux 5, 15, 25 ; gros bonds ×2 aux niveaux 10 et 20, ×2,5 au 30'), '♥'], [$t('Héros : Régénération'), $t('Tu récupères plus vite quand personne ne te frappe (mêmes paliers)'), '✚'], [$t('Héros : Portée'), $t('Ton aura de prédication s\'agrandit (+5 % par niveau, paliers aux niveaux 5 et 10)'), '◎']];
 const UB = [20, 20, 30, 40];
 const Z8 = v => Array.from({ length: 12 }, () => JSON.parse(JSON.stringify(v)));
 let S = { ver: 7, cr: Z8(0), gl: 0, sp: 0, res: [0, 0, 0, 0, 0, 0], rs: {}, rq: null, ms: Z8([0, 0]), bs: Z8([0, 0]), wk: 0, ap: Z8(0), al: Z8(0), fd: 0, pe: 0, cl: Z8([0, 0]), bl: Z8([0, 0]), wp: [0, 0, 0, 0, 0], f: 0, lvl: 0, conv: Z8(0), boss: Z8(0), bA: 0, bH: 0, up: [0, 0, 0, 0], rel: [], relBuys: 0, ch: Z8([0, 0]), cx: Z8([0, 0, 0]), vs: Z8(0), dg: { d: '', n: 0 }, tut: 0, t: Date.now() };
@@ -1424,7 +1424,7 @@ const fmt = n => {
 const rval = k => 1.2 * (k + 1) * (k + 1) / 100;
 const relB = t => S.rel.filter(r => r.t === t).reduce((a, r) => a + rval(r.k), 0);
 /* Améliorations de base : effet par niveau (Puissance, Vie : +17 % additifs croissants ; Régénération : +0,4 %/s de vie max ; Portée : +5 %), paliers multiplicatifs tous les 5 niveaux, croissance du coût */
-const UPEFFECT = { per: [.17, .17, .004, .05], ramp: .06, regBase: .008, grow: 1.7, mil: [[5, 1.2], [10, 1.2], [15, 1.2], [20, 1.2], [25, 1.4]], rngMil: [[5, 1.15], [10, 1.15]] };
+const UPEFFECT = { per: [.17, .17, .004, .05], ramp: .06, regBase: .008, grow: 1.7, mil: [[5, 1.2], [10, 2], [15, 1.2], [20, 2], [25, 1.2], [30, 2.5]], rngMil: [[5, 1.15], [10, 1.15]] };
 const upMul = (l, L) => L.reduce((a, m) => l >= m[0] ? a * m[1] : a, 1);
 const upBase = (i, l) => UPEFFECT.per[i] * l * (1 + UPEFFECT.ramp * l) * upMul(l, UPEFFECT.mil);
 const upM = (i) => upBase(i, S.up[i]);
