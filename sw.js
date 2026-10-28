@@ -1,7 +1,7 @@
-/* Cénacle : cache hors ligne. Changer VERSION à chaque publication pour forcer la mise à jour. */
-const VERSION = 'cenacle-2026-10-28a';
+﻿/* CÃ©nacle : cache hors ligne. Changer VERSION Ã  chaque publication pour forcer la mise Ã  jour. */
+const VERSION = 'cenacle-2026-10-28b';
 const CORE = ['./', './index.html', './vendor/three.min.js', './vendor/trystero-nostr.min.js', './manifest.webmanifest', './icons/icon-192.png', './icons/icon-512.png', './icons/apple-touch-icon.png', './icons/favicon-32.png', './menu/art.jpg', './menu/th-jesus.jpg', './menu/th-apo.jpg', './i18n.js', './weapons.js', './armes.js'];
-/* Première installation : activation immédiate. Mise à jour : on attend que le joueur clique « Mettre à jour » (message SKIP_WAITING). */
+/* PremiÃ¨re installation : activation immÃ©diate. Mise Ã  jour : on attend que le joueur clique Â« Mettre Ã  jour Â» (message SKIP_WAITING). */
 self.addEventListener('install', e => { e.waitUntil(caches.open(VERSION).then(c => c.addAll(CORE)).then(() => { if (!self.registration.active) return self.skipWaiting(); })); });
 self.addEventListener('message', e => { if (e.data && e.data.type === 'SKIP_WAITING') self.skipWaiting(); });
 self.addEventListener('activate', e => { e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k !== VERSION).map(k => caches.delete(k)))).then(() => self.clients.claim())); });
