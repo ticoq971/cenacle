@@ -1461,9 +1461,11 @@ const FELT = { on: 1, hp: .08, dmg: .06, sp: .03, cd: .025, rew: .08, bossHp: .0
 const feltF = (z, k) => FELT.on ? 1 + FELT[k] * z : 1;
 /* équilibrage par niveau (le niveau 1 reste tel quel) : h = vie des ennemis, d = dégâts, b = vie des boss en plus ; bish = revenu des évêques (freine l'effet boule de neige) */
 const BAL = { h: [1, 1.8, 1.7, 2.25, 2.1, 2.35, 2.45, 2.8, 3, 3.3, 3.3, 4], d: [1, 1.35, 1.35, 1.55, 1.45, 1.62, 1.68, 1.85, 2, 2.2, 2.2, 2.6], b: [1, 1.6, 1.6, 2.8, 2.3, 3.1, 3.1, 3.6, 3.4, 3.4, 3.2, 3.6], bish: 0.45 };
-/* vie des boss : table ronde, croissance régulière (~×2,2 par niveau) ; remplace l'ancienne formule */
-const BOSSHP = [1000, 2500, 6000, 14000, 30000, 65000, 140000, 300000, 600000, 1200000, 2400000, 5000000];
-const foeStat = (z, kind, boss) => { const q = foeStat0(z, kind, boss); q.dmg *= DMGM * feltF(z, 'dmg') * (BAL.d[z] || 1); q.hp *= feltF(z, 'hp') * (boss ? feltF(z, 'bossHp') * (BAL.b[z] || 1) : 1) * (BAL.h[z] || 1); if (boss && kind !== 13 && BOSSHP[z]) q.hp = BOSSHP[z]; q.sp *= feltF(z, 'sp'); q.cd /= feltF(z, 'cd'); return q; };
+/* vie des boss : table ronde, croissance régulière (~×1,6 par niveau, calée avec une simulation sans bonus de conversion) ; remplace l'ancienne formule */
+/* vie d'un ennemi normal (type 0) par niveau, calée pour qu'il tombe en quelques secondes avec la puissance attendue */
+const ENHP = [35, 60, 105, 185, 320, 560, 990, 1700, 3000, 5300, 9300, 16000];
+const BOSSHP = [4000, 6500, 10500, 17000, 27000, 44000, 71000, 115000, 185000, 300000, 490000, 800000];
+const foeStat = (z, kind, boss) => { const q = foeStat0(z, kind, boss); q.dmg *= DMGM * feltF(z, 'dmg') * (BAL.d[z] || 1); if (!boss && ENHP[z]) q.hp *= ENHP[z] / (40 * Math.pow(5.1, ZT(z))); else q.hp *= feltF(z, 'hp') * (boss ? feltF(z, 'bossHp') * (BAL.b[z] || 1) : 1) * (BAL.h[z] || 1); if (boss && kind !== 13 && BOSSHP[z]) q.hp = BOSSHP[z]; q.sp *= feltF(z, 'sp'); q.cd /= feltF(z, 'cd'); return q; };
 const bonusOf = (z, kind) => { const k = K(z) * feltF(z, 'rew'); return kind === 6 ? { a: .6 * k, h: 1.2 * k, f: 8 * k } : kind === 4 ? { a: .7 * k, h: 0, f: 5 * k } : kind === 5 ? { a: 0, h: 0, f: 8 * k } : kind === 0 ? { a: .45 * k, h: 0, f: 4 * k } : kind === 1 ? { a: 0, h: 2.8 * k, f: 6 * k } : kind === 2 ? { a: 0, h: 0, f: 8 * k } : kind === 7 ? { a: 0, h: 0, f: 0 } : kind === 8 ? { a: .6 * k, h: 1.2 * k, f: 8 * k } : kind === 14 ? { a: .9 * k, h: 2 * k, f: 12 * k } : kind >= 9 ? { a: 0, h: 0, f: 3 * k } : { a: 3.5 * k, h: 16 * k, f: 150 * k }; };
 let _svT = 0, _svL = -1e9;
 function save() { if (window.RESETTING) return; const n = performance.now(); if (n - _svL < 3000) { if (!_svT) _svT = setTimeout(() => { _svT = 0; saveNow(); }, 3050 - (n - _svL)); return; } saveNow(); }
@@ -4983,7 +4985,7 @@ function buildUI() {
   $('ups').innerHTML = UPG.map((u, i) => `<div class="up r2"><div class="ic">${u[2]}</div><div class="mid"><div class="nm">${u[0].replace($t('Héros : '), '')}</div><div class="vl" id="uc${i}"></div><div id="ub${i}"></div></div><div class="rt"><div class="lv" id="ul${i}"></div><button class="buy b2" data-u="${i}"></button></div></div>`).join('') + $t('<div class="up r2" id="upf" hidden><div class="ic">🔥</div><div class="mid"><div class="nm">Langues de feu</div><div class="vl">Recharge 25 s</div></div><div class="rt"><div class="lv">POUVOIR</div><button class="buy b2" disabled>Max</button></div></div>');
 }
 $('zbar').addEventListener('click', ev => { const b = ev.target.closest('.zb'); if (!b) return; const z = +b.dataset.z; if (W.arena) return; if (z > S.lvl) { note($t('Zone verrouillée'), $t('Vaincs ') + ZONES[z - 1].boss + $t(' pour y accéder.')); return; } const [x, zz] = zoneStart(z); W.x = x; W.z = zz; camera.position.set(x, CAMH, zz + CAMZ); });
-$('ups').addEventListener('click', ev => { const b = ev.target.closest('button[data-u]'); if (!b) return; const i = +b.dataset.u, c = upCost(i); if (!upOk(i)) return; { const r = upRes(i); if (r) S.res[r[0]] -= r[1]; } const L0 = i === 3 ? UPEFFECT.rngMil : UPEFFECT.mil, m0 = upMul(S.up[i], L0), h0 = HPM(); S.f -= c; S.up[i]++; if (i === 1) hpTrack(); { const m1 = upMul(S.up[i], L0); if (m1 > m0) { note($t('Palier !'), UPG[i][0] + $t(' niveau ') + S.up[i] + $t(' : bonus ×') + nf(m1 / m0, 2) + ' (total ×' + nf(m1, 2) + ')'); burst(W.x, 2.5, W.z, 0xffe27a, 50, 8, 10); } } save(); });
+$('ups').addEventListener('click', ev => { const b = ev.target.closest('button[data-u]'); if (!b) return; const i = +b.dataset.u, c = upCost(i); if (!upOk(i)) return; { const r = upRes(i), r2 = upRes2(i); if (r) S.res[r[0]] -= r[1]; if (r2) S.res[r2[0]] -= r2[1]; } const L0 = i === 3 ? UPEFFECT.rngMil : UPEFFECT.mil, m0 = upMul(S.up[i], L0), h0 = HPM(); S.f -= c; S.up[i]++; if (i === 1) hpTrack(); { const m1 = upMul(S.up[i], L0); if (m1 > m0) { note($t('Palier !'), UPG[i][0] + $t(' niveau ') + S.up[i] + $t(' : bonus ×') + nf(m1 / m0, 2) + ' (total ×' + nf(m1, 2) + ')'); burst(W.x, 2.5, W.z, 0xffe27a, 50, 8, 10); } } save(); });
 $('act').addEventListener('click', () => { if (W.por) { if (S.sp) note($t('Satan est vaincu'), $t('Le monde spirituel est libéré.')); else if (!S.vs[GOLZ]) note($t('Il manque : Sermon'), $t('Prêche d\'abord au sommet du Calvaire.')); else enterSpirit(); } else if (W.plot) doBuild(W.plot); else if (W.nob) appointBishop(W.nob); else if (W.inCh) doMass(W.inCh); else if (W.gol) golgotha(); else if (W.ep) enterEpreuve(W.ep.zn); else if (W.por) { if (S.sp) note($t('Satan est vaincu'), $t('Le monde spirituel est libéré.')); else enterSpirit(); } });
 $('fire').addEventListener('click', () => castFire());
 $('setb').addEventListener('click', () => { RST.step = 0; MP.open = !MP.open; $('mpl').style.display = MP.open ? 'block' : 'none'; mpDraw(true); });
@@ -5001,8 +5003,8 @@ let HGOPEN = false;
 function heroRows() {
   const fv = [() => ATK(), () => HPM(), () => REGEN(), () => RNG()], ff = [v => fmt(v), v => fmt(v), v => fmt(v) + '/s', v => v.toFixed(1).replace('.', DSEP) + ' m'];
   let h = $t('<div class="sec">Jésus</div>');
-  UPG.forEach((u, i) => { const mx = i === 3 && S.up[3] >= 10, c = upCost(i), now = ff[i](fv[i]()); let nx = ''; if (!mx) { S.up[i]++; nx = ff[i](fv[i]()); S.up[i]--; } const r = mx ? null : upRes(i), short = r && S.res[r[0]] < r[1];
-    h += '<div class="up r2"><div class="ic">' + u[2] + '</div><div class="mid"><div class="nm">' + u[0].replace($t('Héros : '), '') + '</div><div class="vl">' + now + (mx ? '' : ' › <em>' + nx + '</em>') + '</div></div><div class="rt"><div class="lv">' + (mx ? $t('NIVEAU MAX') : $t('NIVEAU ') + S.up[i]) + '</div><button class="buy b2' + (mx ? $t(' max') : '') + '" data-hu="' + i + '"' + (mx || !upOk(i) ? ' disabled' : '') + '>' + (mx ? $t('Max') : fmt(c) + COIN + (r ? ' ' + (short ? '<span class="miss">' + r[1] + '</span>' : r[1]) + rIco(r[0]) : '')) + '</button></div></div>'; });
+  UPG.forEach((u, i) => { const mx = i === 3 && S.up[3] >= 10, c = upCost(i), now = ff[i](fv[i]()); let nx = ''; if (!mx) { S.up[i]++; nx = ff[i](fv[i]()); S.up[i]--; } const r = mx ? null : upRes(i), short = r && S.res[r[0]] < r[1], r2 = mx ? null : upRes2(i), short2 = r2 && S.res[r2[0]] < r2[1];
+    h += '<div class="up r2"><div class="ic">' + u[2] + '</div><div class="mid"><div class="nm">' + u[0].replace($t('Héros : '), '') + '</div><div class="vl">' + now + (mx ? '' : ' › <em>' + nx + '</em>') + '</div></div><div class="rt"><div class="lv">' + (mx ? $t('NIVEAU MAX') : $t('NIVEAU ') + S.up[i]) + '</div><button class="buy b2' + (mx ? $t(' max') : '') + '" data-hu="' + i + '"' + (mx || !upOk(i) ? ' disabled' : '') + '>' + (mx ? $t('Max') : fmt(c) + COIN + (r ? ' ' + (short ? '<span class="miss">' + r[1] + '</span>' : r[1]) + rIco(r[0]) : '') + (r2 ? ' ' + (short2 ? '<span class="miss">' + r2[1] + '</span>' : r2[1]) + rIco(r2[0]) : '')) + '</button></div></div>'; });
   const L = []; for (let z = 0; z < NZ; z++) if (S.ap[z] > 0) L.push(z);
   h += $t('<div class="sec">Apôtres <small>') + apN() + ' / ' + AP.length + '</small></div>';
   if (!L.length) h += '<div class="up r2"><div class="ic">' + IC.dis + $t('</div><div class="mid"><div class="nm">Aucun apôtre</div><div class="vl" style="font-size:.85rem">Libère le captif d’une zone</div></div><div></div></div>');
@@ -5177,13 +5179,14 @@ function shopHtml() {
       + (j === 2 ? '<span style="position:absolute;top:-9px;left:50%;transform:translateX(-50%);background:#d83a3a;color:#fff;font:800 .55rem sans-serif;padding:2px 7px;border-radius:9px;white-space:nowrap">' + $t('MEILLEUR PRIX') + '</span>' : '')
       + shopIco(ik, 34 + j * 8) + '<span style="font:400 1.25rem var(--display,sans-serif);line-height:1">+' + (g.f ? fmt(g.f) : g.r) + '</span>'
       + '<span style="width:92%;text-align:center;background:linear-gradient(#ffe08a,#d89a2a);color:#3a2200;font:800 .85rem sans-serif;padding:5px 0;border-radius:9px;box-shadow:0 2px 0 #8a5a12;white-space:nowrap">' + shopPrice(id) + '</span></button>'; }).join('') + '</div></div>';
+  h += '<button data-m="wd" style="display:flex;gap:8px;align-items:flex-start;text-align:left;width:100%;margin:10px 0 0;padding:8px 10px;border-radius:10px;border:2px solid ' + (SHOP.wd ? '#fff3c0' : '#c8942a') + ';background:#24150a;color:#fff3c0;font:600 .72rem/1.3 system-ui"><span style="flex:none;width:18px;height:18px;border-radius:5px;border:2px solid #ffd24a;background:' + (SHOP.wd ? '#ffd24a' : 'transparent') + ';color:#3a2200;display:grid;place-items:center;font-weight:900">' + (SHOP.wd ? '✓' : '') + '</span><span>' + $t('Je demande la livraison immédiate de mon achat numérique et je reconnais perdre mon droit de rétractation de 14 jours.') + '</span></button>';
   return h + $t('<div style="margin:10px 0 6px;text-align:center;font-size:.74rem;opacity:.75">Les achats sont liés à ta sauvegarde en ligne. Garde ton code de récupération (Sauvegardes).</div>') + '<div style="text-align:center;font-size:.74rem;margin-bottom:6px"><a href="conditions.html" target="_blank" rel="noopener" style="color:#ffd24a">Conditions de vente</a></div>' + $t('<button class="mb alt" data-m="home">← Retour</button>');
 }
 function shopPendGet() { try { return JSON.parse(localStorage.getItem('cenacle_pay') || '[]').filter(x => /^cs_/.test(x)).slice(-10); } catch (e) { return []; } }
 function shopPendSet(a) { try { localStorage.setItem('cenacle_pay', JSON.stringify(a.slice(-10))); } catch (e) { } }
 async function shopApi(method, qs, body) { const k = cfKey(); if (!k) throw 0; const r = await fetch('/api/shop' + (qs || ''), { method, headers: { Authorization: 'Bearer ' + k, 'Content-Type': 'application/json' }, body: body ? JSON.stringify(body) : undefined, cache: 'no-store', credentials: 'omit' }); const j = await r.json().catch(() => null); if (!j) throw 0; return j; }
 async function shopBuy(id) {
-  if (SHOP.busy || !SHOPP[id]) return; SHOP.busy = true; mToast($t('Ouverture du paiement…'));
+  if (SHOP.busy || !SHOPP[id]) return; if (!SHOP.wd) { mToast($t('Coche d’abord la case de livraison immédiate.')); return; } SHOP.busy = true; mToast($t('Ouverture du paiement…'));
   try { try { save(); } catch (e) { } const j = await shopApi('POST', '', { pack: id }); if (!j.url || String(j.url).indexOf('https://checkout.stripe.com/') !== 0) throw 0; shopPendSet(shopPendGet().concat([j.session])); location.href = j.url; }
   catch (e) { SHOP.busy = false; mToast($t('Paiement indisponible pour le moment. Réessaie plus tard.')); }
 }
@@ -5248,10 +5251,10 @@ function paint() {
     const fv = [() => ATK(), () => HPM(), () => REGEN(), () => RNG()], ff = [v => fmt(v), v => fmt(v), v => fmt(v) + '/s', v => v.toFixed(1).replace('.', DSEP) + ' m'], now = ff[i](fv[i]());
     let badge = '', h;
     if (mx) h = now; else { const L1 = i === 3 ? UPEFFECT.rngMil : UPEFFECT.mil, nm = L1.find(m => m[0] > S.up[i]), isP = L1.some(m => m[0] === S.up[i] + 1); S.up[i]++; const nx = ff[i](fv[i]()); S.up[i]--; h = now + ' › <em>' + nx + '</em>'; if (isP) badge = $t('<span class="pal">★ Palier ×') + nf(nm[1], 2) + $t(' au prochain niveau</span>'); }
-    const r = mx ? null : upRes(i), short = r && S.res[r[0]] < r[1];
-    if (short) badge = '<span class="pal miss2">' + RES[r[0]].n + $t(' manquante : ') + S.res[r[0]] + ' / ' + r[1] + '</span>';
+    const r = mx ? null : upRes(i), short = r && S.res[r[0]] < r[1], r2 = mx ? null : upRes2(i), short2 = r2 && S.res[r2[0]] < r2[1];
+    if (short) badge = '<span class="pal miss2">' + RES[r[0]].n + $t(' manquante : ') + S.res[r[0]] + ' / ' + r[1] + '</span>'; else if (short2) badge = '<span class="pal miss2">' + RES[r2[0]].n + $t(' manquante : ') + S.res[r2[0]] + ' / ' + r2[1] + '</span>';
     const uc = $('uc' + i); if (uc.innerHTML !== h) uc.innerHTML = h; const ub = $('ub' + i); if (ub.innerHTML !== badge) ub.innerHTML = badge;
-    const bh = mx ? $t('Max') : fmt(c) + COIN + (r ? ' ' + (short ? '<span class="miss">' + r[1] + '</span>' : r[1]) + rIco(r[0]) : '');
+    const bh = mx ? $t('Max') : fmt(c) + COIN + (r ? ' ' + (short ? '<span class="miss">' + r[1] + '</span>' : r[1]) + rIco(r[0]) : '') + (r2 ? ' ' + (short2 ? '<span class="miss">' + r2[1] + '</span>' : r2[1]) + rIco(r2[0]) : '');
     if (b.dataset.h !== bh) { b.dataset.h = bh; b.innerHTML = bh; } b.disabled = mx || !upOk(i); b.classList.toggle('max', mx); }); }
   if (sheetTab === 'rg') { const c = relCost(); $('seekb').innerHTML = $t('Chercher une relique · ') + fmt(c) + ' ' + COIN; $('seekb').disabled = S.f < c || S.rel.length >= 12; }
   if (sheetTab === 'ug' && T - lastHeroDraw > .6) { lastHeroDraw = T; drawHeroPanel(); }
@@ -5282,7 +5285,10 @@ function initIcons() {
 const RZONE = r => [0, 3, 5, 7, 9, 11][r], resOpen = r => S.lvl >= RZONE(r), RICO = ['myrrh', 'oil', 'marble', 'purple', 'gem', 'light'];
 const UPRES = [[0, 10, 3], [1, 10, 3], [2, 10, 3], [3, 8, 2]];
 function upRes(i, L) { if (L === undefined) L = S.up[i]; const d = UPRES[i]; if (L < d[1] || !resOpen(d[0])) return null; return [d[0], Math.ceil(d[2] * Math.pow(1.3, L - d[1]))]; }
-const upOk = i => { const r = upRes(i); return S.f >= upCost(i) && !(i === 3 && S.up[3] >= 10) && (!r || S.res[r[0]] >= r[1]); };
+/* seconde ressource à partir du niveau 20 : Puissance +Pourpre, Vie +Marbre, Régénération +Vitrail */
+const UPRES2 = [[3, 3], [2, 3], [4, 3], null];
+function upRes2(i, L) { if (L === undefined) L = S.up[i]; const d = UPRES2[i]; if (!d || L < 20 || !resOpen(d[0])) return null; return [d[0], Math.ceil(d[1] * Math.pow(1.3, L - 20))]; }
+const upOk = i => { const r = upRes(i), r2 = upRes2(i); return S.f >= upCost(i) && !(i === 3 && S.up[3] >= 10) && (!r || S.res[r[0]] >= r[1]) && (!r2 || S.res[r2[0]] >= r2[1]); };
 /* pouvoirs des apôtres : à chaque palier (niv. 5, 10, 15…), Vitrail puis Lumière en alternance, 4 + 2 par palier */
 function apPRes(l) { const n = l + 1; if (n % 5) return null; const k = n / 5, r = k % 2 ? 4 : 5; if (!resOpen(r)) return null; return [r, 4 + 2 * (k - 1)]; }
 const rIco = r => '<span class="ci">' + ICO[RICO[r]] + '</span>';
@@ -5678,6 +5684,7 @@ function menuClick(ev) {
   else if (a === 'vers' || a === 'rel') menuPanel(() => { openSheet('rg'); vsTab(a === 'vers' ? 1 : 0); drawVs(); $('sht').textContent = $t('Reliques'); $('shs').textContent = VTAB ? $t('Versets ') + nVs() + ' / 12' : S.rel.length + ' / 12'; });
   else if (a === 'set') menuPanel(() => { const s = $('setb'); if (s && !MP.open) s.click(); });
   else if (a === 'snd') { const s = $('sndb'); if (s) s.click(); menuDraw(); } else if (['home', 'new', 'saves', 'install', 'donate', 'shop'].includes(a)) { MENU.scr = a; menuDraw(); }
+  else if (a === 'wd') { SHOP.wd = SHOP.wd ? 0 : 1; menuDraw(); }
   else if (/^stab:[f0-5]$/.test(a)) { SHOP.tab = a.slice(5); menuDraw(); }
   else if (/^buy:[fr][0-9_]+$/.test(a)) shopBuy(a.slice(4));
   else if (a === 'newok') { try { sessionStorage.setItem('cenacle_skipmenu', '1'); } catch (e) { } menuClose(); doReset(); }
