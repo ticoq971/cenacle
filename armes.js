@@ -11,7 +11,7 @@ const ARMD = {"W": [{"id": "parole", "c": "D", "z": -1, "n": "La Parole", "P": 1
   const WB = {}, BYZ = []; ARMD.W.forEach(w => { WB[w.id] = w; if (w.z >= 0) BYZ[w.z] = w; });
   const CATS = ['D', 'M', 'C'], CCOL = { D: 0x5ab8ff, M: 0xd49aff, C: 0xffd24a }, CHEX = { D: '#5ab8ff', M: '#d49aff', C: '#ffd24a' };
   const A = window.ARM = { WB, BYZ, mode: 0, tgt: null, set: null, jc: 0, hos: 0, lastShot: -9, cur: WB.parole, r: 0 };
-  const lvl = id => (S.wl && S.wl[id]) || 0, own = id => lvl(id) > 0, dmgLv = L => 1 + .22 * (Math.max(1, L) - 1), pwv = (w, L) => fmt(ATK() * w.m * dmgLv(Math.max(1, L)));
+  const lvl = id => (S.wl && S.wl[id]) || 0, own = id => lvl(id) > 0, dmgLv = L => 1 + .264 * (Math.max(1, L) - 1), pwv = (w, L) => fmt(ATK() * w.m * dmgLv(Math.max(1, L)));
   const RNGs = () => { try { return RNG(); } catch (e) { return 8; } };
   const isEq = id => !!(S.wq && CATS.some(c => S.wq[c] === id));
   /* ---------- sauvegarde : S.wl = { id: niveau }, S.wq = { D, M, C }, S.wdisc = avertissement vu ---------- */
