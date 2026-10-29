@@ -161,36 +161,39 @@ body.shopen #armhud,body.shopen #armrb{display:none!important}
 #armpop table{width:100%;font-size:.76rem;border-collapse:collapse;margin:6px 0}#armpop td{padding:3px 2px;border-bottom:1px solid #d8b06066;text-align:left}#armpop td:last-child{text-align:right}
 #armpop .ok{display:block;width:100%;min-height:46px;margin-top:10px;border-radius:12px;border:2px solid #d8b060;background:linear-gradient(#8ff0b4,#2f9a5a);color:#06240f;font:800 1.05rem system-ui;box-shadow:0 4px 0 #1b5a36;cursor:pointer}
 #armpop .chip{display:inline-block;font:700 .72rem system-ui;padding:3px 8px;border-radius:999px;background:#fff8;border:1px solid #d8b060;margin:2px}
-#ag .iv{font-family:var(--display,system-ui)}
-#ag .ivtop{display:grid;grid-template-columns:1fr auto;gap:8px;background:#8a9bd0;border:3px solid #c9d3f5;border-radius:16px;padding:8px}
+#ag .iv{font-family:var(--body,system-ui)}
+#ag .ivtop{display:grid;grid-template-columns:1fr auto;gap:8px;background:#fff8;border:2px solid #d8b060;border-radius:14px;padding:8px}
 #ag .ivslots{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;align-content:start}
-#ag .ivstats{width:112px;background:#5d70b3;border-radius:12px;overflow:hidden;text-align:center}
-.ivh2{font:400 1.05rem var(--display,system-ui);color:#fff;-webkit-text-stroke:3px #000;paint-order:stroke fill;letter-spacing:.5px;padding:3px 0;background:#4c5fa0}
-.ivrow{font:400 1.25rem var(--display,system-ui);color:#fff;-webkit-text-stroke:3px #000;paint-order:stroke fill;padding:6px 4px;white-space:nowrap}.ivrow span{-webkit-text-stroke:0;font-size:1.1rem}
-#ag .ivbox{margin-top:8px;background:#8a9bd0;border:3px solid #c9d3f5;border-radius:16px;padding:6px}#ag .ivh3{background:#6a7dc0;border-radius:10px;margin-bottom:6px;padding:6px;text-align:center}
+#ag .ivstats{width:104px;background:#2a1d0c;border:2px solid #b8872a;border-radius:12px;overflow:hidden;text-align:center;display:flex;flex-direction:column}
+.ivh2{font:800 .85rem var(--display,system-ui);color:#7a4a00;letter-spacing:.6px;padding:3px 0;text-align:center}#ag .ivstats .ivh2{color:#ffe08a;background:#3d2a0c}
+.ivrow{font:800 1.15rem var(--display,system-ui);color:#fff;padding:8px 4px;white-space:nowrap;flex:1;display:flex;align-items:center;justify-content:center;gap:4px}.ivrow span{font-size:1.05rem}
+#ag .ivbox{margin-top:8px;background:#fff8;border:2px solid #d8b060;border-radius:14px;padding:6px}#ag .ivh3{border-bottom:2px solid #d8b06088;margin-bottom:6px;padding:2px 0 5px}
 #ag .ivgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
-.ivt{position:relative;aspect-ratio:1;border-radius:12px;border:3px solid #ffffff99;background:linear-gradient(#7dbb48,#4f8a2e);padding:0;display:flex;align-items:flex-end;justify-content:center;overflow:hidden;cursor:pointer;color:#fff}
+.ivt{position:relative;aspect-ratio:1;border-radius:12px;border:2px solid #d8b060;background:linear-gradient(#36427f,#1b2352);padding:0;display:flex;align-items:flex-end;justify-content:center;overflow:hidden;cursor:pointer;color:#fff}
 .ivt img{position:absolute;inset:4px 4px 14px;width:calc(100% - 8px);height:calc(100% - 18px);object-fit:contain}
-.ivt i{position:absolute;left:3px;top:2px;width:18px;height:18px;border-radius:6px;background:var(--c);color:#12121a;font:800 .7rem/18px system-ui;text-align:center;font-style:normal}
-.ivt b{position:relative;font:400 .72rem var(--display,system-ui);-webkit-text-stroke:2.5px #000;paint-order:stroke fill;white-space:nowrap;padding-bottom:1px}
-.ivt.eq{background:linear-gradient(#58c27a,#2f8a52);border-color:#d6ffe4;box-shadow:0 0 0 2px #2f8a52}.ivt.on{border-color:#d6ffe4}
-.ivt.lk{background:linear-gradient(#a7a36c,#7a7650);filter:grayscale(.55);opacity:.8}.ivt.lk img{opacity:.45}
-.ivt.em{background:#5d70b3;border-style:dashed;align-items:center;cursor:default}.ivt.em b{font-size:.62rem;-webkit-text-stroke:0;color:#c9d3f5;text-align:center;white-space:normal}
-#armpop.iv .pb{background:#8a9bd0;border:3px solid #c9d3f5;box-shadow:0 8px 0 #4c5fa0,0 20px 40px #0008;color:#fff;font-family:var(--display,system-ui)}
-.ivhd{position:relative;font:400 1.5rem var(--display,system-ui);color:#fff;-webkit-text-stroke:4px #000;paint-order:stroke fill;padding:2px 30px 8px}
-.ivx{position:absolute;right:-4px;top:0;width:34px;height:34px;border:0;background:none;color:#fff;font:400 1.5rem system-ui;-webkit-text-stroke:3px #000;paint-order:stroke fill;cursor:pointer}
+.ivt i{position:absolute;left:3px;top:2px;width:17px;height:17px;border-radius:6px;background:var(--c);color:#12121a;font:800 .66rem/17px system-ui;text-align:center;font-style:normal}
+.ivt em{position:absolute;right:3px;top:2px;font:800 .62rem system-ui;font-style:normal;background:#ffe08a;color:#3a2410;border-radius:6px;padding:0 4px}
+.ivt b{position:relative;font:800 .66rem system-ui;text-shadow:0 1px 2px #000,0 0 3px #000;white-space:nowrap;padding-bottom:2px}
+.ivt.eq{border-color:#6fe39a;box-shadow:0 0 0 2px #3a8a3a88}.ivt.on{border-color:#6fe39a}
+.ivt.lk{background:linear-gradient(#5a5a6a,#34343f);filter:grayscale(.5);opacity:.82}.ivt.lk img{opacity:.45}
+.ivt.em{border-style:dashed;align-items:center;cursor:default;opacity:.7}.ivt.em b{font-size:.6rem;color:#e8d8a8;text-align:center;white-space:normal}
+.ivi{position:absolute;inset:4px 4px 14px;display:flex;align-items:center;justify-content:center;font-size:1.3rem}.ivi svg{max-width:100%;max-height:100%}
+#armpop.iv .pb{text-align:center}
+.ivhd{position:relative;font:800 1.3rem var(--title,serif);color:#7a4a00;padding:2px 30px 8px}
+.ivx{position:absolute;right:-4px;top:0;width:34px;height:34px;border:0;background:none;color:#7a4a00;font:800 1.3rem system-ui;cursor:pointer}
 .ivinf{display:flex;gap:10px;text-align:left}.ivinf .ivt{width:92px;flex:none;cursor:default}
-.ivdt{flex:1;min-width:0}.ivnm{display:flex;justify-content:space-between;gap:6px;font:400 1.1rem var(--display,system-ui);color:#fff3b0;-webkit-text-stroke:3px #000;paint-order:stroke fill}.ivnm em{font-style:normal;font-size:.8rem;color:#fff}
-.ivst{margin-top:4px;background:#5d70b3;border-radius:10px;padding:5px 8px;font:400 1.15rem var(--display,system-ui);color:#fff;-webkit-text-stroke:3px #000;paint-order:stroke fill}.ivst u{text-decoration:none;color:#fff}.ivst i{font-style:normal;color:#5dff8a}
-.ivch{margin-top:4px;display:flex;flex-wrap:wrap;gap:4px}.ivch span{font:700 .68rem system-ui;background:#fff3;border-radius:999px;padding:2px 8px;color:#fff}
-.ivtx{text-align:left;font:600 .8rem/1.35 system-ui;margin:8px 2px;color:#fff}.ivtx p{margin:3px 0}.ivtx small{opacity:.85}.ivtx .vs{background:#0002;border-radius:10px;padding:6px 8px;color:#fff}.ivtx .vs b{color:#fff}
-#armpop.iv .pwr{background:#4c5fa0;color:#fff}#armpop.iv table{color:#fff}#armpop.iv td{border-bottom:1px solid #fff3;font:600 .7rem system-ui}
-.ivups{display:flex;gap:8px;justify-content:center;margin:8px 0}.ivcol{flex:1;text-align:center}.ivcol>span{display:block;font:400 .85rem var(--display,system-ui);color:#4c5fa0;margin-bottom:3px}
-.ivbx{background:#5d70b3;border-radius:12px 12px 0 0;padding:6px;font:400 1.5rem var(--display,system-ui);color:#fff;-webkit-text-stroke:4px #000;paint-order:stroke fill}.ivbx u{text-decoration:none;color:#5dff8a}
-.ivb{display:block;width:100%;min-height:42px;border:0;border-radius:12px;font:400 1rem var(--display,system-ui);color:#fff;-webkit-text-stroke:3px #000;paint-order:stroke fill;padding:4px 8px;cursor:pointer;background:#c8c8cc;box-shadow:0 4px 0 #8a8a92}
-.ivcol .ivb{border-radius:0 0 12px 12px;font-size:.82rem;-webkit-text-stroke:2.5px #000}.ivb.go{background:#4cc46a;box-shadow:0 4px 0 #1f7a3a}.ivb.off{background:#b5b5bb;color:#eee}
-.ivb.y{background:#ffc400;box-shadow:0 4px 0 #c98a00}.ivb.r{background:#ff6b6b;box-shadow:0 4px 0 #b83030}.ivb.on{background:#4cc46a;box-shadow:0 4px 0 #1f7a3a}
-.ivbts{display:flex;gap:8px;margin-top:10px}.ivlk{font:700 .9rem system-ui;background:#5d70b3;border-radius:12px;padding:10px;width:100%}
+.ivdt{flex:1;min-width:0}.ivnm{display:flex;justify-content:space-between;gap:6px;font:800 1.1rem var(--display,system-ui);color:#3a2410}.ivnm em{font-style:normal;font-size:.8rem;color:#7a4a00}
+.ivst{margin-top:4px;background:#2a1d0c;border-radius:10px;padding:5px 8px;font:800 1.05rem var(--display,system-ui);color:#ffe08a}.ivst u{text-decoration:none;color:#fff}.ivst i{font-style:normal;color:#8ff0b4}
+.ivch{margin-top:4px;display:flex;flex-wrap:wrap;gap:4px}.ivch span{font:700 .68rem system-ui;background:#fff8;border:1px solid #d8b060;border-radius:999px;padding:2px 8px;color:#3a2410}
+.ivtx{text-align:left;font:600 .8rem/1.35 system-ui;margin:8px 2px;color:#3a2410}.ivtx p{margin:3px 0}.ivtx small{opacity:.8}
+.ivups{display:flex;gap:8px;justify-content:center;margin:8px 0}.ivcol{flex:1;text-align:center}.ivcol>span{display:block;font:800 .8rem var(--display,system-ui);color:#7a4a00;margin-bottom:3px}
+.ivbx{background:linear-gradient(#36427f,#1b2352);border:2px solid #d8b060;border-bottom:0;border-radius:12px 12px 0 0;padding:6px;font:800 1.5rem var(--display,system-ui);color:#fff}.ivbx u{text-decoration:none;color:#8ff0b4}
+.ivb{display:block;width:100%;min-height:42px;border:2px solid #d8b060;border-radius:12px;font:800 .95rem system-ui;color:#fff;padding:4px 8px;cursor:pointer;background:linear-gradient(#4a78c8,#2a4a98);box-shadow:0 3px 0 #1a2f66}
+.ivcol .ivb{border-radius:0 0 12px 12px;font-size:.82rem;display:flex;align-items:center;justify-content:center;gap:3px;flex-wrap:wrap}.ivb .ci{display:inline-flex;vertical-align:middle}
+.ivb.go{background:linear-gradient(#8ff0b4,#2f9a5a);color:#06240f;box-shadow:0 3px 0 #1b5a36}.ivb.off{background:#b8a888;color:#f4ecd8;box-shadow:0 3px 0 #7a6a4a}
+.ivb.y{background:linear-gradient(#ffd96a,#d8a020);color:#3a2410;box-shadow:0 3px 0 #8a6a10}.ivb.r{background:linear-gradient(#e87a5a,#b8402a);box-shadow:0 3px 0 #6a2010}.ivb.on{background:linear-gradient(#8ff0b4,#2f9a5a);color:#06240f;box-shadow:0 3px 0 #1b5a36}
+.ivbts{display:flex;gap:8px;margin-top:10px}.ivlk{font:700 .9rem system-ui;background:#fff8;border:2px solid #d8b060;border-radius:12px;padding:10px;width:100%;color:#3a2410}
+#armpop.iv table{color:#3a2410}
 #armpop .pwr{background:#2a1d0c;color:#ffe08a;border-radius:12px;padding:8px;margin:8px 0;font-size:.8rem;text-align:left}#armpop .pwr b{color:#fff}`;
     document.head.appendChild(s);
   }
@@ -218,7 +221,7 @@ body.shopen #armhud,body.shopen #armrb{display:none!important}
   A.TH = TH; A.thumbs = thumbs;
   /* ---------- onglet Arsenal ---------- */
   const sheetOpenAg = () => typeof sheetTab !== 'undefined' && sheetTab === 'ag' && $('sheet').classList.contains('open');
-  const resTxt = R => R.map(([r, n]) => fmt(n) + ' ' + RES[r].n).join(' + ');
+  const FI = () => (typeof COIN !== 'undefined' ? COIN : ' F'), resTxt = R => R.map(([r, n]) => fmt(n) + (typeof rIco === 'function' ? rIco(r) : ' ' + RES[r].n)).join(' ');
   function nextCost(id) { const w = WB[id], L = lvl(id); return w.lv.find(q => q.L === L + 1) || null; }
   function canUp(id) { const c = nextCost(id); if (!c) return { ok: false, why: 'max' }; if (id === 'glaive' && c.L >= 5 && !S.sp) return { ok: false, why: 'satan', c };
     if (S.lvl < c.g) return { ok: false, why: 'gate', c }; if (S.f < c.F || c.R.some(([r, n]) => (S.res[r] || 0) < n)) return { ok: false, why: 'cost', c }; return { ok: true, c }; }
@@ -227,13 +230,17 @@ body.shopen #armhud,body.shopen #armrb{display:none!important}
   const bossN = z => { try { return ZONES[z].boss; } catch (e) { return ''; } };
   A.tt = () => [L_('Inventaire'), L_('Armes de foi') + ' · ' + Object.keys(WB).filter(own).length + ' / ' + Object.keys(WB).length];
   function upBtn(id) { const q = canUp(id); if (q.why === 'max') return '<button class="wbt" disabled>' + L_('Max') + '</button>';
-    const c = q.c; let sub = fmt(c.F) + ' F' + (c.R.length ? ' + ' + resTxt(c.R) : ''); if (q.why === 'gate') sub = '🔒 ' + L_('Niveau ') + (c.g + 1); if (q.why === 'satan') sub = '🔒 ' + L_('Satan converti');
+    const c = q.c; let sub = fmt(c.F) + FI() + (c.R.length ? ' ' + resTxt(c.R) : ''); if (q.why === 'gate') sub = '🔒 ' + L_('Niveau ') + (c.g + 1); if (q.why === 'satan') sub = '🔒 ' + L_('Satan converti');
     return '<button class="wbt' + (q.ok ? ' g' : '') + '" data-a="up" data-id="' + id + '"' + (q.ok ? '' : ' disabled') + '>' + L_('Niv. ') + (c.L) + '<small>' + sub + '</small></button>'; }
   const tile = (w, cls) => { const o = own(w.id), L = lvl(w.id); return '<button class="ivt ' + (o ? 'own' : 'lk') + (cls || '') + '" data-a="det" data-id="' + w.id + '" style="--c:' + CHEX[w.c] + '" aria-label="' + L_(w.n) + '">' + (TH[w.id] ? '<img alt="" src="' + TH[w.id] + '">' : '<img alt="">') + '<i>' + L_(ARMD.CAT[w.c]).charAt(0) + '</i><b>' + (o ? L + '/8 ' + L_('NIV') : '🔒 ' + (w.z + 1)) + '</b></button>'; };
   function drawAg() {
     const p = $('ag'); if (!p) return; ensure(); thumbs();
     const ws = ARMD.W.slice().sort((a, b) => (own(b.id) - own(a.id)) || (a.z - b.z));
-    let h = '<div class="iv"><div class="ivtop"><div class="ivslots">' + CATS.map(c => { const id = S.wq[c], w = id && WB[id]; return w ? tile(w, ' eq') : '<div class="ivt em" style="--c:' + CHEX[c] + '"><b>' + L_(ARMD.CAT[c]) + '</b></div>'; }).join('') + '</div><div class="ivstats"><div class="ivh2">' + L_('STATS') + '</div><div class="ivrow"><span style="color:#ff9a3a">⚔</span> ' + fmt(ATK()) + '</div><div class="ivrow"><span style="color:#3ae070">❤</span> ' + fmt(HPM()) + '</div></div></div>';
+    const eqs = CATS.map(c => S.wq[c] && WB[S.wq[c]]).filter(w => w && own(w.id)), main = eqs.slice().sort((a, b) => b.P - a.P)[0] || WB.parole;
+    const wslot = tile(main, ' eq').replace('</button>', (eqs.length > 1 ? '<em title="' + L_('auto selon la distance') + '">+' + (eqs.length - 1) + '</em>' : '') + '</button>');
+    const armor = (typeof WP !== 'undefined' && S.wp) ? WP.map((a, z0) => { const st = S.wp[z0], zb = [2, 4, 6, 8, 9][z0], nm = ['ceinture', 'cuirasse', 'chaussures', 'bouclier', 'casque'][z0];
+      return '<button class="ivt ' + (st === 2 ? 'own eq' : 'lk') + '" data-a="arm" data-id="' + z0 + '" style="--c:#8fd0ff" aria-label="' + a[0] + '">' + (st && typeof rqSvg === 'function' ? '<span class="ivi">' + rqSvg(nm, 36) + '</span>' : '<span class="ivi">🔒</span>') + '<b>' + (st === 2 ? a[0].split(' ').slice(-1)[0] : L_('Niv. ') + (zb + 1)) + '</b></button>'; }).join('') : '';
+    let h = '<div class="iv"><div class="ivtop"><div class="ivslots">' + wslot + armor + '</div><div class="ivstats"><div class="ivh2">' + L_('STATS') + '</div><div class="ivrow"><span style="color:#ff9a3a">⚔</span> ' + fmt(ATK()) + '</div><div class="ivrow"><span style="color:#3ae070">❤</span> ' + fmt(HPM()) + '</div></div></div>';
     h += '<div class="ivbox"><div class="ivh2 ivh3">' + L_('ARMES') + ' · ' + Object.keys(WB).filter(own).length + ' / ' + Object.keys(WB).length + '</div><div class="ivgrid">' + ws.map(w => tile(w, S.wq[w.c] === w.id ? ' on' : '')).join('') + '</div></div></div>';
     if (S.wpx) h += '<div class="wleg">⚔ <b>' + L_('Héritage de l’Épée de l’Esprit') + '</b><br>' + L_('+25 % de Puissance et +15 % de coups critiques sur toutes les armes (ancienne 6e pièce d’armure, conservée pour ta sauvegarde)') + '</div>';
     h += '<p class="wdisc">' + discTxt() + '</p>';
@@ -241,7 +248,7 @@ body.shopen #armhud,body.shopen #armrb{display:none!important}
   }
   const discTxt = () => L_('Armes spirituelles : des symboles de la foi, jamais de violence contre des personnes.') + ' « ' + L_(ARMD.DISC[1]) + ' » (' + L_(ARMD.DISC[0]) + ')';
   A.drawAg = drawAg;
-  function onAgClick(ev) { const b = ev.target.closest('[data-a]'); if (!b) return; ev.stopPropagation(); const id = b.dataset.id; if (b.dataset.a === 'up') buy(id); else if (b.dataset.a === 'eq') equip(id); else if (b.dataset.a === 'det') detail(id); }
+  function onAgClick(ev) { const b = ev.target.closest('[data-a]'); if (!b) return; ev.stopPropagation(); const id = b.dataset.id; if (b.dataset.a === 'up') buy(id); else if (b.dataset.a === 'eq') equip(id); else if (b.dataset.a === 'det') detail(id); else if (b.dataset.a === 'arm') armDetail(+id); }
   function mountTab() {
     if (document.getElementById('ag')) return true; const tabs = $('stabs'), body = $('sbody'); if (!tabs || !body) return false;
     const b = document.createElement('button'); b.dataset.s = 'ag'; b.textContent = L_('Inventaire'); const rg = tabs.querySelector('[data-s="rsg"]'); tabs.insertBefore(b, rg || null);
@@ -268,9 +275,9 @@ body.shopen #armhud,body.shopen #armrb{display:none!important}
     const rr = w.mt !== undefined ? String(w.mt).replace('.', DSEP) + ' m' : String(w.k).replace('.', DSEP) + ' × ' + L_('portée');
     let pw = ''; if (id === 'croix') { const I = A.ringInfo(); pw = '<div class="pwr">◎ <b>' + L_('Anneaux de foi') + '</b> · ' + L_('pouvoir actif') + '<br>' + I.n + ' ' + L_('anneaux') + ' · ' + L_('60 % d’un coup de Croix chacun') + ' · 9 m/s · ' + (lvl('croix') >= 8 ? '2,4' : '2') + ' × ' + L_('portée') + ' · ' + L_('recharge') + ' ' + I.cd + ' s<br><small>' + L_('Niv. 4 : 4 anneaux, recharge 24 s · Niv. 8 : 5 anneaux, recharge 18 s, 2,4 × portée') + '</small>' + qv(ARMD.RING[1], ARMD.RING[0]).replace('class="vs"', 'class="vs" style="color:#ffe9b0"') + '</div>'; }
     const q = canUp(id), c = q.c, eq = S.wq[w.c] === id;
-    const rows = w.lv.map(x => '<tr' + (x.L <= L ? ' style="opacity:.5"' : '') + '><td>' + L_('Niv. ') + x.L + ' · ⚡ ' + pwv(w, x.L) + '</td><td>' + L_('Niveau ') + (x.g + 1) + (id === 'glaive' && x.L >= 5 ? ' + ' + L_('Satan converti') : '') + '</td><td>' + fmt(x.F) + ' F + ' + resTxt(x.R) + '</td></tr>').join('');
+    const rows = w.lv.map(x => '<tr' + (x.L <= L ? ' style="opacity:.5"' : '') + '><td>' + L_('Niv. ') + x.L + ' · ⚡ ' + pwv(w, x.L) + '</td><td>' + L_('Niveau ') + (x.g + 1) + (id === 'glaive' && x.L >= 5 ? ' + ' + L_('Satan converti') : '') + '</td><td>' + fmt(x.F) + FI() + ' ' + resTxt(x.R) + '</td></tr>').join('');
     let up; if (!o) up = '<div class="ivlk">🔒 ' + L_('Convertis le boss du niveau ') + (w.z + 1) + '</div>'; else if (q.why === 'max') up = '<div class="ivcol"><span>' + L_('NIV MAX') + '</span><div class="ivbx">' + L + ' / 8</div></div>';
-    else { let sub = fmt(c.F) + ' F' + (c.R.length ? ' + ' + resTxt(c.R) : ''); if (q.why === 'gate') sub = '🔒 ' + L_('Niveau ') + (c.g + 1); if (q.why === 'satan') sub = '🔒 ' + L_('Satan converti');
+    else { let sub = fmt(c.F) + FI() + (c.R.length ? ' ' + resTxt(c.R) : ''); if (q.why === 'gate') sub = '🔒 ' + L_('Niveau ') + (c.g + 1); if (q.why === 'satan') sub = '🔒 ' + L_('Satan converti');
       up = '<div class="ivcol"><span>' + L_('AMÉLIORER') + '</span><div class="ivbx">' + L + ' <u>&gt;</u> ' + (L + 1) + '</div><button class="ivb' + (q.ok ? ' go' : ' off') + '" data-a="up" data-id="' + id + '"' + (q.ok ? '' : ' disabled') + '>' + sub + '</button></div>'; }
     pop('<div class="ivhd">' + L_('INFO OBJET') + '<button class="ivx" data-a="x" aria-label="' + L_('Fermer') + '">✕</button></div>'
       + '<div class="ivinf"><div class="ivt ' + (o ? 'own' : 'lk') + (eq ? ' eq' : '') + '" style="--c:' + CHEX[w.c] + '">' + (TH[id] ? '<img alt="" src="' + TH[id] + '">' : '') + '<b>' + (o ? L + '/8 ' + L_('NIV') : '🔒') + '</b></div>'
@@ -282,6 +289,9 @@ body.shopen #armhud,body.shopen #armrb{display:none!important}
     const pb = document.querySelector('#armpop .pb'); if (pb) pb.addEventListener('click', ev => { const b = ev.target.closest('[data-a="up"],[data-a="eq"]'); if (b) { ev.stopPropagation(); onAgClick(ev); detail(id); } }, true);
   }
   A.detail = detail;
+  function armDetail(z0) { if (typeof WP === 'undefined') return; const a = WP[z0], st = S.wp[z0], zb = [2, 4, 6, 8, 9][z0], nm = ['ceinture', 'cuirasse', 'chaussures', 'bouclier', 'casque'][z0];
+    pop('<div class="ivhd">' + L_('INFO OBJET') + '<button class="ivx" data-a="x" aria-label="' + L_('Fermer') + '">✕</button></div><div class="ivinf"><div class="ivt ' + (st === 2 ? 'own eq' : 'lk') + '" style="--c:#8fd0ff"><span class="ivi">' + (st && typeof rqSvg === 'function' ? rqSvg(nm, 56) : '🔒') + '</span><b>' + (st === 2 ? '✔' : '🔒') + '</b></div><div class="ivdt"><div class="ivnm"><span>' + a[0] + '</span></div><div class="ivst">' + (st === 2 ? a[1] : '?') + '</div></div></div><div class="ivtx"><p>' + (st === 2 ? L_('Tu la portes déjà.') : st === 1 ? L_('Elle est tombée au sol : ramasse-la.') : L_('Boss du niveau ') + (zb + 1) + ' · ' + bossN(zb)) + '</p></div><div class="ivbts"><button class="ivb r" data-a="x">' + L_('Fermer') + '</button></div>');
+    const ap = document.getElementById('armpop'); if (ap) ap.classList.add('iv'); }
   /* ---------- ligne dans Réglages ---------- */
   const oLR = window.langRow; if (oLR) window.langRow = function (box) { oLR.apply(this, arguments); const w = box && box.querySelector('#langw'); if (w && !w.querySelector('.wdisc')) { const d = document.createElement('p'); d.className = 'wdisc'; d.textContent = '✝ ' + discTxt(); w.appendChild(d); } };
   /* ---------- boucle ---------- */
