@@ -16,13 +16,15 @@ const ARMD = {"W": [{"id": "parole", "c": "D", "z": -1, "n": "La Parole", "P": 1
   const isEq = id => !!(S.wq && CATS.some(c => S.wq[c] === id));
   /* ---------- sauvegarde : S.wl = { id: niveau }, S.wq = { D, M, C }, S.wdisc = avertissement vu ---------- */
   function ensure() {
-    if (S.wl && S.wq) return;
+    if (S.wl && S.wq) { if (!S.wone) { S.wone = 1; const eq = CATS.map(c => S.wq[c] && WB[S.wq[c]]).filter(w => w && own(w.id)).sort((a, b) => b.P - a.P); if (eq.length > 1) setEq(eq[0].id); } return; }
     S.wl = { parole: 1 }; S.wq = { D: 'parole', M: null, C: null };
     for (let z = 0; z < 12; z++) if (S.boss && S.boss[z]) grant(z, true);   /* parties existantes : armes des boss déjà convertis */
   }
+  function setEq(id) { const w = WB[id]; if (!w) return; CATS.forEach(c => { S.wq[c] = null; }); S.wq[w.c] = id; }
+  const eqNow = () => { const l = CATS.map(c => S.wq[c] && WB[S.wq[c]]).filter(w => w && own(w.id)).sort((a, b) => b.P - a.P); return l[0] || null; };
   function grant(z, quiet) {
     const w = BYZ[z]; if (!w || own(w.id)) return; S.wl[w.id] = 1;
-    const cur = S.wq[w.c] && WB[S.wq[w.c]]; if (!cur || cur.P <= w.P) S.wq[w.c] = w.id;   /* l'arme la plus récente est la plus forte : équipée d'office */
+    const cur = eqNow(); if (!cur || cur.P <= w.P) setEq(w.id);   /* l'arme la plus récente est la plus forte : équipée d'office */
     if (!quiet) { try { save(); } catch (e) { } setTimeout(() => popNew(w), 1800); }
   }
   A.grant = grant; A.ensure = ensure;
@@ -39,7 +41,7 @@ const ARMD = {"W": [{"id": "parole", "c": "D", "z": -1, "n": "La Parole", "P": 1
     let nd = 1e9, ne = null; if (alive) for (const e of enemies) { if (e.done > 0) continue; const d = dist(e.x, e.z) - (e.boss ? 2.4 : 0); if (d < nd) { nd = d; ne = e; } }
     let id = null, mode = 0;
     for (const c of ['C', 'M', 'D']) { const w = S.wq[c] && WB[S.wq[c]]; if (!w || !own(w.id)) continue; if (nd <= reach(w)) { id = w.id; break; } if (w.id === 'glaive' && nd <= fireR()) { id = w.id; mode = 1; break; } }
-    if (!id) id = (S.wq.D && own(S.wq.D)) ? S.wq.D : 'parole';
+    if (!id) { const q = eqNow(); id = q ? q.id : 'parole'; }
     const w = WB[id]; A.cur = w; A.mode = mode; A.tgt = ne; const r = mode ? fireR() : reach(w); A.r = r;
     A.set = null;
     if (w.tg === 'one' && ne) { const lst = enemies.filter(e => e.done <= 0 && dist(e.x, e.z) <= r + (e.boss ? 2.4 : 0)); lst.sort((a, b) => ((b.boss || b.stat || b.kind === 4) ? 1 : 0) - ((a.boss || a.stat || a.kind === 4) ? 1 : 0) || dist(a.x, a.z) - dist(b.x, b.z)); A.set = new Set(lst.slice(0, (w.id === 'fronde' && lvl(w.id) >= 8) ? 2 : 1)); }
@@ -163,8 +165,8 @@ body.shopen #armhud,body.shopen #armrb{display:none!important}
 #armpop .chip{display:inline-block;font:700 .72rem system-ui;padding:3px 8px;border-radius:999px;background:#fff8;border:1px solid #d8b060;margin:2px}
 #ag .iv{font-family:var(--body,system-ui)}
 #ag .ivtop{display:grid;grid-template-columns:1fr auto;gap:8px;background:#fff8;border:2px solid #d8b060;border-radius:14px;padding:8px}
-#ag .ivslots{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;align-content:start}
-#ag .ivstats{width:104px;background:#2a1d0c;border:2px solid #b8872a;border-radius:12px;overflow:hidden;text-align:center;display:flex;flex-direction:column}
+#ag .ivslots{display:grid;grid-template-columns:1fr 1fr;gap:8px;align-content:start}#ag .ivsl{text-align:center}#ag .ivsl .ivt{width:100%;max-width:96px;display:flex;margin:0 auto}.ivlab{font:800 .7rem var(--display,system-ui);color:#7a4a00;letter-spacing:.6px;margin:0 0 3px}
+#ag .ivstats{width:112px;background:#2a1d0c;border:2px solid #b8872a;border-radius:12px;overflow:hidden;text-align:center;display:flex;flex-direction:column}
 .ivh2{font:800 .85rem var(--display,system-ui);color:#7a4a00;letter-spacing:.6px;padding:3px 0;text-align:center}#ag .ivstats .ivh2{color:#ffe08a;background:#3d2a0c}
 .ivrow{font:800 1.15rem var(--display,system-ui);color:#fff;padding:8px 4px;white-space:nowrap;flex:1;display:flex;align-items:center;justify-content:center;gap:4px}.ivrow span{font-size:1.05rem}
 #ag .ivbox{margin-top:8px;background:#fff8;border:2px solid #d8b060;border-radius:14px;padding:6px}#ag .ivh3{border-bottom:2px solid #d8b06088;margin-bottom:6px;padding:2px 0 5px}
@@ -193,7 +195,7 @@ body.shopen #armhud,body.shopen #armrb{display:none!important}
 .ivb.go{background:linear-gradient(#8ff0b4,#2f9a5a);color:#06240f;box-shadow:0 3px 0 #1b5a36}.ivb.off{background:#b8a888;color:#f4ecd8;box-shadow:0 3px 0 #7a6a4a}
 .ivb.y{background:linear-gradient(#ffd96a,#d8a020);color:#3a2410;box-shadow:0 3px 0 #8a6a10}.ivb.r{background:linear-gradient(#e87a5a,#b8402a);box-shadow:0 3px 0 #6a2010}.ivb.on{background:linear-gradient(#8ff0b4,#2f9a5a);color:#06240f;box-shadow:0 3px 0 #1b5a36}
 .ivbts{display:flex;gap:8px;margin-top:10px}.ivlk{font:700 .9rem system-ui;background:#fff8;border:2px solid #d8b060;border-radius:12px;padding:10px;width:100%;color:#3a2410}
-#armpop.iv table{color:#3a2410}
+#armpop.iv table{color:#3a2410}.ivpc{display:flex;gap:8px;align-items:center;text-align:left;margin:5px 0}.ivpc .ivt{width:46px;flex:none;cursor:default}.ivpc b{display:block;font:800 .88rem system-ui;color:#3a2410}.ivpc small{display:block;font:600 .74rem system-ui;color:#6a4a20}.ivpc.lk{opacity:.7}
 #armpop .pwr{background:#2a1d0c;color:#ffe08a;border-radius:12px;padding:8px;margin:8px 0;font-size:.8rem;text-align:left}#armpop .pwr b{color:#fff}`;
     document.head.appendChild(s);
   }
@@ -226,7 +228,7 @@ body.shopen #armhud,body.shopen #armrb{display:none!important}
   function canUp(id) { const c = nextCost(id); if (!c) return { ok: false, why: 'max' }; if (id === 'glaive' && c.L >= 5 && !S.sp) return { ok: false, why: 'satan', c };
     if (S.lvl < c.g) return { ok: false, why: 'gate', c }; if (S.f < c.F || c.R.some(([r, n]) => (S.res[r] || 0) < n)) return { ok: false, why: 'cost', c }; return { ok: true, c }; }
   function buy(id) { const q = canUp(id); if (!q.ok) return; S.f -= q.c.F; q.c.R.forEach(([r, n]) => S.res[r] -= n); S.wl[id]++; try { sfx('up'); } catch (e) { } try { save(); } catch (e) { } lastHud = ''; drawAg(); const d = document.getElementById('armpop'); if (d && d.dataset.id === id) detail(id); }
-  function equip(id) { const w = WB[id]; if (!own(id)) return; S.wq[w.c] = id; try { save(); } catch (e) { } lastHud = ''; drawAg(); }
+  function equip(id) { const w = WB[id]; if (!own(id)) return; setEq(id); try { save(); } catch (e) { } lastHud = ''; drawAg(); }
   const bossN = z => { try { return ZONES[z].boss; } catch (e) { return ''; } };
   A.tt = () => [L_('Inventaire'), L_('Armes de foi') + ' · ' + Object.keys(WB).filter(own).length + ' / ' + Object.keys(WB).length];
   function upBtn(id) { const q = canUp(id); if (q.why === 'max') return '<button class="wbt" disabled>' + L_('Max') + '</button>';
@@ -236,11 +238,10 @@ body.shopen #armhud,body.shopen #armrb{display:none!important}
   function drawAg() {
     const p = $('ag'); if (!p) return; ensure(); thumbs();
     const ws = ARMD.W.slice().sort((a, b) => (own(b.id) - own(a.id)) || (a.z - b.z));
-    const eqs = CATS.map(c => S.wq[c] && WB[S.wq[c]]).filter(w => w && own(w.id)), main = eqs.slice().sort((a, b) => b.P - a.P)[0] || WB.parole;
-    const wslot = tile(main, ' eq').replace('</button>', (eqs.length > 1 ? '<em title="' + L_('auto selon la distance') + '">+' + (eqs.length - 1) + '</em>' : '') + '</button>');
-    const armor = (typeof WP !== 'undefined' && S.wp) ? WP.map((a, z0) => { const st = S.wp[z0], zb = [2, 4, 6, 8, 9][z0], nm = ['ceinture', 'cuirasse', 'chaussures', 'bouclier', 'casque'][z0];
-      return '<button class="ivt ' + (st === 2 ? 'own eq' : 'lk') + '" data-a="arm" data-id="' + z0 + '" style="--c:#8fd0ff" aria-label="' + a[0] + '">' + (st && typeof rqSvg === 'function' ? '<span class="ivi">' + rqSvg(nm, 36) + '</span>' : '<span class="ivi">🔒</span>') + '<b>' + (st === 2 ? a[0].split(' ').slice(-1)[0] : L_('Niv. ') + (zb + 1)) + '</b></button>'; }).join('') : '';
-    let h = '<div class="iv"><div class="ivtop"><div class="ivslots">' + wslot + armor + '</div><div class="ivstats"><div class="ivh2">' + L_('STATS') + '</div><div class="ivrow"><span style="color:#ff9a3a">⚔</span> ' + fmt(ATK()) + '</div><div class="ivrow"><span style="color:#3ae070">❤</span> ' + fmt(HPM()) + '</div></div></div>';
+    const main = eqNow() || WB.parole, wslot = tile(main, ' eq');
+    const nW = (typeof WP !== 'undefined' && S.wp) ? S.wp.filter(v => v === 2).length : 0, nT = (typeof WP !== 'undefined') ? WP.length : 5;
+    const aslot = '<button class="ivt ' + (nW ? 'own eq' : 'lk') + '" data-a="arm" style="--c:#8fd0ff" aria-label="' + L_('Armure de Dieu') + '"><span class="ivi">' + (nW && typeof rqSvg === 'function' ? rqSvg('cuirasse', 44) : '🔒') + '</span><i>A</i><b>' + nW + '/' + nT + '</b></button>';
+    let h = '<div class="iv"><div class="ivtop"><div class="ivslots"><div class="ivsl"><div class="ivlab">' + L_('ARME') + '</div>' + wslot + '</div><div class="ivsl"><div class="ivlab">' + L_('ARMURE') + '</div>' + aslot + '</div></div><div class="ivstats"><div class="ivh2">' + L_('STATS') + '</div><div class="ivrow"><span style="color:#ff9a3a">⚔</span> ' + fmt(ATK()) + '</div><div class="ivrow"><span style="color:#3ae070">❤</span> ' + fmt(HPM()) + '</div></div></div>';
     h += '<div class="ivbox"><div class="ivh2 ivh3">' + L_('ARMES') + ' · ' + Object.keys(WB).filter(own).length + ' / ' + Object.keys(WB).length + '</div><div class="ivgrid">' + ws.map(w => tile(w, S.wq[w.c] === w.id ? ' on' : '')).join('') + '</div></div></div>';
     if (S.wpx) h += '<div class="wleg">⚔ <b>' + L_('Héritage de l’Épée de l’Esprit') + '</b><br>' + L_('+25 % de Puissance et +15 % de coups critiques sur toutes les armes (ancienne 6e pièce d’armure, conservée pour ta sauvegarde)') + '</div>';
     h += '<p class="wdisc">' + discTxt() + '</p>';
@@ -248,7 +249,7 @@ body.shopen #armhud,body.shopen #armrb{display:none!important}
   }
   const discTxt = () => L_('Armes spirituelles : des symboles de la foi, jamais de violence contre des personnes.') + ' « ' + L_(ARMD.DISC[1]) + ' » (' + L_(ARMD.DISC[0]) + ')';
   A.drawAg = drawAg;
-  function onAgClick(ev) { const b = ev.target.closest('[data-a]'); if (!b) return; ev.stopPropagation(); const id = b.dataset.id; if (b.dataset.a === 'up') buy(id); else if (b.dataset.a === 'eq') equip(id); else if (b.dataset.a === 'det') detail(id); else if (b.dataset.a === 'arm') armDetail(+id); }
+  function onAgClick(ev) { const b = ev.target.closest('[data-a]'); if (!b) return; ev.stopPropagation(); const id = b.dataset.id; if (b.dataset.a === 'up') buy(id); else if (b.dataset.a === 'eq') equip(id); else if (b.dataset.a === 'det') detail(id); else if (b.dataset.a === 'arm') armDetail(); }
   function mountTab() {
     if (document.getElementById('ag')) return true; const tabs = $('stabs'), body = $('sbody'); if (!tabs || !body) return false;
     const b = document.createElement('button'); b.dataset.s = 'ag'; b.textContent = L_('Inventaire'); const rg = tabs.querySelector('[data-s="rsg"]'); tabs.insertBefore(b, rg || null);
@@ -289,8 +290,9 @@ body.shopen #armhud,body.shopen #armrb{display:none!important}
     const pb = document.querySelector('#armpop .pb'); if (pb) pb.addEventListener('click', ev => { const b = ev.target.closest('[data-a="up"],[data-a="eq"]'); if (b) { ev.stopPropagation(); onAgClick(ev); detail(id); } }, true);
   }
   A.detail = detail;
-  function armDetail(z0) { if (typeof WP === 'undefined') return; const a = WP[z0], st = S.wp[z0], zb = [2, 4, 6, 8, 9][z0], nm = ['ceinture', 'cuirasse', 'chaussures', 'bouclier', 'casque'][z0];
-    pop('<div class="ivhd">' + L_('INFO OBJET') + '<button class="ivx" data-a="x" aria-label="' + L_('Fermer') + '">✕</button></div><div class="ivinf"><div class="ivt ' + (st === 2 ? 'own eq' : 'lk') + '" style="--c:#8fd0ff"><span class="ivi">' + (st && typeof rqSvg === 'function' ? rqSvg(nm, 56) : '🔒') + '</span><b>' + (st === 2 ? '✔' : '🔒') + '</b></div><div class="ivdt"><div class="ivnm"><span>' + a[0] + '</span></div><div class="ivst">' + (st === 2 ? a[1] : '?') + '</div></div></div><div class="ivtx"><p>' + (st === 2 ? L_('Tu la portes déjà.') : st === 1 ? L_('Elle est tombée au sol : ramasse-la.') : L_('Boss du niveau ') + (zb + 1) + ' · ' + bossN(zb)) + '</p></div><div class="ivbts"><button class="ivb r" data-a="x">' + L_('Fermer') + '</button></div>');
+  function armDetail() { if (typeof WP === 'undefined') return; const nm = ['ceinture', 'cuirasse', 'chaussures', 'bouclier', 'casque'], nW = S.wp.filter(v => v === 2).length;
+    const rows = WP.map((a, z0) => { const st = S.wp[z0], zb = [2, 4, 6, 8, 9][z0]; return '<div class="ivpc' + (st === 2 ? '' : ' lk') + '"><span class="ivt ' + (st === 2 ? 'own eq' : 'lk') + '" style="--c:#8fd0ff"><span class="ivi">' + (st && typeof rqSvg === 'function' ? rqSvg(nm[z0], 30) : '🔒') + '</span></span><div><b>' + (st === 2 ? a[0] : '? ' + bossN(zb)) + '</b><small>' + (st === 2 ? a[1] : st === 1 ? L_('Elle est tombée au sol : ramasse-la.') : L_('Boss du niveau ') + (zb + 1)) + '</small></div></div>'; }).join('');
+    pop('<div class="ivhd">' + L_('Armure de Dieu') + '<button class="ivx" data-a="x" aria-label="' + L_('Fermer') + '">✕</button></div><div class="ivst" style="margin-bottom:8px">' + nW + ' / ' + WP.length + (nW === WP.length ? ' · +15 %' : '') + '</div>' + rows + '<div class="ivtx"><p>' + L_('Cinq boss laissent chacun une pièce ; les cinq ensemble : +15 % Puissance et Vie.') + '</p></div><div class="ivbts"><button class="ivb r" data-a="x">' + L_('Fermer') + '</button></div>');
     const ap = document.getElementById('armpop'); if (ap) ap.classList.add('iv'); }
   /* ---------- ligne dans Réglages ---------- */
   const oLR = window.langRow; if (oLR) window.langRow = function (box) { oLR.apply(this, arguments); const w = box && box.querySelector('#langw'); if (w && !w.querySelector('.wdisc')) { const d = document.createElement('p'); d.className = 'wdisc'; d.textContent = '✝ ' + discTxt(); w.appendChild(d); } };
