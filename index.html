@@ -211,7 +211,7 @@ html body #mpl{position:fixed!important;left:max(12px,env(safe-area-inset-left,0
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:var(--body);user-select:none;-webkit-user-select:none;touch-action:none}
 button{font-family:inherit}
-#game{position:fixed;inset:0}
+#game{position:fixed;left:0;top:0;right:0;height:100vh;height:100lvh}
 #gl{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none}
 #over{position:absolute;inset:0;pointer-events:none;overflow:hidden}
 #fx{position:absolute;inset:0;pointer-events:none;opacity:0;background:radial-gradient(ellipse at center,transparent 45%,#e8100099 100%)}
@@ -3484,7 +3484,7 @@ async function initGL() {
 window.ECO = 1; try { if (localStorage.getItem('cenacle_eco') === '0') window.ECO = 0; } catch (e) { }
 const ADP = { pr: 0, t: 0, n: 0, sum: 0, sh: 0 };
 function adaptRes() { const n = performance.now(); if (ADP.t && !document.hidden) { const d = n - ADP.t; if (d < 250) { ADP.sum += d; if (++ADP.n >= 90) { const av = ADP.sum / ADP.n; ADP.sum = 0; ADP.n = 0; if (av > 38) { if (!ADP.pr) ADP.pr = renderer.getPixelRatio(); if (ADP.pr > 1.01) { ADP.pr = Math.max(1, ADP.pr - .25); renderer.setPixelRatio(ADP.pr); onResize(); } else if (!ADP.sh) { ADP.sh = 1; sunL.shadow.mapSize.set(1024, 1024); if (sunL.shadow.map) { sunL.shadow.map.dispose(); sunL.shadow.map = null; } } } } } else { ADP.sum = 0; ADP.n = 0; } } ADP.t = n; }
-function onResize() { const w = innerWidth, h = innerHeight; renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix(); }
+function onResize() { const g = $('game'), w = innerWidth, h = Math.max(innerHeight, (g && g.clientHeight) || 0); window.GH = h; renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix(); }
 function initWaters() { window.BAKECP && BAKECP('pre'); FLATS = []; planInit(); FLATS = []; PX.forEach(X => X && X.plaza.forEach(p => FLATS.push({ x: p.x, z: p.z, r: p.r + 1.2, h: hraw(p.x, p.z) }))); }
 
 /* textures procédurales (canvas, tuilables) */
@@ -3674,7 +3674,7 @@ function syncWalls(init) {
 
 /* ---------- ennemis et récompenses ---------- */
 const v3 = new THREE.Vector3();
-function proj(x, y, z) { v3.set(x, y, z).project(camera); return [(v3.x * .5 + .5) * innerWidth, (-v3.y * .5 + .5) * innerHeight, v3.z]; }
+function proj(x, y, z) { v3.set(x, y, z).project(camera); return [(v3.x * .5 + .5) * innerWidth, (-v3.y * .5 + .5) * (window.GH || innerHeight), v3.z]; }
 function floatT(txt, x, y, z, cls, col) { if (FAST) return; if ((!cls || cls === 's') && $('over').querySelectorAll('.fl').length > 3) return; const p = proj(x, y, z); if (p[2] > 1) return; const d = document.createElement('div'); d.className = 'fl ' + (cls || ''); d.textContent = txt; if (col) d.style.color = col; d.style.left = p[0] + 'px'; d.style.top = p[1] + 'px'; $('over').appendChild(d); setTimeout(() => d.remove(), 1000); }
 const _nq = []; let _nbusy = 0;
 /* notifications discrètes : petite pile en haut à gauche (3 max), doublons fusionnés (×N), messages mineurs plus courts */
