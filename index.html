@@ -545,9 +545,7 @@ body.fbh #setb,body.fbh #sndb{display:none!important}#mapb2{position:absolute;le
 .tst{background:#10142acc;color:#fff7e0;border-left:3px solid #b4bce0;border-radius:8px;padding:4px 8px;font:500 .74rem/1.25 var(--body,system-ui);box-shadow:0 2px 6px #0004;transition:opacity .3s,transform .3s;animation:tstin .25s}
 .tst b{display:block;font-weight:800;font-size:.8rem}.tst.imp{border-left-color:#ffd24a;background:#2a1d0cdd}.tst.imp b{color:#ffd24a;font-size:.86rem}.tst.low{opacity:.8}.tst.out{opacity:0;transform:translateX(-12px)}
 @keyframes tstin{from{opacity:0;transform:translateX(-12px)}to{opacity:1;transform:none}}
-#chatt{top:calc(env(safe-area-inset-top,0px) + 76px)!important}#adoffer{position:absolute;left:max(6px,env(safe-area-inset-left,0px));bottom:calc(env(safe-area-inset-bottom,0px) + 100px);z-index:6;display:flex;align-items:center;gap:6px;padding:5px 10px 5px 6px;border-radius:14px;border:2px solid var(--ac,#ffd24a);background:#10142af0;color:#fff;font:700 .72rem var(--body);cursor:pointer;animation:adp 1.4s ease-in-out infinite}#adoffer[hidden]{display:none}#adoffer i{font-style:normal;width:26px;height:26px;border-radius:50%;background:var(--ac,#ffd24a);color:#10142a;display:flex;align-items:center;justify-content:center;font-size:.8rem}#adoffer span{display:flex;flex-direction:column;text-align:left;line-height:1.1}#adoffer b{color:var(--ac,#ffd24a);font-size:.8rem}@keyframes adp{50%{transform:scale(1.05)}}
-#adov{position:fixed;inset:0;z-index:9999;background:#000d;display:flex;align-items:center;justify-content:center}#adov .adb{width:min(300px,86vw);padding:18px;border-radius:16px;background:#10142a;border:2px solid #ffd24a;color:#fff;text-align:center;font-family:var(--body)}#adov small{display:block;opacity:.6;margin-bottom:6px}#adov p{font-size:1.3rem;color:#ffd24a;margin:8px 0 14px}#adov button{display:block;width:100%;margin-top:8px;padding:10px;border-radius:10px;border:0;font:800 1rem var(--body);background:#ffd24a;color:#10142a}#adov button:disabled{opacity:.5}#adov #adx{background:none;color:#fff9;font-size:.8rem;font-weight:400}
-#tut{bottom:calc(env(safe-area-inset-bottom,0px) + 236px)!important}
+#chatt{top:calc(env(safe-area-inset-top,0px) + 76px)!important}#tut{bottom:calc(env(safe-area-inset-bottom,0px) + 236px)!important}
 
 .nw{white-space:nowrap}.upg{color:#1b7a3a;font-weight:700}
 .mbdg{display:inline-block;white-space:nowrap;background:linear-gradient(#ffe27a,#e0a021);color:#3a2400;border:1px solid #8a5a00;border-radius:999px;padding:1px 8px;font-size:.78rem;font-weight:800;margin-top:3px}
@@ -5244,7 +5242,7 @@ function paint() {
     { let ok = UPG.some((u, i) => upOk(i)); for (let z = 0; z < NZ && !ok; z++) if (S.ap[z] === 1) { const pr = apPRes(S.al[z]); ok = (S.f >= apCost(z, S.al[z]) && (!pr || S.res[pr[0]] >= pr[1])) || S.f >= apHCost(z, ahL(z)); } const ub = $('upb'); if (ub) ub.classList.toggle('glow', ok && !ub.classList.contains('on')); } const nr = S.rel.filter(r => r.nw).length; setB('bd_rg', nr ? String(nr) : '', true); const ca = churchActs(); setB('bd_cg', ca ? String(ca) : '');
     if (op) { const TT = { ug: [$t('Améliorer'), $t('Héros de la Parole')], rsg: [$t('Recherche'), S.rq ? $t('En cours : ') + (RS.find(q => q.id === S.rq[0]) || { n: '' }).n : $t('3 catégories')], cg: [$t('Églises'), $t('Évêques · ') + fmt(window._bTot || 0) + ' F/min'], dg: [$t('Cadeau du jour'), $t('Niveau ') + (S.lvl + 1) + ' · ' + znS(S.lvl)], rg: [$t('Reliques'), VTAB ? $t('Versets ') + nVs() + ' / 12' : S.rel.length + ' / 12'], ag: window.ARM ? ARM.tt() : ['', ''] }[sheetTab] || ['', ''];
       if ($('sht').textContent !== TT[0]) $('sht').textContent = TT[0]; if ($('shs').textContent !== TT[1]) $('shs').textContent = TT[1]; } }
-  document.body.classList.toggle('shopen', $('sheet').classList.contains('open')); fbSync(); try { adTick(); } catch (e) { }
+  document.body.classList.toggle('shopen', $('sheet').classList.contains('open')); fbSync();
   if (!S.tut && !$('sheet').classList.contains('open')) $('tut').style.display = 'block';
   if (!$('sheet').classList.contains('open')) return;
   document.querySelectorAll('#stabs button').forEach(b => b.classList.toggle('on', b.dataset.s === sheetTab));
@@ -5292,37 +5290,6 @@ function upRes(i, L) { if (L === undefined) L = S.up[i]; const d = UPRES[i]; if 
 function upList(i, L) { if (L === undefined) L = S.up[i]; if (i === 3) { const q = upRes(i, L); return q ? [q] : []; } const open = RES.map((_, r) => r).filter(resOpen), n = Math.min(Math.floor(L / 10), open.length), o = []; for (let j = 0; j < n; j++) o.push([open[j], Math.ceil(3 * Math.pow(1.3, L - 10 * (j + 1)))]); return o; }
 const upOk = i => S.f >= upCost(i) && !(i === 3 && S.up[3] >= 10) && upList(i).every(q => S.res[q[0]] >= q[1]);
 /* pouvoirs des apôtres : à chaque palier (niv. 5, 10, 15…), Vitrail puis Lumière en alternance, 4 + 2 par palier */
-/* pub avec récompense : toutes les minutes, une offre près de la Boutique (la ressource débloquée qui manque le plus, sinon des fidèles).
-   Pour brancher une vraie régie : définir window.CENACLE_ADS = { rewarded(done) { ... done(true) quand la pub est vue ... } } */
-const AD = { t: Date.now(), el: null, offer: null, shownAt: 0, busy: 0, every: 60000, life: 25000 };
-function adNeed() {
-  const need = {}, add = (r, n) => { if (resOpen(r) && n > (need[r] || 0)) need[r] = n; };
-  UPG.forEach((u, i) => { if (!(i === 3 && S.up[3] >= 10)) upList(i).forEach(q => add(q[0], q[1])); });
-  RS.forEach(it => { if (!has(it.id) && !resLocked(it)) it.r.forEach(([z, n]) => add(z, n)); });
-  for (let z = 0; z < NZ; z++) if (S.ap[z] === 1) { const pr = apPRes(S.al[z]); if (pr) add(pr[0], pr[1]); }
-  let best = -1, gap = 0; for (const r in need) { const g = need[r] - S.res[r]; if (g > gap) { gap = g; best = +r; } }
-  if (best >= 0) return { r: best, n: Math.min(60, Math.max(3, gap)) };
-  return { r: -1, n: Math.max(50, Math.round(Math.min(upCost(0), upCost(1)) * .5)) };
-}
-function adGive(o) { if (o.r >= 0) S.res[o.r] += o.n; else S.f += o.n; note($t('Merci !'), '+' + fmt(o.n) + ' ' + (o.r >= 0 ? RES[o.r].n : $t('fidèles'))); save(); }
-function adPlay(o) {
-  if (AD.busy) return; AD.busy = 1; AD.offer = null; if (AD.el) AD.el.hidden = true;
-  const end = ok => { AD.busy = 0; AD.t = Date.now(); if (ok) adGive(o); };
-  if (window.CENACLE_ADS && CENACLE_ADS.rewarded) { try { CENACLE_ADS.rewarded(end); } catch (e) { end(false); } return; }
-  const ov = document.createElement('div'); ov.id = 'adov';
-  ov.innerHTML = '<div class="adb"><small>' + $t('Publicité (aperçu)') + '</small><b>' + $t('Ta récompense') + '</b><p>+' + fmt(o.n) + ' ' + (o.r >= 0 ? RES[o.r].n : $t('fidèles')) + '</p><button id="adok" disabled></button><button id="adx">' + $t('Fermer') + '</button></div>';
-  document.body.appendChild(ov); let n = 5; const ok = ov.querySelector('#adok'), tk = () => { ok.textContent = n > 0 ? n + ' s' : $t('Récupérer'); ok.disabled = n > 0; }; tk();
-  const iv = setInterval(() => { if (n > 0) { n--; tk(); } }, 1000), close = r => { clearInterval(iv); ov.remove(); end(r); };
-  ok.addEventListener('click', () => { if (!ok.disabled) close(true); }); ov.querySelector('#adx').addEventListener('click', () => close(false));
-}
-function adTick() {
-  const now = Date.now(), m = document.getElementById('menu'), blocked = AD.busy || document.hidden || W.dead || !S.tut || $('sheet').classList.contains('open') || (m && m.isConnected && getComputedStyle(m).display !== 'none');
-  if (!AD.el) { const b = document.createElement('button'); b.id = 'adoffer'; b.hidden = true; b.addEventListener('click', () => AD.offer && adPlay(AD.offer)); $('game').appendChild(b); AD.el = b; }
-  if (blocked) { AD.t = now; if (AD.offer) { AD.offer = null; AD.el.hidden = true; } return; }
-  if (AD.offer) { if (now - AD.shownAt > AD.life) { AD.offer = null; AD.el.hidden = true; AD.t = now; } return; }
-  if (now - AD.t < AD.every) return;
-  const o = adNeed(); AD.offer = o; AD.shownAt = now; AD.el.innerHTML = '<i>▶</i><span>' + $t('Pub') + '<b>+' + fmt(o.n) + ' ' + (o.r >= 0 ? RES[o.r].n : $t('fidèles')) + '</b></span>'; AD.el.style.setProperty('--ac', o.r >= 0 ? RES[o.r].c : '#ffd24a'); AD.el.hidden = false;
-}
 function apPRes(l) { const n = l + 1; if (n % 5) return null; const k = n / 5, r = k % 2 ? 4 : 5; if (!resOpen(r)) return null; return [r, 4 + 2 * (k - 1)]; }
 const rIco = r => '<span class="ci">' + ICO[RICO[r]] + '</span>';
 const COINS = [], NCOIN = 60; let coinIM, coinHL, coinSP, coinSH, coinGL, coinTxt = 0, coinTxtT = 0, coinPulseT = -9;
