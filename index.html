@@ -1118,7 +1118,7 @@ function syncDom(a, b) {
 }
 /* multiplicateur de récompense en fidèles par modèle d'ennemi (kind 1 non-boss de la zone) */
 const REWMUL = { temple_guard: 1.5 };
-const rewMul = e => { if (e.boss || e.kind !== 1 || e.zn === 0) return 1; return REWMUL[(FZM[e.zn] || FZM[0])[1]] || 1; };
+const rewMul = e => { if (e.boss || e.kind !== 1 || 1) return 1; return REWMUL[(FZM[e.zn] || FZM[0])[1]] || 1; };
 /* ---------- badges de déblocage, panneau des reliques clarifié ---------- */
 const pctf = v => (v * 100).toFixed(1).replace('.', DSEP).replace(',0', '');
 const BDGDOM = { ug: 'upn', rsg: 'rsn', rg: 'rgn' };
@@ -4763,7 +4763,8 @@ function hurtFx(a) { shakeA = Math.max(shakeA, a); if (FAST) return; const f = $
 /* valeurs affichées sous la barre : fidèles réellement crédités à la conversion (même formule que reward / taxKill / arenaKill) et dégâts réellement infligés par coup (après réduction de l'arme spirituelle) */
 /* facteur de fidèles d'un ennemi ordinaire : (récompense du plus faible du niveau) x (ses dégâts / dégâts du plus faible du même type) */
 function rewRef(zn, kind) { const X = PX[zn], c = X._rr || (X._rr = {}); if (c[kind]) return c[kind]; const p0 = Math.max(0, zoneRange(zn)[0]), m0 = dgMul(p0, zn), n = diffNorm(zn), pf0 = 1 + ((DIFFGRAD.pwf[zn] || 1) - 1) * p0; return (c[kind] = { d: foeStat(zn, kind, false).dmg * m0.dmg * n.dmg * pf0, r: m0.rew * n.rew, h: foeStat(zn, kind, false).hp * m0.hp * n.hp * pf0 }); }
-function rewD(e) { if (e.rewD) return e.rewD; if (!e.boss && e.zn === 0 && (e.kind === 0 || e.kind === 1)) return (e.rewD = 1); /* niveau 1 : 4 F (marchand) et 6 F (garde), sans modulation */ if (e.ebr) return (e.rewD = e.ebr * e.ebk); let v = e.rewM || 1; if (!e.boss && e.kind !== 7 && !(e.kind >= 9 && e.kind <= 13) && e.dgp >= 0 && e.dmgS > 0) { const R = rewRef(e.zn, e.kind); if (R.d > 0) v = R.r * e.dmgS / R.d * (e.ebk || 1); } return (e.rewD = v); }
+const FIXF1 = { 2: 11, 4: 11, 8: 18, 14: 25 };
+function rewD(e) { if (e.rewD) return e.rewD; if (!e.boss && e.kind !== 7 && !(e.kind >= 9 && e.kind <= 13)) { const fx = FIXF1[e.kind]; return (e.rewD = fx ? fx * K(e.zn) * feltF(e.zn, 'rew') / bonusOf(e.zn, e.kind).f : 1); } if (e.ebr) return (e.rewD = e.ebr * e.ebk); let v = e.rewM || 1; if (!e.boss && e.kind !== 7 && !(e.kind >= 9 && e.kind <= 13) && e.dgp >= 0 && e.dmgS > 0) { const R = rewRef(e.zn, e.kind); if (R.d > 0) v = R.r * e.dmgS / R.d * (e.ebk || 1); } return (e.rewD = v); }
 function foeRew(e) {
   const z = e.zn; if (e.kind === 7) return (e.loot || 0) > 0 ? Math.floor(e.loot * 1.5) : Math.round(6 * K(z) * FM());
   if (e.kind >= 9 && e.kind <= 13) return (e.kind >= 12 ? 25 : 3) * K(z) * FM();
