@@ -1337,7 +1337,7 @@ const EB = { lo: { 0: .70, 1: .78, 4: .80, 8: .80, 14: .82 }, hi: { 0: .86, 1: .
 const ebF = (kind, p) => { const lo = EB.lo[kind] !== undefined ? EB.lo[kind] : .75, hi = EB.hi[kind] !== undefined ? EB.hi[kind] : .9; return lo + (hi - lo) * Math.max(0, Math.min(1, p)); };
 function diffApply(st, zn, boss, kind, x, z) {
   if (boss || kind === 7 || kind === 6 || (kind >= 9 && kind <= 13) || W.arena && !W.tmp) return { p: -1, rm: 1 };
-  const p = depthE(x, z, zn), m = dgMul(p, zn), n = diffNorm(zn); const pf = 1 + ((DIFFGRAD.pwf[zn] || 1) - 1) * Math.max(0, p); st.hp *= m.hp * n.hp * pf; st.dmg *= m.dmg * n.dmg * pf;
+  const p = W.tmp ? depthE(x, z, zn) : .5 /* vie et dégâts fixes par type d'ennemi et par zone : difficulté moyenne, quelle que soit la position */, m = dgMul(p, zn), n = diffNorm(zn); const pf = 1 + ((DIFFGRAD.pwf[zn] || 1) - 1) * Math.max(0, p); st.hp *= m.hp * n.hp * pf; st.dmg *= m.dmg * n.dmg * pf;
   if (zn >= 1 && !W.tmp) { const o = foeStat(zn, kind, false), elh = Math.min(EB.el, st.hp / (o.hp * m.hp * n.hp * pf)), eld = Math.min(EB.el, st.dmg / (o.dmg * m.dmg * n.dmg * pf)), B = foeStat(zn - 1, 0, true), f = ebF(kind, p), h0 = st.hp;
     st.hp = Math.max(h0, f * B.hp * Math.max(1, elh)); st.dmg = Math.max(st.dmg, f * B.dmg * Math.max(1, eld)); st.ebf = f; const R0 = rewRef(zn, 0); st.ebr = R0.r; st.eba = EB.ca[zn] || 1; st.ebh = EB.ch[zn] || 1; st.ebk = EB.k * (EB.cal[zn] || 1) * Math.min(EB.rmax, Math.max(1, st.hp / R0.h)); return { p, rm: R0.r * st.ebk }; }
   st.ebk = EB.k; return { p, rm: m.rew * n.rew * EB.k };
