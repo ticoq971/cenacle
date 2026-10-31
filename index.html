@@ -3951,7 +3951,7 @@ function setInside(p, ins) {
 
 /* ---------- collecteurs d'impôts, légionnaires, croix, monde spirituel ---------- */
 function pickKind(zn) {
-  /* collecteur d impots retire */
+  if (Math.random() < .07 && !enemies.some(q => q.kind === 7 && !q.done)) return 7;
   if (OZ(zn) <= 2 && Math.random() < [.12, .2, .3][OZ(zn)]) return 8;
   const r = Math.random(); return r < .45 ? 0 : r < .72 ? 1 : 4;
 }
