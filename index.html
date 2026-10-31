@@ -3709,7 +3709,7 @@ function spawnFoe(zn, boss, kind, px, pz, apz, elite) {
 }
 function reward(kind, zn, x, z, mult, cn) {
   const b = bonusOf(zn, kind), capOk = kind === 3 || S.conv[zn] < CAP; let F = b.f * FM() * (mult || 1), a = b.a, h = b.h;
-  a *= (window._rm || 1) * (window._rma || 1); h *= (window._rm || 1) * (window._rmh || 1); a = 0; h = 0; /* ennemis : ressources seulement, aucun bonus permanent (les boss donnent reliques et armes à part) */ if (window._byB) { a = 0; h = 0; F *= window._byB; } window._rwF = F;
+  a *= (window._rm || 1) * (window._rma || 1); h *= (window._rm || 1) * (window._rmh || 1); a = 0; h = 0; /* ennemis : ressources seulement, aucun bonus permanent (les boss donnent reliques et armes à part) */ if (window._byB) { a = 0; h = 0; F *= window._byB; } F = Math.ceil(F - 1e-6); window._rwF = F;
   S.bA += a; S.bH += h; if (cn) spawnCoins(x, z, F, cn); else S.f += F; if (h) hpTrack();
   let y = 2.2; const fx = x + 2.4; if (a) { floatT('+' + fmt(a) + $t(' Puissance'), fx, y, z, 'a'); y += 1.1; } if (h) { floatT('+' + fmt(h) + $t(' Vie'), fx, y, z, 'g'); y += 1.1; } if (!cn) floatT('+' + fmt(F) + ' F', fx, y, z, 'y');
   if (!window._byB && kind !== 3 && (kind <= 8 && kind !== 7 || kind === 14)) { S.conv[zn]++; if (S.conv[zn] === NEEDZ(zn) && !S.boss[zn]) note($t('Le boss apparaît !'), ZONES[zn].boss + $t(' t\'attend dans cette zone.')); else if (S.conv[zn] === CNEED[0] || S.conv[zn] === CNEED[1]) note($t('Église disponible !'), $t('Approche d\'un emplacement doré pour bâtir une église.')); else if (S.conv[zn] === CAP) note($t('Zone convertie'), $t('Tu as converti beaucoup d\x27habitants de cette zone.')); }
@@ -4768,7 +4768,7 @@ function rewD(e) { if (e.rewD) return e.rewD; if (!e.boss && e.kind !== 7 && !(e
 function foeRew(e) {
   const z = e.zn; if (e.kind === 7) return (e.loot || 0) > 0 ? Math.floor(e.loot * 1.5) : Math.round(6 * K(z) * FM());
   if (e.kind >= 9 && e.kind <= 13) return (e.kind >= 12 ? 25 : 3) * K(z) * FM();
-  const k = e.boss ? 3 : e.kind, b = bonusOf(z, k), capOk = k === 3 || S.conv[z] < CAP; let F = b.f * FM() * (e.tg && !e.boss ? 2.5 : e.stat ? 2 : 1) * rewMul(e) * rewD(e); return F;
+  const k = e.boss ? 3 : e.kind, b = bonusOf(z, k), capOk = k === 3 || S.conv[z] < CAP; let F = b.f * FM() * (e.tg && !e.boss ? 2.5 : e.stat ? 2 : 1) * rewMul(e) * rewD(e); return Math.ceil(F - 1e-6); /* toujours un nombre entier, arrondi au-dessus */
 }
 function foeDmgShown(e) { return e.kind === 7 || !(e.dmg > 0) ? 0 : e.dmg * (wpOn(3) ? .88 : 1); }
 let _shT = 0;
