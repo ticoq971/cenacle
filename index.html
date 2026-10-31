@@ -1436,7 +1436,7 @@ const RNG = () => 3.6 * (1 + UPEFFECT.per[3] * Math.min(S.up[3], 10) * upMul(Mat
 const FM = () => (1 + relB(2) + (wpOn(4) ? .2 : 0) + (has('pain') ? .2 : 0)) * vsM('f');
 /* coût de l'amélioration Puissance (index 0) : multiplicateur lisible, 0,7 = 30 % moins cher à tous les niveaux */
 const POWER_COST_MUL = .7;
-const upCost = i => Math.round(UB[i] * Math.pow(UPEFFECT.grow, S.up[i]) * ed(S.up[i]) * (i === 0 ? POWER_COST_MUL : 1));
+const upCost = i => Math.round(UB[i] * Math.pow(UPEFFECT.grow, S.up[i]) * ed(S.up[i]) * (i === 0 ? POWER_COST_MUL : 1) * (i < 2 && S.up[i] < 15 ? .75 : 1));
 const CCOST = (z, p) => Math.round(30 * K(z) * (p ? 2.5 : 1) * ed(p ? 3 : 0)), CNEED = [6, 15];
 const chHeal = c => 8 * (1 + .25 * c) * (has('gueri') ? 1.6 : 1), chAmt = (z, c) => 3 * (1 + .2 * c) * (1 + .5 * ZT(z)) * EB.t, chIv = b => 10 / (1 + .3 * b) * (has('ecoles') ? .6 : 1) / vsM('bish');
 const passive = () => 0;
