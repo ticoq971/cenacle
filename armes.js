@@ -142,7 +142,8 @@ const ARMD = {"W": [{"id": "parole", "c": "D", "z": -1, "n": "La Parole", "P": 1
   let hud = null, rb = null, lastHud = '';
   function css() {
     if (document.getElementById('armcss')) return; const s = document.createElement('style'); s.id = 'armcss';
-    s.textContent = `#armhud{position:fixed;left:calc(env(safe-area-inset-left,0px) + 10px);bottom:calc(env(safe-area-inset-bottom,0px) + 100px);display:flex;flex-direction:row;gap:5px;z-index:4;pointer-events:none}
+    s.textContent = `#sathint{position:fixed;left:50%;top:calc(env(safe-area-inset-top,0px) + 215px);transform:translateX(-50%);z-index:55;display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:14px;background:linear-gradient(#6b6257,#4a433b);border:2px solid #e8c04a;box-shadow:0 4px 14px #0008;color:#ffe9a8;font:700 .82rem system-ui;max-width:92vw}#sathint .si{font-size:1.1rem}#sathint button{border:0;border-radius:10px;padding:6px 10px;font:800 .78rem system-ui;cursor:pointer}#sathint [data-a=eq]{background:linear-gradient(#ffe08a,#e8b33a);color:#4a2c00}#sathint [data-a=x]{background:#0003;color:#ffe9a8;padding:6px 8px}
+#armhud{position:fixed;left:calc(env(safe-area-inset-left,0px) + 10px);bottom:calc(env(safe-area-inset-bottom,0px) + 100px);display:flex;flex-direction:row;gap:5px;z-index:4;pointer-events:none}
 body.shopen #armhud,body.shopen #armrb{display:none!important}
 #armhud div{width:38px;height:38px;border-radius:10px;border:2px solid #0006;background:#1a1208cc;display:grid;place-items:center;opacity:.55;position:relative}
 #armhud div.on{opacity:1;border-color:var(--c);box-shadow:0 0 10px var(--c)}#armhud img{width:32px;height:32px}#armhud i{position:absolute;right:-3px;bottom:-3px;font:800 9px/1 system-ui;color:#fff;background:var(--c);border-radius:5px;padding:2px 3px;font-style:normal;color:#1a1208}
@@ -249,6 +250,11 @@ body.shopen #armhud,body.shopen #armrb{display:none!important}
   }
   const discTxt = () => L_('Armes spirituelles : des symboles de la foi, jamais de violence contre des personnes.') + ' « ' + L_(ARMD.DISC[1]) + ' » (' + L_(ARMD.DISC[0]) + ')';
   A.drawAg = drawAg;
+  A.satHint = function () { try { ensure(); css(); const old = document.getElementById('sathint'); if (old) old.remove(); const q = eqNow(); if (!own('glaive') || (q && q.id === 'glaive')) return;   /* 25a : conseil seulement, jamais de changement automatique */
+    const d = document.createElement('div'); d.id = 'sathint'; d.setAttribute('role', 'status');
+    d.innerHTML = '<span class="si">⚔</span><b>' + L_('Glaive de l’Esprit recommandé') + '</b><button data-a="eq">' + L_('Équiper') + '</button><button data-a="x" aria-label="✕">✕</button>';
+    d.addEventListener('click', ev => { const b = ev.target.closest('button'); if (!b) return; if (b.dataset.a === 'eq') { equip('glaive'); try { note(L_('Équipée !'), L_(WB.glaive.n)); } catch (e) { } } d.remove(); });
+    document.body.appendChild(d); setTimeout(() => { if (d.isConnected) d.remove(); }, 12000); } catch (e) { } };
   function onAgClick(ev) { const b = ev.target.closest('[data-a]'); if (!b) return; ev.stopPropagation(); const id = b.dataset.id; if (b.dataset.a === 'up') buy(id); else if (b.dataset.a === 'eq') equip(id); else if (b.dataset.a === 'det') detail(id); else if (b.dataset.a === 'arm') armDetail(); }
   function mountTab() {
     if (document.getElementById('ag')) return true; const tabs = $('stabs'), body = $('sbody'); if (!tabs || !body) return false;
