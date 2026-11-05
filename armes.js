@@ -49,7 +49,7 @@ const ARMD = {"W": [{"id": "parole", "c": "D", "z": -1, "n": "La Parole", "P": 1
     hudSync();
     return r;
   };
-  A.cd = function () { const w = A.cur; let c = w.cd; if (w.id === 'jericho' && lvl(w.id) >= 4) c = 2.0; if (A.hosK && T < A.hos) c /= 1 + A.hosK; return c; };
+  A.cd = function () { const w = A.cur; let c = w.cd; if (w.id === 'jericho' && lvl(w.id) >= 4) c = 2.0; if (c < 1 && w.id !== 'parole') c *= 1.15 + .55 * Math.max(0, 8 - Math.max(1, lvl(w.id))) / 7; /* armes rapides : cadence plus lente au niveau 1, qui s'améliore à chaque niveau de l'arme */ if (A.hosK && T < A.hos) c /= 1 + A.hosK; return c; };
   A.mul = function () {
     const w = A.cur, L = lvl(w.id); let m = w.m * dmgLv(L); A.ign = 0;
     if (w.id === 'jericho') { A.jc++; if (A.jc % 7 === 0) { m *= L >= 8 ? 4 : 3; A.ign = 1; } }
