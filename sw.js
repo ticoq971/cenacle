@@ -1,5 +1,5 @@
 /* Cénacle : cache hors ligne. Changer VERSION à chaque publication pour forcer la mise à jour. */
-const VERSION = 'cenacle-2026-11-05f';
+const VERSION = 'cenacle-2026-11-05g';
 const CORE = ['./', './index.html', './vendor/three.min.js', './vendor/trystero-nostr.min.js', './manifest.webmanifest', './icons/icon-192.png', './icons/icon-512.png', './icons/apple-touch-icon.png', './icons/favicon-32.png', './menu/art.jpg', './menu/th-jesus.jpg', './menu/th-apo.jpg', './i18n.js', './weapons.js', './armes.js'];
 /* PremiÃ¨re installation : activation immÃ©diate. Mise Ã  jour : on attend que le joueur clique Â« Mettre Ã  jour Â» (message SKIP_WAITING). */
 self.addEventListener('install', e => { e.waitUntil(caches.open(VERSION).then(c => c.addAll(CORE)).then(() => { if (!self.registration.active) return self.skipWaiting(); })); });
