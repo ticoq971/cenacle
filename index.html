@@ -3812,7 +3812,7 @@ const apHpMax = (z, l, h) => Math.round(30 * K(z) * APV[z] * (1 + .15 * (l === u
 const apHCost = (z, h) => Math.round(25 * K(z) * Math.pow(1.55, h) * ed(h));
 const apMax = d => apHpMax(d.zn);
 function hitApostle(d, e) { if (d.hp === undefined) d.hp = apMax(d); const dm = e.dmg * rnd(.9, 1.1) * .7; d.hp -= dm; floatT('-' + fmt(dm), d.x + rnd(-.6, .6), 3.8, d.z, 'r'); if (d.hp <= 0) { d.dn = 15; floatT(AP[d.zn].n + $t(' est à terre'), d.x, 5, d.z, 'r'); note($t('Apôtre à terre'), AP[d.zn].n + $t(' se relève dans 15 s (3 fois plus vite pendant ta prière).')); } }
-const eff = (e, dm) => Math.max(dm * .05, dm - (e.defM || e.max) / 60);
+const eff = (e, dm) => e.dorm ? 0 : Math.max(dm * .05, dm - (e.defM || e.max) / 60);
 function updDisc(dt, alive) {
   syncDisc();
   disc.slice().forEach((d, i) => {
@@ -4673,7 +4673,8 @@ function update(dt) {
   if (W.moving) { const sp = 9 * speedM() * dt; step(mx * sp, 0); step(0, mz * sp); W.face = Math.atan2(mx, mz); walked += sp; if ((walked > 10 || T > 5) && !S.tut) { S.tut = 1; $('tut').style.display = 'none'; } }
   /* apparitions */
   W.spawnT -= dt; const boss = enemies.find(e => e.boss), normals = enemies.filter(e => !e.boss && !e.done && !e.tg && !e.stat && !e.pr && !e.pat).length, maxN = boss && boss.chase ? 2 : 6;
-  if (!W.arena && zn !== TEMZ && !S.boss[zn] && S.conv[zn] >= NEEDZ(zn) && !boss && alive) { const fa = W.face || 0, be = spawnFoe(zn, true, 0, W.x + Math.sin(fa) * 16, W.z + Math.cos(fa) * 16); be.tg = 1; note($t('Le boss apparaît !'), ZONES[zn].boss + $t(' est devant toi.')); }
+  if (!W.arena && zn !== TEMZ && !S.boss[zn] && !boss && alive) { const be = spawnFoe(zn, true, 0); be.tg = 1; be.dorm = S.conv[zn] < NEEDZ(zn); }
+  if (boss && boss.dorm && S.conv[boss.zn] >= NEEDZ(boss.zn)) { boss.dorm = false; note($t('Le boss se réveille !'), ZONES[boss.zn].boss + $t(' est à son poste.')); }
   if (!W.arena && alive) slotTick(dt, zn, boss);
 
   if (!W.arena && alive) { W.prT -= dt; if (W.prFill || W.prT <= 0) { W.prFill = 0; W.prT = 60; ensureProt(zn); } W.paT = (W.paT || 0) - dt; if (W.paT <= 0) { W.paT = 12; ensurePatrol(zn); } }
@@ -4691,7 +4692,7 @@ function update(dt) {
   W.atk -= dt; pulse = Math.max(0, pulse - dt * 4);
   if (alive && !W.cine && anyTarget && W.atk <= 0) {
     W.atk = AR ? AR.cd() : .6; pulse = 1; const A = ATK() * (AR ? AR.mul() : 1);
-    for (const e of enemies.slice()) { if (e.done > 0) continue; if (dist(e.x, e.z) > rng + (e.boss ? 2.4 : 0)) continue; if (AR && !AR.hit(e)) continue; const crit = Math.random() < .12 + (has('lumiere') ? .1 : 0) + (AR ? AR.crit() : 0), dm = (AR ? AR.dmg : eff)(e, A * rnd(.9, 1.1) * (crit ? 2 : 1)); if ((e.devil || (e.kind === 12 && W.spirit)) && !S.gl) { floatT($t('Invincible'), e.x, 5, e.z, 'r'); e.flash = .1; e.chase = true; continue; } e.hp -= dm; if (AR) AR.after(e, dm); e.flash = .15; e.chase = true; burst(e.x, 2.6 * CS, e.z, 0xffb060, 5, 4, 5); if (crit) flash(e.x, 2.8, e.z, crit); floatT(fmt(dm) + (crit ? '!' : ''), e.x + rnd(-1, 1), ((e.boss ? 7 : 4) + rnd(0, 1)) * CS, e.z, crit ? 'c' : ''); if (e.hp <= 0) convertEnemy(e); }
+    for (const e of enemies.slice()) { if (e.done > 0) continue; if (dist(e.x, e.z) > rng + (e.boss ? 2.4 : 0)) continue; if (AR && !AR.hit(e)) continue; const crit = Math.random() < .12 + (has('lumiere') ? .1 : 0) + (AR ? AR.crit() : 0), dm = (AR ? AR.dmg : eff)(e, A * rnd(.9, 1.1) * (crit ? 2 : 1)); if (e.dorm) { floatT($t('Convertis ') + NEEDZ(e.zn) + $t(' âmes'), e.x, 5, e.z, 'r'); e.flash = .1; continue; } if ((e.devil || (e.kind === 12 && W.spirit)) && !S.gl) { floatT($t('Invincible'), e.x, 5, e.z, 'r'); e.flash = .1; e.chase = true; continue; } e.hp -= dm; if (AR) AR.after(e, dm); e.flash = .15; e.chase = true; burst(e.x, 2.6 * CS, e.z, 0xffb060, 5, 4, 5); if (crit) flash(e.x, 2.8, e.z, crit); floatT(fmt(dm) + (crit ? '!' : ''), e.x + rnd(-1, 1), ((e.boss ? 7 : 4) + rnd(0, 1)) * CS, e.z, crit ? 'c' : ''); if (e.hp <= 0) convertEnemy(e); }
   }
   updDisc(dt, alive); try { updFolk(dt); } catch (e) { folk.forEach(q => scene.remove(q.m)); folk.length = 0; folkZone = W.arena ? -2 : W.zone; } updBishops(dt, zn); updQuest(dt, alive, zn); updVia(dt, alive); updSpirit(dt, alive); updEpreuve(dt, alive); eprTick(zn, alive);
   /* malades à guérir */
@@ -4721,7 +4722,7 @@ function update(dt) {
     if (e.bt && e.done <= 0) { e.chase = false; e.m.rotation.y = Math.atan2(e.bt.bx - e.x, e.bt.bz - e.z); animH(e.m, T, false, Math.sin(T * 9 + e.ph) > 0, e.ph); e.m.position.set(e.x, gy(e.x, e.z) + (e.up || 0), e.z); continue; }
     if (e.done > 0) { e.done -= dt; if (e.cva) CVA.tick(e, u, dt); else { u.body.position.y = Math.abs(Math.sin(e.done * 9)) * .6; e.m.scale.setScalar(e.sc * (.3 + .7 * Math.max(0, e.done / 1.6))); } if (e.done <= 0) { e.rm = 1; burst(e.x, 2, e.z, 0xffffff, 14, 5, 8); } e.m.position.set(e.x, gy(e.x, e.z) + (e.up || 0), e.z); continue; }
     if (e.kind === 7 && e.flee > 0) { e.flee -= dt; const fdx = e.x - W.x, fdz = e.z - W.z, fl = Math.hypot(fdx, fdz) || 1; { const q = nvSlide(e.x, e.z, fdx / fl * 7.4 * dt, fdz / fl * 7.4 * dt, .4, true); e.x = q[0]; e.z = q[1]; } e.x = Math.max(ZB[zn].x0 + 1.2, Math.min(ZB[zn].x1 - 1.2, e.x)); e.z = Math.max(ZB[zn].z0 + 1.2, Math.min(ZB[zn].z1 - 1.2, e.z)); if (inWater(e.x, e.z) || wallBlock(e.x, e.z, .9)) e.flee = 0; e.m.rotation.y = Math.atan2(fdx, fdz); animH(e.m, T, true, false, e.ph); e.m.position.set(e.x, gy(e.x, e.z), e.z); if (e.flee <= 0) e.rm = 1; continue; }
-    const d = dist(e.x, e.z), safe = (nearChurch && !e.boss) || !!(W.tmp && (W.tmp.truce || e.dis)) || e.giveUp > T || (PRAYER.safe && !!W.prayer && !e.boss); if (u.hulls) { const vv = d < 7; if (u.hv !== vv) { u.hv = vv; u.hulls.forEach(h => h.visible = vv); if (u.mdl) u.sh.visible = !vv; u.casters.forEach(h => h.castShadow = vv); } } { const far = !e.boss && proxyFar(e, d); const sh = (!far && d < 110) || !!e.boss; const gl = !e.boss && !(e.flash > 0) && !e.done; e.m.visible = sh && !gLod(e, d, sh && gl); if (far && d < 110 && !(e.done > 0)) proxyPush(e.x, e.z, e.m.rotation.y, '#8a3a2a'); }
+    const d = dist(e.x, e.z), safe = (nearChurch && !e.boss) || !!(W.tmp && (W.tmp.truce || e.dis)) || e.giveUp > T || e.dorm || (PRAYER.safe && !!W.prayer && !e.boss); if (u.hulls) { const vv = d < 7; if (u.hv !== vv) { u.hv = vv; u.hulls.forEach(h => h.visible = vv); if (u.mdl) u.sh.visible = !vv; u.casters.forEach(h => h.castShadow = vv); } } { const far = !e.boss && proxyFar(e, d); const sh = (!far && d < 110) || !!e.boss; const gl = !e.boss && !(e.flash > 0) && !e.done; e.m.visible = sh && !gLod(e, d, sh && gl); if (far && d < 110 && !(e.done > 0)) proxyPush(e.x, e.z, e.m.rotation.y, '#8a3a2a'); }
     let ax = W.x, az = W.z, ad = d; e.at = null; if (!W.arena && e.kind !== 6 && e.kind !== 7) for (const q of disc) { if (q.dn > 0) continue; const qd = Math.hypot(q.x - e.x, q.z - e.z); if (qd < ad - .5) { ad = qd; ax = q.x; az = q.z; e.at = q; } }
     const vis = e.boss || W.arena || (FAST ? d < 30 : onScreen(e.x, e.z));
     const tgOk = !e.tg || atTemple(e.zn);
